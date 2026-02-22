@@ -10,6 +10,7 @@
     "chat.agent.maxRequests": 300,
     "chat.tools.terminal.enableAutoApprove": true,
     "chat.tools.terminal.autoApprove": {
+        "*": true,
         "rm": false,
         "rmdir": false,
         "del": false,
@@ -20,7 +21,6 @@
         "chmod": false,
         "chown": false,
         "/^Remove-Item\\b/i": false,
-        "*": true,
         "npx playwright": true
     }
 }

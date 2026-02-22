@@ -1131,11 +1131,38 @@
                     if (!["pending", "done", "skipped"].includes(newStatus))
                         return;
                     state.activityStatuses[activityId] = newStatus;
+                    saveStatusesToStorage();
                     // Auto-collapse if expanded
                     if (state.expandedActivityId === activityId) {
                         state.expandedActivityId = null;
                     }
                     renderDayContent();
+                }
+
+                function getStorageKey() {
+                    const tripId = state.itinerary?.tripId;
+                    return tripId ? `itinerary_statuses_${tripId}` : null;
+                }
+
+                function saveStatusesToStorage() {
+                    try {
+                        const key = getStorageKey();
+                        if (!key) return;
+                        const toSave = {};
+                        for (const [id, status] of Object.entries(state.activityStatuses)) {
+                            if (status !== "pending") toSave[id] = status;
+                        }
+                        localStorage.setItem(key, JSON.stringify(toSave));
+                    } catch (_) { /* storage unavailable */ }
+                }
+
+                function loadStatusesFromStorage() {
+                    try {
+                        const key = getStorageKey();
+                        if (!key) return null;
+                        const raw = localStorage.getItem(key);
+                        return raw ? JSON.parse(raw) : null;
+                    } catch (_) { return null; }
                 }
 
                 function toggleExpand(activityId) {
@@ -1769,7 +1796,7 @@
                 }
 
                 // ── File Loading ──
-                function loadItinerary(data) {
+                function loadItinerary(data, { restoreFromStorage = false } = {}) {
                     state.fileLoadState = "loading";
                     updateFileStatus("Loading...", "");
 
@@ -1793,9 +1820,15 @@
                     state.fileLoadState = "loaded";
 
                     // Initialize activity statuses
+                    const saved = restoreFromStorage ? loadStatusesFromStorage() : null;
+                    if (!restoreFromStorage) {
+                        // Explicit file load — clear any saved progress
+                        try { const key = getStorageKey(); if (key) localStorage.removeItem(key); } catch (_) {}
+                    }
                     data.days.forEach((day) => {
                         (day.activities || []).forEach((act) => {
-                            state.activityStatuses[act.activityId] = "pending";
+                            state.activityStatuses[act.activityId] =
+                                (saved && saved[act.activityId]) || "pending";
                         });
                     });
 
@@ -2725,7 +2758,7 @@
                 };
 
                 // ── Initialize ──
-                loadItinerary(DEFAULT_ITINERARY);
+                loadItinerary(DEFAULT_ITINERARY, { restoreFromStorage: true });
             })();
         </script>
     </body>
