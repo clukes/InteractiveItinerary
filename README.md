@@ -8,22 +8,6 @@ A mobile-first, single-file web app for browsing a multi-day itinerary with maps
 
 ![Day 1 default view showing day tabs, route map, and activity cards](tests/e2e/screenshots/day1-default.png)
 
-### Checklist progress on another day
-
-![Day 2 view with completed checklist state](tests/e2e/screenshots/day2-with-done.png)
-
-### Activity details expanded
-
-![Expanded activity panel with details, tips, and links](tests/e2e/screenshots/activity-expanded.png)
-
-### Custom itinerary loaded
-
-![Loaded Paris itinerary from JSON file](tests/e2e/screenshots/paris-loaded.png)
-
-### Validation feedback for invalid files
-
-![Validation errors shown after loading an invalid itinerary file](tests/e2e/screenshots/validation-errors.png)
-
 ## What It Does
 
 - Day-by-day tabs with keyboard-accessible navigation
