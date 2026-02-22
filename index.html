@@ -143,75 +143,6 @@
                 margin-top: 0.25rem;
             }
 
-            /* === File Loader === */
-            .file-loader {
-                margin: 0.9rem 1rem 0.8rem;
-                padding: 0.9rem 1rem;
-                background: rgba(255, 253, 248, 0.9);
-                border: 1px solid #ecdcc9;
-                border-radius: var(--radius-lg);
-                display: flex;
-                align-items: center;
-                gap: 1rem;
-                flex-wrap: wrap;
-                box-shadow: var(--shadow-soft);
-                backdrop-filter: blur(3px);
-            }
-            .file-loader label {
-                font-size: 0.875rem;
-                font-weight: 600;
-                letter-spacing: 0.25px;
-                cursor: pointer;
-                background: linear-gradient(135deg, var(--brand), #1fadb0);
-                color: #ffffff;
-                padding: 0.52rem 1.2rem;
-                border-radius: 24px;
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                transition:
-                    background-color 0.2s,
-                    box-shadow 0.2s;
-                box-shadow: 0 6px 14px rgba(15, 63, 83, 0.24);
-            }
-            .file-loader label:hover {
-                background: linear-gradient(
-                    135deg,
-                    var(--brand-strong),
-                    #1492b6
-                );
-                box-shadow: 0 8px 16px rgba(15, 63, 83, 0.28);
-            }
-            .file-loader label:focus-within {
-                outline: 2px solid #1a73e8;
-                outline-offset: 2px;
-            }
-            .file-loader input[type="file"] {
-                position: absolute;
-                width: 1px;
-                height: 1px;
-                overflow: hidden;
-                clip: rect(0, 0, 0, 0);
-                white-space: nowrap;
-                border: 0;
-            }
-            .file-loader .file-status {
-                font-size: 0.875rem;
-                color: var(--text-secondary);
-                background: #f6efe4;
-                border: 1px solid #ead6bf;
-                border-radius: 999px;
-                padding: 0.24rem 0.72rem;
-            }
-            .file-loader .file-status.error {
-                color: #d93025;
-                font-weight: 500;
-            }
-            .file-loader .file-status.success {
-                color: #188038;
-                font-weight: 500;
-            }
-
             /* === Day Tabs === */
             .day-tabs {
                 display: flex;
@@ -306,6 +237,9 @@
                 border-radius: 999px;
                 padding: 0.26rem 0.62rem;
             }
+            .map-shell {
+                position: relative;
+            }
             .map-container {
                 position: relative;
                 width: 100%;
@@ -335,7 +269,9 @@
                 align-items: center;
                 gap: 0.2rem;
                 cursor: pointer;
-                transition: background-color 0.2s, transform 0.2s;
+                transition:
+                    background-color 0.2s,
+                    transform 0.2s;
             }
             .map-key-toggle:hover {
                 background: rgba(255, 255, 255, 0.2);
@@ -355,8 +291,8 @@
             }
             .map-overlay-key {
                 position: absolute;
-                top: 0.9rem;
-                right: 0.9rem;
+                top: 0.65rem;
+                right: 0.65rem;
                 z-index: 4;
                 background: linear-gradient(
                     145deg,
@@ -366,10 +302,10 @@
                 border: 1px solid rgba(255, 255, 255, 0.18);
                 border-radius: 12px;
                 color: #f2fbff;
-                width: min(230px, 65%);
+                width: min(190px, 55%);
                 box-shadow: 0 12px 24px rgba(3, 18, 24, 0.34);
                 backdrop-filter: blur(4px);
-                padding: 0.55rem 0.65rem;
+                padding: 0.45rem 0.55rem;
                 pointer-events: auto;
             }
             .map-overlay-header {
@@ -378,9 +314,9 @@
                 align-items: center;
             }
             .map-overlay-title {
-                font-size: 0.73rem;
+                font-size: 0.67rem;
                 text-transform: uppercase;
-                letter-spacing: 0.85px;
+                letter-spacing: 0.7px;
                 opacity: 0.92;
                 display: inline-flex;
                 align-items: center;
@@ -390,16 +326,16 @@
             .map-overlay-grid {
                 display: grid;
                 grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-                gap: 0.4rem 0.6rem;
-                margin-top: 0.4rem;
+                gap: 0.3rem 0.45rem;
+                margin-top: 0.3rem;
             }
             .map-overlay-item {
-                font-size: 0.72rem;
+                font-size: 0.66rem;
                 display: inline-flex;
                 align-items: center;
                 gap: 0.32rem;
                 white-space: nowrap;
-                padding: 0.24rem 0.38rem;
+                padding: 0.18rem 0.32rem;
                 border-radius: 999px;
                 background: rgba(255, 255, 255, 0.08);
                 border: 1px solid rgba(255, 255, 255, 0.08);
@@ -784,7 +720,9 @@
                 overflow: hidden;
                 border: 1px solid #ecdeca;
                 background: var(--surface-muted);
-                transition: box-shadow 0.2s, transform 0.2s;
+                transition:
+                    box-shadow 0.2s,
+                    transform 0.2s;
                 position: relative;
             }
             .photo-example:hover {
@@ -844,17 +782,25 @@
             }
 
             @media (max-width: 640px) {
+                .map-shell {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.4rem;
+                }
                 .map-overlay-key {
+                    position: static;
+                    align-self: flex-end;
                     width: auto;
-                    max-width: calc(100% - 1.8rem);
+                    max-width: min(185px, 100%);
+                    padding: 0.35rem 0.45rem;
                 }
                 .map-key-toggle {
-                    font-size: 0.7rem;
-                    padding: 0.35rem 0.52rem;
+                    font-size: 0.62rem;
+                    padding: 0.28rem 0.44rem;
                 }
                 .map-overlay-grid {
                     grid-template-columns: 1fr;
-                    gap: 0.3rem;
+                    gap: 0.24rem;
                 }
             }
         </style>
@@ -865,27 +811,14 @@
             <div class="trip-dates" id="app-dates"></div>
         </header>
 
-        <div class="file-loader">
-            <label for="file-input">
-                <span
-                    class="material-symbols-outlined"
-                    style="margin-right: 8px; font-size: 1.25rem"
-                    >upload_file</span
-                >
-                Load Itinerary
-                <input
-                    type="file"
-                    id="file-input"
-                    accept=".json,application/json"
-                    aria-label="Load itinerary JSON file"
-                />
-            </label>
-            <span
-                class="file-status"
-                id="file-status"
-                aria-live="polite"
-            ></span>
-        </div>
+        <input
+            type="file"
+            id="file-input"
+            accept=".json,application/json"
+            aria-label="Load itinerary JSON file"
+            hidden
+        />
+        <span id="file-status" aria-live="polite" hidden></span>
 
         <div class="validation-errors" id="validation-errors" role="alert">
             <h3>Validation Errors</h3>
@@ -1443,9 +1376,9 @@
                     const keyButton = `<button class="map-key-toggle" data-action="toggle-map-key" type="button" aria-label="${keyButtonLabel} filter key"><span class="material-symbols-outlined" aria-hidden="true">${keyButtonIcon}</span>${keyButtonLabel}</button>`;
                     const keyPanelContent = state.mapFilterKeyHidden
                         ? ""
-                        : `<div class="map-overlay-grid"><span class="map-overlay-item route"><span class="material-symbols-outlined map-overlay-icon">route</span>Route path</span><span class="map-overlay-item stop"><span class="material-symbols-outlined map-overlay-icon">location_on</span>Stops</span>${missingKeyItem}<span class="map-overlay-item tap"><span class="material-symbols-outlined map-overlay-icon">touch_app</span>Tap to open</span></div>`;
-                    const keyPanel = `<div class="map-overlay-key" aria-hidden="true"><div class="map-overlay-header"><div class="map-overlay-title"><span class="material-symbols-outlined" style="font-size: 0.95rem;">tune</span>Filter Key</div>${keyButton}</div>${keyPanelContent}</div>`;
-                    let svg = `<div class="map-container">${keyPanel}<svg viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Route map for the day">${renderTileLayer(geometry, width, height)}`;
+                        : `<div class="map-overlay-grid" aria-hidden="true"><span class="map-overlay-item route"><span class="material-symbols-outlined map-overlay-icon">route</span>Route path</span><span class="map-overlay-item stop"><span class="material-symbols-outlined map-overlay-icon">location_on</span>Stops</span>${missingKeyItem}<span class="map-overlay-item tap"><span class="material-symbols-outlined map-overlay-icon">touch_app</span>Tap to open</span></div>`;
+                    const keyPanel = `<div class="map-overlay-key"><div class="map-overlay-header"><div class="map-overlay-title" aria-hidden="true"><span class="material-symbols-outlined" style="font-size: 0.95rem;">tune</span>Filter Key</div>${keyButton}</div>${keyPanelContent}</div>`;
+                    let svg = `<div class="map-shell">${keyPanel}<div class="map-container"><svg viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Route map for the day">${renderTileLayer(geometry, width, height)}`;
 
                     // Draw route lines
                     if (points.length >= 2) {
@@ -1465,7 +1398,7 @@
                         svg += `</g>`;
                     });
 
-                    svg += "</svg></div>";
+                    svg += "</svg></div></div>";
                     html += svg;
 
                     // Map legend (including missing map items)
@@ -1678,14 +1611,18 @@
                             act.photoExamples.forEach((pe, idx) => {
                                 const safeUrl = escapeHtml(pe.url);
                                 const safeAlt = escapeHtml(pe.alt);
-                                const safeCredit = pe.credit ? escapeHtml(pe.credit) : '';
-                                const pageUrl = pe.pageUrl ? escapeHtml(pe.pageUrl) : safeUrl;
+                                const safeCredit = pe.credit
+                                    ? escapeHtml(pe.credit)
+                                    : "";
+                                const pageUrl = pe.pageUrl
+                                    ? escapeHtml(pe.pageUrl)
+                                    : safeUrl;
                                 html += `<div class="photo-example">`;
                                 html += `<a href="${pageUrl}" target="_blank" rel="noopener noreferrer" title="Open example photo">`;
                                 html += `<img src="${safeUrl}" alt="${safeAlt}" loading="lazy" />`;
                                 html += `</a>`;
                                 html += `<div class="photo-example-caption">`;
-                                html += `<span class="photo-example-credit">${safeCredit ? '📷 ' + safeCredit : '📷 Unsplash'}</span>`;
+                                html += `<span class="photo-example-credit">${safeCredit ? "📷 " + safeCredit : "📷 Unsplash"}</span>`;
                                 html += `<button class="photo-copy-btn" data-copy-url="${pageUrl}" title="Copy photo link">Copy</button>`;
                                 html += `</div></div>`;
                             });
@@ -1811,7 +1748,8 @@
                                     }, 1500);
                                 } catch {
                                     // Fallback for older browsers
-                                    const ta = document.createElement("textarea");
+                                    const ta =
+                                        document.createElement("textarea");
                                     ta.value = url;
                                     ta.style.position = "fixed";
                                     ta.style.opacity = "0";
@@ -1892,15 +1830,16 @@
 
                 function updateFileStatus(message, statusClass) {
                     const el = document.getElementById("file-status");
+                    if (!el) return;
                     el.textContent = message;
                     el.className =
                         "file-status" + (statusClass ? " " + statusClass : "");
                 }
 
                 // ── File Input Handler ──
-                document
-                    .getElementById("file-input")
-                    .addEventListener("change", async (e) => {
+                const fileInputEl = document.getElementById("file-input");
+                if (fileInputEl) {
+                    fileInputEl.addEventListener("change", async (e) => {
                         const file = e.target.files[0];
                         if (!file) return;
 
@@ -1929,6 +1868,7 @@
                         // Reset input so the same file can be re-loaded
                         e.target.value = "";
                     });
+                }
 
                 // ── Utility ──
                 function escapeHtml(str) {
@@ -1943,13 +1883,13 @@
                     schemaVersion: "1.0",
                     tripId: "seville-weekend-2026",
                     title: "Seville Weekend Getaway",
-                    dateRange: { start: "2026-03-06", end: "2026-03-08" },
+                    dateRange: { start: "2026-02-27", end: "2026-03-01" },
                     days: [
                         {
                             dayId: "day-1",
                             dayNumber: 1,
                             label: "Friday",
-                            date: "2026-03-06",
+                            date: "2026-02-27",
                             activities: [
                                 {
                                     activityId: "fri-1",
@@ -2085,7 +2025,8 @@
                                             url: "https://images.unsplash.com/photo-1740132438754-fcb12ff1eb74?w=400&auto=format",
                                             alt: "Friends enjoying outdoor tapas dining at a European café terrace",
                                             credit: "MChe Lee",
-                                            pageUrl: "https://unsplash.com/photos/GBHDUPem7g8",
+                                            pageUrl:
+                                                "https://unsplash.com/photos/GBHDUPem7g8",
                                         },
                                     ],
                                     ratingSummary:
@@ -2129,13 +2070,15 @@
                                             url: "https://images.unsplash.com/photo-1637333245124-db8d75a59b69?w=400&auto=format",
                                             alt: "Woman walking past a yellow building in Sevilla",
                                             credit: "Pier Francesco Grizi",
-                                            pageUrl: "https://unsplash.com/photos/jo5WNr7nTgs",
+                                            pageUrl:
+                                                "https://unsplash.com/photos/jo5WNr7nTgs",
                                         },
                                         {
                                             url: "https://images.unsplash.com/photo-1761507377433-8d1e26709400?w=400&auto=format",
                                             alt: "People strolling down a narrow shopping street in Seville",
                                             credit: "Jose Manuel Esp",
-                                            pageUrl: "https://unsplash.com/photos/T-bv68Twifg",
+                                            pageUrl:
+                                                "https://unsplash.com/photos/T-bv68Twifg",
                                         },
                                     ],
                                     ratingSummary:
@@ -2178,7 +2121,8 @@
                                             url: "https://images.unsplash.com/photo-1742749620967-b465e0a82096?w=400&auto=format",
                                             alt: "Woman posing on steps with Seville cityscape in background",
                                             credit: "Will Goodman",
-                                            pageUrl: "https://unsplash.com/photos/PsSrgDo9iNg",
+                                            pageUrl:
+                                                "https://unsplash.com/photos/PsSrgDo9iNg",
                                         },
                                     ],
                                     ratingSummary:
@@ -2222,7 +2166,8 @@
                                             url: "https://images.unsplash.com/photo-1740132438754-fcb12ff1eb74?w=400&auto=format",
                                             alt: "Friends enjoying outdoor tapas dining at a European café terrace",
                                             credit: "MChe Lee",
-                                            pageUrl: "https://unsplash.com/photos/GBHDUPem7g8",
+                                            pageUrl:
+                                                "https://unsplash.com/photos/GBHDUPem7g8",
                                         },
                                     ],
                                     ratingSummary:
@@ -2242,7 +2187,7 @@
                             dayId: "day-2",
                             dayNumber: 2,
                             label: "Saturday",
-                            date: "2026-03-07",
+                            date: "2026-02-28",
                             activities: [
                                 {
                                     activityId: "sat-1",
@@ -2377,7 +2322,8 @@
                                             url: "https://images.unsplash.com/photo-1665007019442-180419b71e0d?w=400&auto=format",
                                             alt: "Person walking across a bridge in Seville with river views",
                                             credit: "Hernan Gonzalez",
-                                            pageUrl: "https://unsplash.com/photos/YLgM4h9vxXU",
+                                            pageUrl:
+                                                "https://unsplash.com/photos/YLgM4h9vxXU",
                                         },
                                     ],
                                     ratingSummary: null,
@@ -2414,13 +2360,15 @@
                                             url: "https://images.unsplash.com/photo-1744698276062-a0ffe2246318?w=400&auto=format",
                                             alt: "Woman in pink dress walking through a narrow Seville street",
                                             credit: "Lianhao Qu",
-                                            pageUrl: "https://unsplash.com/photos/D0hAS0BqJeE",
+                                            pageUrl:
+                                                "https://unsplash.com/photos/D0hAS0BqJeE",
                                         },
                                         {
                                             url: "https://images.unsplash.com/photo-1609701113191-faf488c05744?w=400&auto=format",
                                             alt: "Woman exploring a sunny Andalusia alleyway",
                                             credit: "Amos from Stockphotos.com",
-                                            pageUrl: "https://unsplash.com/photos/8okuQaHrONA",
+                                            pageUrl:
+                                                "https://unsplash.com/photos/8okuQaHrONA",
                                         },
                                     ],
                                     ratingSummary:
@@ -2498,7 +2446,8 @@
                                             url: "https://images.unsplash.com/photo-1662982937651-1e75f5819300?w=400&auto=format",
                                             alt: "Street performers and musicians in a Spanish courtyard",
                                             credit: "David L. Espina Rincon",
-                                            pageUrl: "https://unsplash.com/photos/0auPSkP8DM0",
+                                            pageUrl:
+                                                "https://unsplash.com/photos/0auPSkP8DM0",
                                         },
                                     ],
                                     ratingSummary:
@@ -2518,7 +2467,7 @@
                             dayId: "day-3",
                             dayNumber: 3,
                             label: "Sunday",
-                            date: "2026-03-08",
+                            date: "2026-03-01",
                             activities: [
                                 {
                                     activityId: "sun-1",
@@ -2584,7 +2533,8 @@
                                             url: "https://images.unsplash.com/photo-1742749620967-b465e0a82096?w=400&auto=format",
                                             alt: "Woman posing on steps with Seville cityscape in background",
                                             credit: "Will Goodman",
-                                            pageUrl: "https://unsplash.com/photos/PsSrgDo9iNg",
+                                            pageUrl:
+                                                "https://unsplash.com/photos/PsSrgDo9iNg",
                                         },
                                     ],
                                     ratingSummary:
@@ -2628,7 +2578,8 @@
                                             url: "https://images.unsplash.com/photo-1502910288415-7ec2ba6f5086?w=400&auto=format",
                                             alt: "Couple near a historic church in Spain",
                                             credit: "Joshua Newton",
-                                            pageUrl: "https://unsplash.com/photos/_sutqp0Q8pI",
+                                            pageUrl:
+                                                "https://unsplash.com/photos/_sutqp0Q8pI",
                                         },
                                     ],
                                     ratingSummary:
@@ -2672,7 +2623,8 @@
                                             url: "https://images.unsplash.com/photo-1665007019442-180419b71e0d?w=400&auto=format",
                                             alt: "Person walking across a bridge in Seville with river views",
                                             credit: "Hernan Gonzalez",
-                                            pageUrl: "https://unsplash.com/photos/YLgM4h9vxXU",
+                                            pageUrl:
+                                                "https://unsplash.com/photos/YLgM4h9vxXU",
                                         },
                                     ],
                                     ratingSummary:
@@ -2716,7 +2668,8 @@
                                             url: "https://images.unsplash.com/photo-1744698276062-a0ffe2246318?w=400&auto=format",
                                             alt: "Woman in pink dress walking through a narrow Seville street",
                                             credit: "Lianhao Qu",
-                                            pageUrl: "https://unsplash.com/photos/D0hAS0BqJeE",
+                                            pageUrl:
+                                                "https://unsplash.com/photos/D0hAS0BqJeE",
                                         },
                                     ],
                                     ratingSummary:

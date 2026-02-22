@@ -1,0 +1,5 @@
+- add itinerary from A on telegram
+- remove the expensive things 
+- figure out how to make it save, and maybe a better way to host it 
+- correct the dates
+- add in times

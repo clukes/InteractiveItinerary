@@ -24,6 +24,25 @@ const INVALID_FIXTURE = path.resolve(
     "../fixtures/invalid-itinerary-missing-fields.json",
 );
 
+async function getSelectedDayActivities(page) {
+    return page.evaluate(() => {
+        const state = window.__itineraryState;
+        const itinerary = state?.itinerary;
+        if (!itinerary || !Array.isArray(itinerary.days)) return [];
+
+        const day =
+            itinerary.days.find((d) => d.dayId === state.selectedDayId) ||
+            itinerary.days[0];
+
+        return [...(day?.activities || [])]
+            .sort((a, b) => a.order - b.order)
+            .map((activity) => ({
+                name: activity.name,
+                order: activity.order,
+            }));
+    });
+}
+
 // ─── Keyboard Navigation ───────────────────────────────────────────────────────
 
 test.describe("Keyboard Tab Navigation", () => {
@@ -99,28 +118,61 @@ test.describe("Map Markers and Route", () => {
         await page.waitForSelector(".map-container svg");
     });
 
+    async function getExpectedMapDayData(page) {
+        return page.evaluate(() => {
+            const state = window.__itineraryState;
+            const itinerary = state?.itinerary;
+            if (!itinerary || !Array.isArray(itinerary.days)) {
+                return { mappedCount: 0, routeCount: 0, markerNumbers: [], mappedNames: [] };
+            }
+
+            const day =
+                itinerary.days.find((d) => d.dayId === state.selectedDayId) ||
+                itinerary.days[0];
+
+            const sortedActivities = [...(day?.activities || [])].sort(
+                (a, b) => a.order - b.order,
+            );
+            const mapValidActivities = sortedActivities.filter(
+                (a) =>
+                    a.location &&
+                    typeof a.location.lat === "number" &&
+                    typeof a.location.lng === "number",
+            );
+
+            return {
+                mappedCount: mapValidActivities.length,
+                routeCount: Math.max(0, mapValidActivities.length - 1),
+                markerNumbers: mapValidActivities.map((_, i) => String(i + 1)),
+                mappedNames: mapValidActivities.map((a) => a.name),
+            };
+        });
+    }
+
     test("map has correct number of markers and route lines for Day 1", async ({
         page,
     }) => {
+        const expected = await getExpectedMapDayData(page);
+
         const markers = page.locator(".map-marker");
-        await expect(markers).toHaveCount(3);
+        await expect(markers).toHaveCount(expected.mappedCount);
 
         const routeLines = page.locator(".route-line");
-        await expect(routeLines).toHaveCount(2);
+        await expect(routeLines).toHaveCount(expected.routeCount);
     });
 
     test("markers display sequential numbers", async ({ page }) => {
+        const expected = await getExpectedMapDayData(page);
         const texts = page.locator(".map-marker text");
-        await expect(texts.nth(0)).toHaveText("1");
-        await expect(texts.nth(1)).toHaveText("2");
-        await expect(texts.nth(2)).toHaveText("3");
+        await expect(texts).toHaveText(expected.markerNumbers);
     });
 
     test("map legend shows activity names", async ({ page }) => {
+        const expected = await getExpectedMapDayData(page);
         const legend = page.locator(".map-legend");
-        await expect(legend).toContainText("Senso-ji Temple");
-        await expect(legend).toContainText("Tokyo Skytree");
-        await expect(legend).toContainText("Akihabara Electric Town");
+        for (const activityName of expected.mappedNames) {
+            await expect(legend).toContainText(activityName);
+        }
     });
 
     test("map markers have keyboard access (tabindex and aria-label)", async ({
@@ -212,20 +264,22 @@ test.describe("Activity Ordering", () => {
         page,
     }) => {
         await page.goto("/");
+        const expectedActivities = await getSelectedDayActivities(page);
         const names = page.locator(".activity-name");
-        await expect(names).toHaveCount(3);
-        await expect(names.nth(0)).toHaveText("Senso-ji Temple");
-        await expect(names.nth(1)).toHaveText("Tokyo Skytree");
-        await expect(names.nth(2)).toHaveText("Akihabara Electric Town");
+        await expect(names).toHaveCount(expectedActivities.length);
+        await expect(names).toHaveText(
+            expectedActivities.map((activity) => activity.name),
+        );
     });
 
     test("activity order badges show correct numbers", async ({ page }) => {
         await page.goto("/");
+        const expectedActivities = await getSelectedDayActivities(page);
         const orderBadges = page.locator(".activity-order");
-        await expect(orderBadges).toHaveCount(3);
-        await expect(orderBadges.nth(0)).toHaveText("1");
-        await expect(orderBadges.nth(1)).toHaveText("2");
-        await expect(orderBadges.nth(2)).toHaveText("3");
+        await expect(orderBadges).toHaveCount(expectedActivities.length);
+        await expect(orderBadges).toHaveText(
+            expectedActivities.map((activity) => String(activity.order)),
+        );
     });
 });
 
@@ -234,10 +288,11 @@ test.describe("Activity Ordering", () => {
 test.describe("Activity Details — Optional Fields", () => {
     test('null price shows "Not provided"', async ({ page }) => {
         await page.goto("/");
-        // Akihabara has price: null
+        await page.locator("#file-input").setInputFiles(VALID_FIXTURE);
         const card = page.locator(".activity-card", {
-            hasText: "Akihabara Electric Town",
+            hasText: "Seine River Walk",
         });
+        await expect(card).toBeVisible();
         await card.locator(".activity-header").click();
 
         const priceSection = card.locator(".detail-section", {
@@ -248,9 +303,11 @@ test.describe("Activity Details — Optional Fields", () => {
 
     test('null website shows "Not provided"', async ({ page }) => {
         await page.goto("/");
+        await page.locator("#file-input").setInputFiles(VALID_FIXTURE);
         const card = page.locator(".activity-card", {
-            hasText: "Akihabara Electric Town",
+            hasText: "Seine River Walk",
         });
+        await expect(card).toBeVisible();
         await card.locator(".activity-header").click();
 
         const websiteSection = card.locator(".detail-section", {
@@ -261,9 +318,11 @@ test.describe("Activity Details — Optional Fields", () => {
 
     test('empty reviewLinks shows "No reviews available"', async ({ page }) => {
         await page.goto("/");
+        await page.locator("#file-input").setInputFiles(VALID_FIXTURE);
         const card = page.locator(".activity-card", {
-            hasText: "Akihabara Electric Town",
+            hasText: "Seine River Walk",
         });
+        await expect(card).toBeVisible();
         await card.locator(".activity-header").click();
 
         await expect(card.locator(".activity-details")).toContainText(
@@ -332,9 +391,11 @@ test.describe("ARIA Accessibility", () => {
     test("status button aria-label includes activity name", async ({
         page,
     }) => {
+        const expectedActivities = await getSelectedDayActivities(page);
         const doneBtn = page.locator(".btn-done").first();
         const ariaLabel = await doneBtn.getAttribute("aria-label");
-        expect(ariaLabel).toContain("Senso-ji Temple");
+        expect(expectedActivities.length).toBeGreaterThan(0);
+        expect(ariaLabel).toContain(expectedActivities[0].name);
     });
 
     test('map SVG has role="img" and descriptive aria-label', async ({
@@ -379,10 +440,15 @@ test.describe("File Reload State Reset", () => {
         const fileInput = page.locator("#file-input");
         await fileInput.setInputFiles(VALID_FIXTURE);
 
+        await expect(page.locator("#app-title")).toContainText(
+            "Test Trip to Paris",
+        );
+        const expectedActivities = await getSelectedDayActivities(page);
+
         // All new activities should be pending
         const cards = page.locator(".activity-card");
-        const count = await cards.count();
-        for (let i = 0; i < count; i++) {
+        await expect(cards).toHaveCount(expectedActivities.length);
+        for (let i = 0; i < expectedActivities.length; i++) {
             await expect(cards.nth(i)).toHaveAttribute(
                 "data-status",
                 "pending",

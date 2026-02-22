@@ -32,7 +32,11 @@ test.describe('Mobile Trip Flow', () => {
   });
 
   test('empty day shows empty state message', async ({ page }) => {
-    // Click the last tab (Day 3 - empty in default itinerary)
+    const fileInput = page.locator('#file-input');
+    const fixturePath = path.resolve(__dirname, '../fixtures/valid-itinerary.json');
+    await fileInput.setInputFiles(fixturePath);
+
+    // Click the last tab (Day 3 - empty in fixture)
     const lastTab = page.locator('[role="tab"]').last();
     await lastTab.click();
 
