@@ -12,17 +12,18 @@
     - `npm install`
 2. Start local static server:
 3. Open `index.html` in browser and verify default itinerary renders from inline data.
-3. Open app in browser and verify default itinerary renders.
+4. Open app in browser and verify default itinerary renders.
 
 ## Stage-by-Stage Implementation and Test Plan
-- Establish single-file architecture in `index.html` with inline `<style>` and `<script>` blocks (no required external files).
-Implementation scope:
 
+- Establish single-file architecture in `index.html` with inline `<style>` and `<script>` blocks (no required external files).
+  Implementation scope:
 
 Required tests before moving on:
 
 - Render day activity route visualization in-file (SVG/canvas).
 - Draw ordered route segments for 2+ map-valid activities.
+
 ### Stage 2 — Story P2: Route Map & Google Maps Launch
 
 - Integration: in-file route visualization order matches itinerary activity order.
@@ -31,14 +32,15 @@ Required tests before moving on:
 
 - E2E (Playwright mobile): selecting map point opens expected maps URL intent.
 - Manual: disable network and confirm checklist/details still work while map gracefully degrades.
-Implementation scope:
+  Implementation scope:
 
 - Add done/skipped status controls (mutually exclusive).
-Required tests before moving on:
-
+  Required tests before moving on:
 
 ### Stage 4 — Story P4: Reusable File Loading + Validation
+
 - [ ] App is shareable as a single `index.html` file and works without bundling any external local assets.
+
 ## End-to-End Verification Commands
 
 - Run unit tests: `npm run test:unit`

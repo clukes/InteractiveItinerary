@@ -6,9 +6,21 @@
         "speckit.tasks": true,
         "speckit.implement": true
     },
+    "chat.tools.autoApprove": true,
+    "chat.agent.maxRequests": 300,
+    "chat.tools.terminal.enableAutoApprove": true,
     "chat.tools.terminal.autoApprove": {
-        ".specify/scripts/bash/": true,
-        ".specify/scripts/powershell/": true
+        "rm": false,
+        "rmdir": false,
+        "del": false,
+        "kill": false,
+        "curl": false,
+        "wget": false,
+        "eval": false,
+        "chmod": false,
+        "chown": false,
+        "/^Remove-Item\\b/i": false,
+        "*": true,
+        "npx playwright": true
     }
 }
-

@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Interactive Trip Itinerary</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <style>
+    :root {
+      --bg: #edf3f3;
+      --surface: #ffffff;
+      --surface-muted: #f6fbfb;
+      --text-primary: #152129;
+      --text-secondary: #5b6770;
+      --brand: #1d87a8;
+      --brand-strong: #136f8e;
+      --accent: #39b88f;
+      --shadow-soft: 0 8px 24px rgba(19, 37, 48, 0.08);
+      --shadow-card: 0 10px 30px rgba(14, 31, 42, 0.1);
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+    }
+
+    /* === Reset & Base === */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; -webkit-text-size-adjust: 100%; }
+    body {
+      font-family: 'Google Sans', Roboto, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.5;
+      color: var(--text-primary);
+      background:
+        radial-gradient(circle at 0% 0%, #d9f0f7 0%, rgba(217, 240, 247, 0) 36%),
+        radial-gradient(circle at 100% 100%, #d8f2ea 0%, rgba(216, 242, 234, 0) 34%),
+        var(--bg);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    img { max-width: 100%; height: auto; display: block; }
+    a { color: #1a73e8; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    a:focus-visible, button:focus-visible, [role="tab"]:focus-visible, input:focus-visible {
+      outline: 2px solid #1a73e8;
+      outline-offset: 2px;
+    }
+
+    /* === App Shell === */
+    .app-header {
+      background: linear-gradient(140deg, #1886ab 0%, #23a4c9 58%, #3bc29b 100%);
+      color: #f7fcff;
+      padding: 1rem 1.5rem 1.1rem;
+      text-align: center;
+      box-shadow: var(--shadow-soft);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .app-header h1 { font-size: 1.34rem; font-weight: 600; letter-spacing: 0.1px; }
+    .app-header .trip-dates { font-size: 0.865rem; color: rgba(247, 252, 255, 0.88); margin-top: 0.2rem; }
+
+    /* === File Loader === */
+    .file-loader {
+      margin: 0.9rem 1rem 0.8rem;
+      padding: 0.85rem 1rem;
+      background: var(--surface);
+      border: 1px solid #e0ecef;
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      box-shadow: var(--shadow-soft);
+    }
+    .file-loader label {
+      font-size: 0.875rem;
+      font-weight: 500;
+      letter-spacing: 0.25px;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--brand), #20a6cc);
+      color: #ffffff;
+      padding: 0.52rem 1.2rem;
+      border-radius: 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.2s, box-shadow 0.2s;
+      box-shadow: 0 6px 14px rgba(15, 63, 83, 0.24);
+    }
+    .file-loader label:hover {
+      background: linear-gradient(135deg, var(--brand-strong), #1492b6);
+      box-shadow: 0 8px 16px rgba(15, 63, 83, 0.28);
+    }
+    .file-loader label:focus-within {
+      outline: 2px solid #1a73e8;
+      outline-offset: 2px;
+    }
+    .file-loader input[type="file"] {
+      position: absolute;
+      width: 1px; height: 1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      white-space: nowrap;
+      border: 0;
+    }
+    .file-loader .file-status {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+    .file-loader .file-status.error {
+      color: #d93025;
+      font-weight: 500;
+    }
+    .file-loader .file-status.success {
+      color: #188038;
+      font-weight: 500;
+    }
+
+    /* === Day Tabs === */
+    .day-tabs {
+      display: flex;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      background: transparent;
+      border-bottom: none;
+      padding: 0.2rem 0.8rem 0;
+      gap: 0.45rem;
+      scrollbar-width: none;
+    }
+    .day-tabs::-webkit-scrollbar { display: none; }
+    .day-tab {
+      flex: 0 0 auto;
+      padding: 0.58rem 1.05rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      letter-spacing: 0.25px;
+      color: var(--text-secondary);
+      background: #e8f1f4;
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: color 0.2s, background-color 0.2s, box-shadow 0.2s;
+      font-family: inherit;
+      border-radius: 999px;
+    }
+    .day-tab:hover { color: var(--text-primary); background: #dfebf0; }
+    .day-tab[aria-selected="true"] {
+      color: #ffffff;
+      background: linear-gradient(135deg, var(--brand), #21a2c4);
+      box-shadow: 0 6px 14px rgba(15, 63, 83, 0.22);
+    }
+
+    /* === Main Content === */
+    .day-panel { padding: 0.2rem 0 1.2rem; max-width: 860px; margin: 0 auto; }
+
+    /* === Map Section === */
+    .map-section {
+      background: var(--surface);
+      margin: 1rem;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-card);
+    }
+    .map-section h2 {
+      font-size: 1.03rem;
+      font-weight: 600;
+      padding: 1rem 1.25rem 0.65rem;
+      color: var(--text-primary);
+    }
+    .map-container {
+      position: relative;
+      width: 100%;
+      height: 280px;
+      background:
+        linear-gradient(0deg, rgba(219, 239, 233, 0.45), rgba(219, 239, 233, 0.45)),
+        #dfe8ea;
+      overflow: hidden;
+      border-top: 1px solid #e6eef1;
+      border-bottom: 1px solid #e6eef1;
+    }
+    .map-tile-layer {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      z-index: 0;
+    }
+    .map-tile {
+      position: absolute;
+      width: 256px;
+      height: 256px;
+      object-fit: cover;
+      opacity: 0.92;
+      filter: saturate(0.86) contrast(1.03);
+    }
+    .map-container svg {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      height: 100%;
+    }
+    .map-unavailable {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      text-align: center;
+      padding: 1rem;
+    }
+
+    /* === Checklist Section === */
+    .checklist-section {
+      padding: 0 1rem 1.5rem;
+    }
+    .checklist-section h2 {
+      font-size: 1.03rem;
+      font-weight: 600;
+      padding: 1rem 0.25rem 0.75rem;
+      color: var(--text-primary);
+    }
+
+    /* === Activity Card === */
+    .activity-card {
+      background: var(--surface);
+      border-radius: var(--radius-md);
+      margin-bottom: 0.75rem;
+      box-shadow: var(--shadow-soft);
+      overflow: hidden;
+      transition: box-shadow 0.2s, transform 0.2s;
+      border: 1px solid #e2edf0;
+    }
+    .activity-card:hover {
+      box-shadow: var(--shadow-card);
+      transform: translateY(-1px);
+    }
+    .activity-header {
+      display: flex;
+      align-items: center;
+      padding: 1rem;
+      gap: 1rem;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      width: 100%;
+      text-align: left;
+      font-family: inherit;
+      font-size: 1rem;
+      color: var(--text-primary);
+    }
+    .activity-header:hover { background: #f4f9fa; }
+    .activity-order {
+      flex: 0 0 auto;
+      width: 2rem; height: 2rem;
+      border-radius: 50%;
+      background: #def2f7;
+      color: var(--brand);
+      font-size: 0.875rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .activity-name {
+      flex: 1;
+      font-weight: 500;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .activity-expand-icon {
+      flex: 0 0 auto;
+      font-size: 1.25rem;
+      color: #6b7982;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .activity-card[data-expanded="true"] .activity-expand-icon {
+      transform: rotate(180deg);
+    }
+
+    /* === Status Controls === */
+    .activity-status {
+      display: flex;
+      gap: 0.5rem;
+      padding: 0 1rem 1rem;
+    }
+    .status-btn {
+      font-family: inherit;
+      font-size: 0.875rem;
+      font-weight: 500;
+      letter-spacing: 0.25px;
+      padding: 0.375rem 1rem;
+      border-radius: 16px;
+      border: 1px solid #dadce0;
+      background: #ffffff;
+      color: #60707a;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .status-btn:hover { background: #f4f8fa; color: var(--text-primary); }
+    .status-btn[data-active="true"].btn-done {
+      background: #e6f4ea;
+      color: #137333;
+      border-color: #e6f4ea;
+    }
+    .status-btn[data-active="true"].btn-skipped {
+      background: #fef7e0;
+      color: #b06000;
+      border-color: #fef7e0;
+    }
+
+    /* Status visual on card */
+    .activity-card[data-status="done"] { border-left: 4px solid #137333; }
+    .activity-card[data-status="skipped"] { border-left: 4px solid #f29900; opacity: 0.88; }
+    .activity-card[data-status="done"] .activity-name { text-decoration: line-through; color: #137333; }
+    .activity-card[data-status="skipped"] .activity-name { text-decoration: line-through; color: #b06000; }
+
+    /* === Activity Details (expandable) === */
+    .activity-details {
+      display: none;
+      padding: 0 1rem 1rem;
+      font-size: 0.875rem;
+      color: #33424c;
+      border-top: 1px solid #edf2f4;
+      margin-top: -0.5rem;
+      padding-top: 1rem;
+    }
+    .activity-card[data-expanded="true"] .activity-details {
+      display: block;
+      animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .detail-image {
+      width: 100%;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      max-height: 250px;
+      object-fit: cover;
+    }
+    .detail-section {
+      margin-bottom: 0.875rem;
+    }
+    .detail-label {
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #5f6368;
+      margin-bottom: 0.25rem;
+    }
+    .detail-value { line-height: 1.5; }
+    .detail-value.not-provided {
+      color: #80868b;
+      font-style: italic;
+    }
+    .detail-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      color: #1a73e8;
+      font-weight: 500;
+    }
+    .detail-tips { padding-left: 1.5rem; margin: 0; }
+    .detail-tips li { margin-bottom: 0.25rem; }
+    .map-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      background: #fff5dd;
+      color: #b06000;
+      margin-top: 0.25rem;
+    }
+
+    /* === Empty State === */
+    .empty-state {
+      text-align: center;
+      padding: 4rem 1.5rem;
+      color: var(--text-secondary);
+    }
+    .empty-state p { font-size: 1rem; }
+
+    /* === Validation Errors === */
+    .validation-errors {
+      margin: 1rem;
+      padding: 1rem;
+      background: #fce9e8;
+      border: 1px solid #fad2cf;
+      border-radius: 8px;
+      display: none;
+    }
+    .validation-errors.visible { display: block; }
+    .validation-errors h3 {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #c5221f;
+      margin-bottom: 0.5rem;
+    }
+    .validation-errors ul {
+      padding-left: 1.5rem;
+      font-size: 0.875rem;
+      color: #b31412;
+    }
+    .validation-errors li { margin-bottom: 0.25rem; }
+
+    /* === Map Markers & Route === */
+    .map-marker {
+      cursor: pointer;
+    }
+    .map-marker circle { transition: r 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+    .map-marker:hover circle { r: 12; }
+    .map-marker text {
+      font-size: 11px;
+      font-weight: 500;
+      fill: #ffffff;
+      text-anchor: middle;
+      dominant-baseline: central;
+      pointer-events: none;
+    }
+    .route-line {
+      fill: none;
+      stroke: #168cb2;
+      stroke-width: 4;
+      stroke-dasharray: 7 5;
+      stroke-linecap: round;
+    }
+    .route-line-shadow {
+      fill: none;
+      stroke: rgba(13, 78, 100, 0.3);
+      stroke-width: 6;
+      stroke-linecap: round;
+    }
+    .map-marker-core {
+      fill: #1196bd;
+      stroke: #ffffff;
+      stroke-width: 2;
+    }
+
+    /* Map legend */
+    .map-legend {
+      padding: 0.75rem 1rem 1rem;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .map-legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      background: var(--surface-muted);
+      border: 1px solid #dfebef;
+      border-radius: 999px;
+      padding: 0.3rem 0.65rem;
+    }
+    .map-legend-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: #1196bd;
+    }
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <h1 id="app-title">Interactive Trip Itinerary</h1>
+    <div class="trip-dates" id="app-dates"></div>
+  </header>
+
+  <div class="file-loader">
+    <label for="file-input">
+      <span class="material-symbols-outlined" style="margin-right: 8px; font-size: 1.25rem;">upload_file</span>
+      Load Itinerary
+      <input type="file" id="file-input" accept=".json,application/json" aria-label="Load itinerary JSON file">
+    </label>
+    <span class="file-status" id="file-status" aria-live="polite"></span>
+  </div>
+
+  <div class="validation-errors" id="validation-errors" role="alert">
+    <h3>Validation Errors</h3>
+    <ul id="validation-error-list"></ul>
+  </div>
+
+  <nav aria-label="Trip days">
+    <div class="day-tabs" id="day-tabs" role="tablist"></div>
+  </nav>
+
+  <main id="day-content" aria-live="polite"></main>
+
+  <script>
+  /* ====================================================================
+     Interactive Trip Itinerary — Inline Application Script
+     ==================================================================== */
+  (function() {
+    'use strict';
+
+    // ── Schema for validation (embedded from contracts/itinerary-file.schema.json) ──
+    const ITINERARY_SCHEMA = {
+      required: ['schemaVersion', 'tripId', 'title', 'days'],
+      properties: {
+        schemaVersion: { type: 'string', const: '1.0' },
+        tripId: { type: 'string', minLength: 1 },
+        title: { type: 'string', minLength: 1 },
+        dateRange: {
+          type: 'object',
+          required: ['start', 'end'],
+          properties: {
+            start: { type: 'string' },
+            end: { type: 'string' }
+          }
+        },
+        days: { type: 'array', minItems: 1 }
+      },
+      dayRequired: ['dayId', 'dayNumber', 'label', 'activities'],
+      activityRequired: [
+        'activityId', 'order', 'name', 'description', 'image',
+        'location', 'price', 'tips', 'photoSpotTips',
+        'ratingSummary', 'reviewLinks', 'websiteUrl'
+      ]
+    };
+
+    // ── App State ──
+    const state = {
+      itinerary: null,
+      selectedDayId: null,
+      activityStatuses: {},  // { activityId: 'pending'|'done'|'skipped' }
+      expandedActivityId: null,
+      fileLoadState: 'idle', // idle|loading|loaded|validation_error
+    };
+
+    // Expose state for testing
+    window.__itineraryState = state;
+
+    // ── Validation ──
+    function validateItinerary(data) {
+      const errors = [];
+
+      if (!data || typeof data !== 'object' || Array.isArray(data)) {
+        errors.push('Itinerary must be a JSON object.');
+        return errors;
+      }
+
+      // Required top-level fields
+      for (const field of ITINERARY_SCHEMA.required) {
+        if (!(field in data)) {
+          errors.push(`Missing required field: "${field}".`);
+        }
+      }
+      if (errors.length) return errors;
+
+      // schemaVersion
+      if (data.schemaVersion !== '1.0') {
+        errors.push(`Invalid schemaVersion: expected "1.0", got "${data.schemaVersion}".`);
+      }
+
+      // tripId & title
+      if (typeof data.tripId !== 'string' || data.tripId.length === 0) {
+        errors.push('"tripId" must be a non-empty string.');
+      }
+      if (typeof data.title !== 'string' || data.title.length === 0) {
+        errors.push('"title" must be a non-empty string.');
+      }
+
+      // dateRange (optional)
+      if ('dateRange' in data && data.dateRange !== undefined) {
+        if (!data.dateRange || typeof data.dateRange !== 'object') {
+          errors.push('"dateRange" must be an object with "start" and "end".');
+        } else {
+          if (!data.dateRange.start) errors.push('"dateRange.start" is required.');
+          if (!data.dateRange.end) errors.push('"dateRange.end" is required.');
+          if (data.dateRange.start && data.dateRange.end) {
+            if (new Date(data.dateRange.end) < new Date(data.dateRange.start)) {
+              errors.push('"dateRange.end" must be on or after "dateRange.start".');
+            }
+          }
+        }
+      }
+
+      // days
+      if (!Array.isArray(data.days)) {
+        errors.push('"days" must be an array.');
+        return errors;
+      }
+      if (data.days.length === 0) {
+        errors.push('"days" must contain at least one day.');
+        return errors;
+      }
+
+      // Unique dayNumber check
+      const dayNumbers = new Set();
+      for (let i = 0; i < data.days.length; i++) {
+        const day = data.days[i];
+        const prefix = `days[${i}]`;
+
+        for (const f of ITINERARY_SCHEMA.dayRequired) {
+          if (!(f in day)) {
+            errors.push(`${prefix}: Missing required field "${f}".`);
+          }
+        }
+
+        if (typeof day.dayNumber === 'number') {
+          if (dayNumbers.has(day.dayNumber)) {
+            errors.push(`${prefix}: Duplicate dayNumber ${day.dayNumber}.`);
+          }
+          dayNumbers.add(day.dayNumber);
+        }
+
+        // Validate activities
+        if (Array.isArray(day.activities)) {
+          const activityOrders = new Set();
+          for (let j = 0; j < day.activities.length; j++) {
+            const act = day.activities[j];
+            const actPrefix = `${prefix}.activities[${j}]`;
+
+            for (const f of ITINERARY_SCHEMA.activityRequired) {
+              if (!(f in act)) {
+                errors.push(`${actPrefix}: Missing required field "${f}".`);
+              }
+            }
+
+            if (typeof act.order === 'number') {
+              if (activityOrders.has(act.order)) {
+                errors.push(`${actPrefix}: Duplicate order ${act.order} within day.`);
+              }
+              activityOrders.add(act.order);
+            }
+
+            // Validate image
+            if (act.image && typeof act.image === 'object') {
+              if (!act.image.url) errors.push(`${actPrefix}.image: Missing "url".`);
+              if (!act.image.alt) errors.push(`${actPrefix}.image: Missing "alt".`);
+            } else if ('image' in act && (typeof act.image !== 'object' || act.image === null)) {
+              errors.push(`${actPrefix}.image: Must be an object with "url" and "alt".`);
+            }
+
+            // Validate location
+            if (act.location && typeof act.location === 'object') {
+              if (!act.location.mapsUrl) errors.push(`${actPrefix}.location: Missing "mapsUrl".`);
+            } else if ('location' in act && (typeof act.location !== 'object' || act.location === null)) {
+              errors.push(`${actPrefix}.location: Must be an object with "mapsUrl".`);
+            }
+
+            // Validate tips arrays
+            if ('tips' in act) {
+              if (!Array.isArray(act.tips) || act.tips.length === 0) {
+                errors.push(`${actPrefix}.tips: Must be a non-empty array.`);
+              }
+            }
+            if ('photoSpotTips' in act) {
+              if (!Array.isArray(act.photoSpotTips) || act.photoSpotTips.length === 0) {
+                errors.push(`${actPrefix}.photoSpotTips: Must be a non-empty array.`);
+              }
+            }
+
+            // Validate reviewLinks
+            if ('reviewLinks' in act && act.reviewLinks !== null) {
+              if (!Array.isArray(act.reviewLinks)) {
+                errors.push(`${actPrefix}.reviewLinks: Must be an array.`);
+              } else {
+                const sourceNames = new Set();
+                for (let k = 0; k < act.reviewLinks.length; k++) {
+                  const rl = act.reviewLinks[k];
+                  if (!rl.sourceName || !rl.url) {
+                    errors.push(`${actPrefix}.reviewLinks[${k}]: Missing "sourceName" or "url".`);
+                  }
+                  if (rl.sourceName) {
+                    if (sourceNames.has(rl.sourceName)) {
+                      errors.push(`${actPrefix}.reviewLinks[${k}]: Duplicate sourceName "${rl.sourceName}".`);
+                    }
+                    sourceNames.add(rl.sourceName);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      return errors;
+    }
+
+    // Expose validator for testing
+    window.__validateItinerary = validateItinerary;
+
+    // ── State Management ──
+    function getActivityStatus(activityId) {
+      return state.activityStatuses[activityId] || 'pending';
+    }
+
+    function setActivityStatus(activityId, newStatus) {
+      if (!['pending', 'done', 'skipped'].includes(newStatus)) return;
+      state.activityStatuses[activityId] = newStatus;
+      // Auto-collapse if expanded
+      if (state.expandedActivityId === activityId) {
+        state.expandedActivityId = null;
+      }
+      renderDayContent();
+    }
+
+    function toggleExpand(activityId) {
+      state.expandedActivityId = state.expandedActivityId === activityId ? null : activityId;
+      renderDayContent();
+    }
+
+    function selectDay(dayId) {
+      if (state.selectedDayId === dayId) return;
+      state.selectedDayId = dayId;
+      renderDayTabs();
+      renderDayContent();
+    }
+
+    // Expose for testing
+    window.__getActivityStatus = getActivityStatus;
+    window.__setActivityStatus = setActivityStatus;
+    window.__toggleExpand = toggleExpand;
+    window.__selectDay = selectDay;
+
+    // ── Rendering ──
+    function getSelectedDay() {
+      if (!state.itinerary) return null;
+      return state.itinerary.days.find(d => d.dayId === state.selectedDayId) || null;
+    }
+
+    function renderApp() {
+      renderHeader();
+      renderDayTabs();
+      renderDayContent();
+    }
+
+    function renderHeader() {
+      const titleEl = document.getElementById('app-title');
+      const datesEl = document.getElementById('app-dates');
+      if (!state.itinerary) {
+        titleEl.textContent = 'Interactive Trip Itinerary';
+        datesEl.textContent = '';
+        return;
+      }
+      titleEl.textContent = state.itinerary.title;
+      if (state.itinerary.dateRange) {
+        datesEl.textContent = `${state.itinerary.dateRange.start} — ${state.itinerary.dateRange.end}`;
+      } else {
+        datesEl.textContent = '';
+      }
+    }
+
+    function renderDayTabs() {
+      const container = document.getElementById('day-tabs');
+      container.innerHTML = '';
+      if (!state.itinerary) return;
+
+      state.itinerary.days.forEach(day => {
+        const tab = document.createElement('button');
+        tab.className = 'day-tab';
+        tab.setAttribute('role', 'tab');
+        tab.setAttribute('aria-selected', day.dayId === state.selectedDayId ? 'true' : 'false');
+        tab.setAttribute('aria-controls', 'day-content');
+        tab.setAttribute('data-day-id', day.dayId);
+        tab.id = `tab-${day.dayId}`;
+        tab.textContent = day.label;
+        tab.addEventListener('click', () => selectDay(day.dayId));
+        tab.addEventListener('keydown', (e) => handleTabKeydown(e, day.dayId));
+        container.appendChild(tab);
+      });
+    }
+
+    function handleTabKeydown(e, currentDayId) {
+      if (!state.itinerary) return;
+      const days = state.itinerary.days;
+      const idx = days.findIndex(d => d.dayId === currentDayId);
+      let newIdx = -1;
+
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        newIdx = (idx + 1) % days.length;
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        newIdx = (idx - 1 + days.length) % days.length;
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        newIdx = 0;
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        newIdx = days.length - 1;
+      }
+
+      if (newIdx >= 0) {
+        selectDay(days[newIdx].dayId);
+        const tabEl = document.getElementById(`tab-${days[newIdx].dayId}`);
+        if (tabEl) tabEl.focus();
+      }
+    }
+
+    function renderDayContent() {
+      const container = document.getElementById('day-content');
+      const day = getSelectedDay();
+
+      if (!state.itinerary) {
+        container.innerHTML = '<div class="empty-state"><span class="material-symbols-outlined" style="font-size: 3rem; color: #dadce0; margin-bottom: 1rem; display: block;">flight_takeoff</span><p>Load an itinerary file to get started.</p></div>';
+        return;
+      }
+
+      if (!day) {
+        container.innerHTML = '<div class="empty-state"><span class="material-symbols-outlined" style="font-size: 3rem; color: #dadce0; margin-bottom: 1rem; display: block;">calendar_today</span><p>Select a day to view activities.</p></div>';
+        return;
+      }
+
+      if (!day.activities || day.activities.length === 0) {
+        container.innerHTML = `
+          <div class="day-panel" role="tabpanel" aria-labelledby="tab-${day.dayId}">
+            <div class="empty-state">
+              <span class="material-symbols-outlined" style="font-size: 3rem; color: #dadce0; margin-bottom: 1rem; display: block;">beach_access</span>
+              <p>No activities planned for ${day.label}.</p>
+            </div>
+          </div>`;
+        return;
+      }
+
+      const sortedActivities = [...day.activities].sort((a, b) => a.order - b.order);
+      const mapValidActivities = sortedActivities.filter(a =>
+        a.location && typeof a.location.lat === 'number' && typeof a.location.lng === 'number'
+      );
+
+      let html = `<div class="day-panel" role="tabpanel" aria-labelledby="tab-${day.dayId}">`;
+
+      // Map section
+      html += renderMapSection(sortedActivities, mapValidActivities);
+
+      // Checklist section
+      html += '<div class="checklist-section"><h2>Activities</h2>';
+      sortedActivities.forEach(act => {
+        html += renderActivityCard(act);
+      });
+      html += '</div></div>';
+
+      container.innerHTML = html;
+
+      // Bind event listeners
+      bindActivityEvents();
+    }
+
+    function renderMapSection(sortedActivities, mapValidActivities) {
+      let html = '<div class="map-section"><h2>Route Map</h2>';
+
+      if (mapValidActivities.length === 0) {
+        html += '<div class="map-container"><div class="map-unavailable"><span class="material-symbols-outlined" style="font-size: 2rem; margin-bottom: 0.5rem; display: block;">map</span>Map data unavailable for this day\'s activities.</div></div>';
+        // Show legend for activities missing map data
+        const missingMap = sortedActivities.filter(a =>
+          !a.location || typeof a.location.lat !== 'number' || typeof a.location.lng !== 'number'
+        );
+        if (missingMap.length > 0) {
+          html += '<div class="map-legend">';
+          missingMap.forEach(a => {
+            html += `<span class="map-legend-item"><span class="map-badge"><span class="material-symbols-outlined" style="font-size: 1rem;">location_off</span> Map unavailable</span> ${escapeHtml(a.name)}</span>`;
+          });
+          html += '</div>';
+        }
+        html += '</div>';
+        return html;
+      }
+
+      // Compute map geometry
+      const padding = 24;
+      const width = 360;
+      const height = 220;
+      const geometry = buildMapGeometry(mapValidActivities, width, height, padding);
+      const points = geometry.points;
+
+      let svg = `<div class="map-container">${renderTileLayer(geometry, width, height)}<svg viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Route map for the day">`;
+
+      // Draw route lines
+      if (points.length >= 2) {
+        for (let i = 0; i < points.length - 1; i++) {
+          svg += `<line class="route-line-shadow" x1="${points[i].x}" y1="${points[i].y}" x2="${points[i+1].x}" y2="${points[i+1].y}"/>`;
+          svg += `<line class="route-line" x1="${points[i].x}" y1="${points[i].y}" x2="${points[i+1].x}" y2="${points[i+1].y}"/>`;
+        }
+      }
+
+      // Draw markers
+      points.forEach(p => {
+        svg += `<g class="map-marker" data-activity-id="${p.activity.activityId}" role="button" tabindex="0" aria-label="Open ${escapeHtml(p.activity.name)} in Google Maps">`;
+        svg += `<circle class="map-marker-core" cx="${p.x}" cy="${p.y}" r="8"/>`;
+        svg += `<text x="${p.x}" y="${p.y}">${p.order}</text>`;
+        svg += `</g>`;
+      });
+
+      svg += '</svg></div>';
+      html += svg;
+
+      // Map legend (including missing map items)
+      const missingMap = sortedActivities.filter(a =>
+        !a.location || typeof a.location.lat !== 'number' || typeof a.location.lng !== 'number'
+      );
+      html += '<div class="map-legend">';
+      mapValidActivities.forEach((a, i) => {
+        html += `<span class="map-legend-item"><span class="map-legend-dot"></span> ${i + 1}. ${escapeHtml(a.name)}</span>`;
+      });
+      if (missingMap.length > 0) {
+        missingMap.forEach(a => {
+          html += `<span class="map-legend-item"><span class="map-badge"><span class="material-symbols-outlined" style="font-size: 1rem;">location_off</span> Map unavailable</span> ${escapeHtml(a.name)}</span>`;
+        });
+      }
+      html += '</div></div>';
+      return html;
+    }
+
+    function buildMapGeometry(activities, width, height, padding) {
+      const availableWidth = width - (padding * 2);
+      const availableHeight = height - (padding * 2);
+      let zoom = 15;
+
+      for (let z = 15; z >= 2; z--) {
+        const worldPoints = activities.map(a => latLngToWorld(a.location.lat, a.location.lng, z));
+        const bounds = getBounds(worldPoints);
+        if (bounds.width <= availableWidth && bounds.height <= availableHeight) {
+          zoom = z;
+          break;
+        }
+      }
+
+      const worldPoints = activities.map(a => latLngToWorld(a.location.lat, a.location.lng, zoom));
+      const bounds = getBounds(worldPoints);
+      const centerX = bounds.minX + (bounds.width / 2);
+      const centerY = bounds.minY + (bounds.height / 2);
+      const mapLeft = centerX - (width / 2);
+      const mapTop = centerY - (height / 2);
+
+      return {
+        zoom,
+        mapLeft,
+        mapTop,
+        points: worldPoints.map((point, i) => ({
+          x: point.x - mapLeft,
+          y: point.y - mapTop,
+          order: i + 1,
+          activity: activities[i]
+        }))
+      };
+    }
+
+    function latLngToWorld(lat, lng, zoom) {
+      const tileSize = 256;
+      const scale = (2 ** zoom) * tileSize;
+      const clampedLat = Math.max(-85.05112878, Math.min(85.05112878, lat));
+      const sinLat = Math.sin((clampedLat * Math.PI) / 180);
+      const x = ((lng + 180) / 360) * scale;
+      const y = (0.5 - (Math.log((1 + sinLat) / (1 - sinLat)) / (4 * Math.PI))) * scale;
+      return { x, y };
+    }
+
+    function getBounds(points) {
+      const xs = points.map(p => p.x);
+      const ys = points.map(p => p.y);
+      const minX = Math.min(...xs);
+      const maxX = Math.max(...xs);
+      const minY = Math.min(...ys);
+      const maxY = Math.max(...ys);
+
+      return {
+        minX,
+        minY,
+        maxX,
+        maxY,
+        width: Math.max(1, maxX - minX),
+        height: Math.max(1, maxY - minY)
+      };
+    }
+
+    function renderTileLayer(geometry, width, height) {
+      const tileSize = 256;
+      const tileCount = 2 ** geometry.zoom;
+      const minTileX = Math.floor(geometry.mapLeft / tileSize);
+      const maxTileX = Math.floor((geometry.mapLeft + width) / tileSize);
+      const minTileY = Math.floor(geometry.mapTop / tileSize);
+      const maxTileY = Math.floor((geometry.mapTop + height) / tileSize);
+
+      let html = '<div class="map-tile-layer" aria-hidden="true">';
+
+      for (let tileX = minTileX; tileX <= maxTileX; tileX++) {
+        for (let tileY = minTileY; tileY <= maxTileY; tileY++) {
+          if (tileY < 0 || tileY >= tileCount) continue;
+
+          const wrappedTileX = ((tileX % tileCount) + tileCount) % tileCount;
+          const left = (tileX * tileSize) - geometry.mapLeft;
+          const top = (tileY * tileSize) - geometry.mapTop;
+          const tileUrl = `https://basemaps.cartocdn.com/light_all/${geometry.zoom}/${wrappedTileX}/${tileY}.png`;
+
+          html += `<img class="map-tile" src="${tileUrl}" alt="" loading="lazy" referrerpolicy="no-referrer" style="left:${left.toFixed(2)}px;top:${top.toFixed(2)}px;">`;
+        }
+      }
+
+      html += '</div>';
+      return html;
+    }
+
+    function renderActivityCard(act) {
+      const status = getActivityStatus(act.activityId);
+      const isExpanded = state.expandedActivityId === act.activityId;
+      const hasMapData = act.location && typeof act.location.lat === 'number' && typeof act.location.lng === 'number';
+
+      let html = `<div class="activity-card" data-activity-id="${act.activityId}" data-status="${status}" data-expanded="${isExpanded}">`;
+
+      // Header (expand/collapse trigger)
+      html += `<button class="activity-header" data-action="toggle" data-activity-id="${act.activityId}" aria-expanded="${isExpanded}" aria-controls="details-${act.activityId}">`;
+      html += `<span class="activity-order">${act.order}</span>`;
+      html += `<span class="activity-name">${escapeHtml(act.name)}</span>`;
+      if (!hasMapData) html += `<span class="map-badge"><span class="material-symbols-outlined" style="font-size: 1rem;">location_off</span> No map</span>`;
+      html += `<span class="material-symbols-outlined activity-expand-icon" aria-hidden="true">expand_more</span>`;
+      html += `</button>`;
+
+      // Status controls
+      html += `<div class="activity-status">`;
+      html += `<button class="status-btn btn-done" data-action="status" data-activity-id="${act.activityId}" data-status="done" data-active="${status === 'done'}" aria-pressed="${status === 'done'}" aria-label="Mark ${escapeHtml(act.name)} as done"><span class="material-symbols-outlined" style="font-size: 1rem; vertical-align: middle; margin-right: 4px;">check_circle</span>Done</button>`;
+      html += `<button class="status-btn btn-skipped" data-action="status" data-activity-id="${act.activityId}" data-status="skipped" data-active="${status === 'skipped'}" aria-pressed="${status === 'skipped'}" aria-label="Mark ${escapeHtml(act.name)} as skipped"><span class="material-symbols-outlined" style="font-size: 1rem; vertical-align: middle; margin-right: 4px;">cancel</span>Skip</button>`;
+      html += `</div>`;
+
+      // Expandable details
+      html += `<div class="activity-details" id="details-${act.activityId}" role="region" aria-label="Details for ${escapeHtml(act.name)}">`;
+      html += renderActivityDetails(act);
+      html += `</div>`;
+
+      html += `</div>`;
+      return html;
+    }
+
+    function renderActivityDetails(act) {
+      let html = '';
+
+      // Image
+      if (act.image && act.image.url) {
+        html += `<img class="detail-image" src="${escapeHtml(act.image.url)}" alt="${escapeHtml(act.image.alt || act.name)}" loading="lazy">`;
+      } else {
+        html += `<div class="detail-section"><span class="detail-label">Image</span><span class="detail-value not-provided">Not provided</span></div>`;
+      }
+
+      // Description
+      html += `<div class="detail-section"><div class="detail-label">Description</div><div class="detail-value">${escapeHtml(act.description || '')}</div></div>`;
+
+      // Google Maps Link
+      if (act.location && act.location.mapsUrl) {
+        html += `<div class="detail-section"><div class="detail-label">Location</div><div class="detail-value"><a href="${escapeHtml(act.location.mapsUrl)}" target="_blank" rel="noopener noreferrer" class="detail-link" aria-label="Open ${escapeHtml(act.name)} in Google Maps"><span class="material-symbols-outlined" style="font-size: 1.125rem;">location_on</span> Open in Google Maps</a></div></div>`;
+      } else {
+        html += `<div class="detail-section"><div class="detail-label">Location</div><div class="detail-value not-provided">Map data unavailable</div></div>`;
+      }
+
+      // Price
+      html += `<div class="detail-section"><div class="detail-label">Price</div><div class="detail-value${act.price === null || act.price === undefined ? ' not-provided' : ''}">${act.price !== null && act.price !== undefined ? escapeHtml(act.price) : 'Not provided'}</div></div>`;
+
+      // Tips
+      if (act.tips && act.tips.length > 0) {
+        html += `<div class="detail-section"><div class="detail-label">Tips</div><ul class="detail-tips">`;
+        act.tips.forEach(t => { html += `<li>${escapeHtml(t)}</li>`; });
+        html += `</ul></div>`;
+      } else {
+        html += `<div class="detail-section"><div class="detail-label">Tips</div><div class="detail-value not-provided">Not provided</div></div>`;
+      }
+
+      // Photo Spot Tips
+      if (act.photoSpotTips && act.photoSpotTips.length > 0) {
+        html += `<div class="detail-section"><div class="detail-label">Photo Spot Tips</div><ul class="detail-tips">`;
+        act.photoSpotTips.forEach(t => { html += `<li>${escapeHtml(t)}</li>`; });
+        html += `</ul></div>`;
+      } else {
+        html += `<div class="detail-section"><div class="detail-label">Photo Spot Tips</div><div class="detail-value not-provided">Not provided</div></div>`;
+      }
+
+      // Rating Summary
+      html += `<div class="detail-section"><div class="detail-label">Rating</div><div class="detail-value${act.ratingSummary === null || act.ratingSummary === undefined ? ' not-provided' : ''}">${act.ratingSummary !== null && act.ratingSummary !== undefined ? escapeHtml(act.ratingSummary) : 'Not provided'}</div></div>`;
+
+      // Review Links
+      if (act.reviewLinks && act.reviewLinks.length > 0) {
+        html += `<div class="detail-section"><div class="detail-label">Reviews</div><div class="detail-value">`;
+        act.reviewLinks.forEach(rl => {
+          html += `<a href="${escapeHtml(rl.url)}" target="_blank" rel="noopener noreferrer" class="detail-link" aria-label="Read review on ${escapeHtml(rl.sourceName)}">${escapeHtml(rl.sourceName)}</a> `;
+        });
+        html += `</div></div>`;
+      } else {
+        html += `<div class="detail-section"><div class="detail-label">Reviews</div><div class="detail-value not-provided">No reviews available</div></div>`;
+      }
+
+      // Website
+      if (act.websiteUrl) {
+        html += `<div class="detail-section"><div class="detail-label">Website</div><div class="detail-value"><a href="${escapeHtml(act.websiteUrl)}" target="_blank" rel="noopener noreferrer" class="detail-link" aria-label="Visit ${escapeHtml(act.name)} website"><span class="material-symbols-outlined" style="font-size: 1.125rem;">language</span> Visit Website</a></div></div>`;
+      } else {
+        html += `<div class="detail-section"><div class="detail-label">Website</div><div class="detail-value not-provided">Not provided</div></div>`;
+      }
+
+      return html;
+    }
+
+    function bindActivityEvents() {
+      // Toggle expand
+      document.querySelectorAll('[data-action="toggle"]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          toggleExpand(btn.getAttribute('data-activity-id'));
+        });
+      });
+
+      // Status buttons
+      document.querySelectorAll('[data-action="status"]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const actId = btn.getAttribute('data-activity-id');
+          const newStatus = btn.getAttribute('data-status');
+          const currentStatus = getActivityStatus(actId);
+          // Toggle: if already this status, revert to pending
+          if (currentStatus === newStatus) {
+            setActivityStatus(actId, 'pending');
+          } else {
+            setActivityStatus(actId, newStatus);
+          }
+        });
+      });
+
+      // Map marker clicks
+      document.querySelectorAll('.map-marker').forEach(marker => {
+        const handler = () => {
+          const actId = marker.getAttribute('data-activity-id');
+          if (!state.itinerary) return;
+          const day = getSelectedDay();
+          if (!day) return;
+          const act = day.activities.find(a => a.activityId === actId);
+          if (act && act.location && act.location.mapsUrl) {
+            window.open(act.location.mapsUrl, '_blank', 'noopener,noreferrer');
+          }
+        };
+        marker.addEventListener('click', handler);
+        marker.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handler();
+          }
+        });
+      });
+    }
+
+    // ── File Loading ──
+    function loadItinerary(data) {
+      state.fileLoadState = 'loading';
+      updateFileStatus('Loading...', '');
+
+      const errors = validateItinerary(data);
+      if (errors.length > 0) {
+        state.fileLoadState = 'validation_error';
+        showValidationErrors(errors);
+        updateFileStatus('Validation failed — see errors below.', 'error');
+        return false;
+      }
+
+      // Valid — replace state
+      hideValidationErrors();
+      state.itinerary = data;
+      state.activityStatuses = {};
+      state.expandedActivityId = null;
+      state.selectedDayId = data.days[0]?.dayId || null;
+      state.fileLoadState = 'loaded';
+
+      // Initialize activity statuses
+      data.days.forEach(day => {
+        (day.activities || []).forEach(act => {
+          state.activityStatuses[act.activityId] = 'pending';
+        });
+      });
+
+      updateFileStatus('Itinerary loaded successfully.', 'success');
+      renderApp();
+      return true;
+    }
+
+    // Expose for testing
+    window.__loadItinerary = loadItinerary;
+
+    function showValidationErrors(errors) {
+      const container = document.getElementById('validation-errors');
+      const list = document.getElementById('validation-error-list');
+      list.innerHTML = errors.map(e => `<li>${escapeHtml(e)}</li>`).join('');
+      container.classList.add('visible');
+    }
+
+    function hideValidationErrors() {
+      const container = document.getElementById('validation-errors');
+      container.classList.remove('visible');
+    }
+
+    function updateFileStatus(message, statusClass) {
+      const el = document.getElementById('file-status');
+      el.textContent = message;
+      el.className = 'file-status' + (statusClass ? ' ' + statusClass : '');
+    }
+
+    // ── File Input Handler ──
+    document.getElementById('file-input').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      try {
+        const text = await file.text();
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch (parseErr) {
+          state.fileLoadState = 'validation_error';
+          showValidationErrors([`Invalid JSON: ${parseErr.message}`]);
+          updateFileStatus('Invalid JSON file.', 'error');
+          return;
+        }
+        loadItinerary(data);
+      } catch (err) {
+        state.fileLoadState = 'validation_error';
+        showValidationErrors([`Failed to read file: ${err.message}`]);
+        updateFileStatus('File read error.', 'error');
+      }
+
+      // Reset input so the same file can be re-loaded
+      e.target.value = '';
+    });
+
+    // ── Utility ──
+    function escapeHtml(str) {
+      if (typeof str !== 'string') return '';
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    // ── Default Seed Data ──
+    const DEFAULT_ITINERARY = {
+      schemaVersion: "1.0",
+      tripId: "demo-trip-001",
+      title: "Tokyo Adventure",
+      dateRange: { start: "2026-03-15", end: "2026-03-17" },
+      days: [
+        {
+          dayId: "day-1",
+          dayNumber: 1,
+          label: "Day 1",
+          date: "2026-03-15",
+          activities: [
+            {
+              activityId: "act-1-1",
+              order: 1,
+              name: "Senso-ji Temple",
+              description: "Tokyo's oldest and most significant Buddhist temple, located in the Asakusa district. Walk through the iconic Kaminarimon gate and Nakamise shopping street.",
+              image: { url: "https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=400", alt: "Senso-ji Temple entrance gate" },
+              location: { lat: 35.7148, lng: 139.7967, mapsUrl: "https://maps.google.com/?q=Senso-ji+Temple" },
+              price: "Free",
+              tips: ["Arrive early (before 9 AM) to avoid crowds", "Try the fortune sticks (Omikuji) for ¥100"],
+              photoSpotTips: ["Frame the Kaminarimon lantern with the pagoda in background", "Best golden-hour light hits the main hall at sunrise"],
+              ratingSummary: "4.5/5 — Iconic must-visit temple experience",
+              reviewLinks: [
+                { sourceName: "TripAdvisor", url: "https://www.tripadvisor.com/Attraction_Review-Senso_ji" },
+                { sourceName: "Google Reviews", url: "https://maps.google.com/?q=Senso-ji+Temple" }
+              ],
+              websiteUrl: "https://www.senso-ji.jp/english/"
+            },
+            {
+              activityId: "act-1-2",
+              order: 2,
+              name: "Tokyo Skytree",
+              description: "The tallest tower in Japan at 634m with two observation decks offering panoramic city views.",
+              image: { url: "https://images.unsplash.com/photo-1536098561742-ca998e48cbcc?w=400", alt: "Tokyo Skytree tower against blue sky" },
+              location: { lat: 35.7101, lng: 139.8107, mapsUrl: "https://maps.google.com/?q=Tokyo+Skytree" },
+              price: "¥2,100–¥3,100",
+              tips: ["Book tickets online in advance for shorter wait", "Visit the Solamachi shopping complex at the base"],
+              photoSpotTips: ["Capture reflections in the glass floor on the observation deck", "Best nighttime shots from the lower deck as city lights turn on"],
+              ratingSummary: "4.3/5 — Impressive views, can be crowded",
+              reviewLinks: [
+                { sourceName: "TripAdvisor", url: "https://www.tripadvisor.com/Attraction_Review-Tokyo_Skytree" }
+              ],
+              websiteUrl: "https://www.tokyo-skytree.jp/en/"
+            },
+            {
+              activityId: "act-1-3",
+              order: 3,
+              name: "Akihabara Electric Town",
+              description: "Tokyo's electronics and anime district with countless shops for gadgets, manga, and Japanese pop culture.",
+              image: { url: "https://images.unsplash.com/photo-1542051841857-5f90071e7989?w=400", alt: "Neon signs in Akihabara district" },
+              location: { lat: 35.7023, lng: 139.7745, mapsUrl: "https://maps.google.com/?q=Akihabara" },
+              price: null,
+              tips: ["Many shops open around 10 AM–11 AM", "Check upper floors of buildings for specialty shops"],
+              photoSpotTips: ["Shoot neon signs at dusk for vivid colors", "Capture the main street from the station pedestrian bridge"],
+              ratingSummary: "4.2/5 — Paradise for tech and anime fans",
+              reviewLinks: [],
+              websiteUrl: null
+            }
+          ]
+        },
+        {
+          dayId: "day-2",
+          dayNumber: 2,
+          label: "Day 2",
+          date: "2026-03-16",
+          activities: [
+            {
+              activityId: "act-2-1",
+              order: 1,
+              name: "Meiji Shrine",
+              description: "Serene Shinto shrine surrounded by a dense forest in the heart of Shibuya. Dedicated to Emperor Meiji and Empress Shoken.",
+              image: { url: "https://images.unsplash.com/photo-1583766395091-2eb9994ed094?w=400", alt: "Torii gate at Meiji Shrine entrance" },
+              location: { lat: 35.6764, lng: 139.6993, mapsUrl: "https://maps.google.com/?q=Meiji+Shrine" },
+              price: "Free",
+              tips: ["Walk the forest path from Harajuku station entrance", "Write a wish on an ema wooden plaque"],
+              photoSpotTips: ["The torii gate entrance is stunning in morning light", "Capture the tree canopy along the gravel path"],
+              ratingSummary: "4.6/5 — Peaceful escape in the city",
+              reviewLinks: [
+                { sourceName: "Japan Guide", url: "https://www.japan-guide.com/e/e3002.html" }
+              ],
+              websiteUrl: "https://www.meijijingu.or.jp/en/"
+            },
+            {
+              activityId: "act-2-2",
+              order: 2,
+              name: "Shibuya Crossing",
+              description: "The world's busiest pedestrian crossing. Experience the organized chaos as thousands cross simultaneously.",
+              image: { url: "https://images.unsplash.com/photo-1542051841857-5f90071e7989?w=400", alt: "Shibuya Crossing from above" },
+              location: { lat: 35.6595, lng: 139.7004, mapsUrl: "https://maps.google.com/?q=Shibuya+Crossing" },
+              price: "Free",
+              tips: ["Best experienced during evening rush hour", "Visit the Starbucks overlooking the crossing for a bird's eye view"],
+              photoSpotTips: ["Shoot from Shibuya Sky or Magnet building rooftop for aerial views", "At street level, use a slow shutter to capture motion blur of crowds"],
+              ratingSummary: "4.4/5 — Quintessential Tokyo experience",
+              reviewLinks: [
+                { sourceName: "TripAdvisor", url: "https://www.tripadvisor.com/Attraction_Review-Shibuya_Crossing" }
+              ],
+              websiteUrl: null
+            }
+          ]
+        },
+        {
+          dayId: "day-3",
+          dayNumber: 3,
+          label: "Day 3",
+          date: "2026-03-17",
+          activities: []
+        }
+      ]
+    };
+
+    // ── Initialize ──
+    loadItinerary(DEFAULT_ITINERARY);
+
+  })();
+  </script>
+</body>
+</html>

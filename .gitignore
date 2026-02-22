@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+
+# Test outputs
+coverage/
+test-results/
+playwright-report/
+
+# Environment
+.env*
+!.env.example
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor
+*.swp
+*.tmp
+
+# Logs
+*.log
+npm-debug.log*
