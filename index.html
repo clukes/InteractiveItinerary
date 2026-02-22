@@ -284,10 +284,8 @@
             .map-subtitle {
                 display: block;
                 padding: 0 1.25rem 0.75rem;
-                font-size: 0.82rem;
+                font-size: 0.85rem;
                 color: var(--text-secondary);
-                font-family: "Caveat", cursive;
-                font-size: 1.25rem;
                 line-height: 1;
             }
             .map-meta {
@@ -311,43 +309,55 @@
             .map-container {
                 position: relative;
                 width: 100%;
-                height: 300px;
+                aspect-ratio: 360 / 280;
                 background:
                     linear-gradient(
                         0deg,
                         rgba(209, 233, 224, 0.32),
-                        rgba(209, 233, 224, 0.32)
+                        rgba(209, 233, 224, 0)
                     ),
                     #dfe8ea;
                 overflow: hidden;
                 border-top: 1px solid #eadfce;
                 border-bottom: 1px solid #eadfce;
             }
-            .map-tile-layer {
-                position: absolute;
-                inset: 0;
-                overflow: hidden;
-                z-index: 0;
+            .map-key-toggle {
+                background: rgba(255, 255, 255, 0.1);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                color: #f2fbff;
+                font-family: inherit;
+                font-size: 0.65rem;
+                font-weight: 600;
+                line-height: 1;
+                border-radius: 999px;
+                padding: 0.3rem 0.5rem;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.2rem;
+                cursor: pointer;
+                transition: background-color 0.2s, transform 0.2s;
             }
-            .map-tile {
-                position: absolute;
-                width: 256px;
-                height: 256px;
-                object-fit: cover;
-                opacity: 0.96;
-                filter: saturate(1.12) contrast(1.02) hue-rotate(-8deg);
+            .map-key-toggle:hover {
+                background: rgba(255, 255, 255, 0.2);
+                transform: translateY(-1px);
+            }
+            .map-key-toggle .material-symbols-outlined {
+                font-size: 0.85rem;
             }
             .map-container svg {
-                position: relative;
-                z-index: 2;
+                display: block;
                 width: 100%;
                 height: 100%;
+            }
+            .map-container svg image {
+                opacity: 0.96;
+                filter: saturate(1.12) contrast(1.02) hue-rotate(-8deg);
             }
             .map-overlay-key {
                 position: absolute;
                 top: 0.9rem;
                 right: 0.9rem;
-                z-index: 1;
+                z-index: 4;
                 background: linear-gradient(
                     145deg,
                     rgba(9, 29, 36, 0.84),
@@ -360,14 +370,18 @@
                 box-shadow: 0 12px 24px rgba(3, 18, 24, 0.34);
                 backdrop-filter: blur(4px);
                 padding: 0.55rem 0.65rem;
-                pointer-events: none;
+                pointer-events: auto;
+            }
+            .map-overlay-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
             }
             .map-overlay-title {
                 font-size: 0.73rem;
                 text-transform: uppercase;
                 letter-spacing: 0.85px;
                 opacity: 0.92;
-                margin-bottom: 0.4rem;
                 display: inline-flex;
                 align-items: center;
                 gap: 0.3rem;
@@ -377,6 +391,7 @@
                 display: grid;
                 grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
                 gap: 0.4rem 0.6rem;
+                margin-top: 0.4rem;
             }
             .map-overlay-item {
                 font-size: 0.72rem;
@@ -746,10 +761,96 @@
                 background: #ff5a5f;
             }
 
+            /* === Photo Examples === */
+            .photo-examples {
+                display: flex;
+                gap: 0.75rem;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                padding: 0.5rem 0 0.25rem;
+                scrollbar-width: thin;
+            }
+            .photo-examples::-webkit-scrollbar {
+                height: 4px;
+            }
+            .photo-examples::-webkit-scrollbar-thumb {
+                background: #d1c4b2;
+                border-radius: 4px;
+            }
+            .photo-example {
+                flex: 0 0 auto;
+                width: 160px;
+                border-radius: var(--radius-sm);
+                overflow: hidden;
+                border: 1px solid #ecdeca;
+                background: var(--surface-muted);
+                transition: box-shadow 0.2s, transform 0.2s;
+                position: relative;
+            }
+            .photo-example:hover {
+                box-shadow: var(--shadow-card);
+                transform: translateY(-2px);
+            }
+            .photo-example a {
+                display: block;
+                text-decoration: none;
+            }
+            .photo-example img {
+                width: 160px;
+                height: 200px;
+                object-fit: cover;
+                display: block;
+            }
+            .photo-example-caption {
+                padding: 0.35rem 0.5rem;
+                font-size: 0.68rem;
+                color: var(--text-secondary);
+                line-height: 1.25;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 0.25rem;
+            }
+            .photo-example-credit {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                flex: 1;
+            }
+            .photo-copy-btn {
+                flex: 0 0 auto;
+                background: none;
+                border: 1px solid #e0d5c5;
+                border-radius: 6px;
+                cursor: pointer;
+                padding: 0.2rem 0.4rem;
+                font-size: 0.65rem;
+                color: var(--text-secondary);
+                font-family: inherit;
+                transition: all 0.2s;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.2rem;
+            }
+            .photo-copy-btn:hover {
+                background: #f6efe4;
+                color: var(--text-primary);
+                border-color: #d1c4b2;
+            }
+            .photo-copy-btn.copied {
+                background: #e6f4ea;
+                color: #137333;
+                border-color: #c4e7cc;
+            }
+
             @media (max-width: 640px) {
                 .map-overlay-key {
                     width: auto;
                     max-width: calc(100% - 1.8rem);
+                }
+                .map-key-toggle {
+                    font-size: 0.7rem;
+                    padding: 0.35rem 0.52rem;
                 }
                 .map-overlay-grid {
                     grid-template-columns: 1fr;
@@ -845,6 +946,7 @@
                     activityStatuses: {}, // { activityId: 'pending'|'done'|'skipped' }
                     expandedActivityId: null,
                     fileLoadState: "idle", // idle|loading|loaded|validation_error
+                    mapFilterKeyHidden: window.innerWidth <= 640,
                 };
 
                 // Expose state for testing
@@ -1111,6 +1213,11 @@
                     renderDayContent();
                 }
 
+                function toggleMapFilterKey() {
+                    state.mapFilterKeyHidden = !state.mapFilterKeyHidden;
+                    renderDayContent();
+                }
+
                 function selectDay(dayId) {
                     if (state.selectedDayId === dayId) return;
                     state.selectedDayId = dayId;
@@ -1284,7 +1391,11 @@
                     );
                     let html =
                         '<div class="map-section"><h2>Route Map</h2><div class="map-subtitle">A little visual journey for your day.</div>';
-                    html += `<div class="map-meta"><span class="map-meta-pill"><span class="material-symbols-outlined" style="font-size: 1rem;">route</span>${mappedCount} mapped stop${mappedCount === 1 ? "" : "s"}</span><span class="map-meta-pill"><span class="material-symbols-outlined" style="font-size: 1rem;">location_off</span>${missingCount} missing location${missingCount === 1 ? "" : "s"}</span></div>`;
+                    const missingPill =
+                        missingCount > 0
+                            ? `<span class="map-meta-pill"><span class="material-symbols-outlined" style="font-size: 1rem;">location_off</span>${missingCount} missing location${missingCount === 1 ? "" : "s"}</span>`
+                            : "";
+                    html += `<div class="map-meta"><span class="map-meta-pill"><span class="material-symbols-outlined" style="font-size: 1rem;">route</span>${mappedCount} mapped stop${mappedCount === 1 ? "" : "s"}</span>${missingPill}</div>`;
 
                     if (mapValidActivities.length === 0) {
                         html +=
@@ -1308,9 +1419,9 @@
                     }
 
                     // Compute map geometry
-                    const padding = 24;
+                    const padding = 32;
                     const width = 360;
-                    const height = 220;
+                    const height = 280;
                     const geometry = buildMapGeometry(
                         mapValidActivities,
                         width,
@@ -1319,7 +1430,22 @@
                     );
                     const points = geometry.points;
 
-                    let svg = `<div class="map-container">${renderTileLayer(geometry, width, height)}<div class="map-overlay-key" aria-hidden="true"><div class="map-overlay-title"><span class="material-symbols-outlined" style="font-size: 0.95rem;">tune</span>Filter Key</div><div class="map-overlay-grid"><span class="map-overlay-item route"><span class="material-symbols-outlined map-overlay-icon">route</span>Route path</span><span class="map-overlay-item stop"><span class="material-symbols-outlined map-overlay-icon">location_on</span>Stops</span><span class="map-overlay-item missing"><span class="material-symbols-outlined map-overlay-icon">location_off</span>No map data</span><span class="map-overlay-item tap"><span class="material-symbols-outlined map-overlay-icon">touch_app</span>Tap to open</span></div></div><svg viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Route map for the day">`;
+                    const missingKeyItem =
+                        missingCount > 0
+                            ? `<span class="map-overlay-item missing"><span class="material-symbols-outlined map-overlay-icon">location_off</span>No map data</span>`
+                            : "";
+                    const keyButtonLabel = state.mapFilterKeyHidden
+                        ? "Show key"
+                        : "Hide key";
+                    const keyButtonIcon = state.mapFilterKeyHidden
+                        ? "visibility"
+                        : "visibility_off";
+                    const keyButton = `<button class="map-key-toggle" data-action="toggle-map-key" type="button" aria-label="${keyButtonLabel} filter key"><span class="material-symbols-outlined" aria-hidden="true">${keyButtonIcon}</span>${keyButtonLabel}</button>`;
+                    const keyPanelContent = state.mapFilterKeyHidden
+                        ? ""
+                        : `<div class="map-overlay-grid"><span class="map-overlay-item route"><span class="material-symbols-outlined map-overlay-icon">route</span>Route path</span><span class="map-overlay-item stop"><span class="material-symbols-outlined map-overlay-icon">location_on</span>Stops</span>${missingKeyItem}<span class="map-overlay-item tap"><span class="material-symbols-outlined map-overlay-icon">touch_app</span>Tap to open</span></div>`;
+                    const keyPanel = `<div class="map-overlay-key" aria-hidden="true"><div class="map-overlay-header"><div class="map-overlay-title"><span class="material-symbols-outlined" style="font-size: 0.95rem;">tune</span>Filter Key</div>${keyButton}</div>${keyPanelContent}</div>`;
+                    let svg = `<div class="map-container">${keyPanel}<svg viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Route map for the day">${renderTileLayer(geometry, width, height)}`;
 
                     // Draw route lines
                     if (points.length >= 2) {
@@ -1450,8 +1576,7 @@
                         (geometry.mapTop + height) / tileSize,
                     );
 
-                    let html =
-                        '<div class="map-tile-layer" aria-hidden="true">';
+                    let svg = "";
 
                     for (let tileX = minTileX; tileX <= maxTileX; tileX++) {
                         for (let tileY = minTileY; tileY <= maxTileY; tileY++) {
@@ -1459,16 +1584,15 @@
 
                             const wrappedTileX =
                                 ((tileX % tileCount) + tileCount) % tileCount;
-                            const left = tileX * tileSize - geometry.mapLeft;
-                            const top = tileY * tileSize - geometry.mapTop;
+                            const x = tileX * tileSize - geometry.mapLeft;
+                            const y = tileY * tileSize - geometry.mapTop;
                             const tileUrl = `https://basemaps.cartocdn.com/light_all/${geometry.zoom}/${wrappedTileX}/${tileY}.png`;
 
-                            html += `<img class="map-tile" src="${tileUrl}" alt="" loading="lazy" referrerpolicy="no-referrer" style="left:${left.toFixed(2)}px;top:${top.toFixed(2)}px;">`;
+                            svg += `<image href="${tileUrl}" x="${x.toFixed(2)}" y="${y.toFixed(2)}" width="${tileSize}" height="${tileSize}" />`;
                         }
                     }
 
-                    html += "</div>";
-                    return html;
+                    return svg;
                 }
 
                 function renderActivityCard(act) {
@@ -1546,7 +1670,28 @@
                         act.photoSpotTips.forEach((t) => {
                             html += `<li>${escapeHtml(t)}</li>`;
                         });
-                        html += `</ul></div>`;
+                        html += `</ul>`;
+                        // Photo Examples
+                        if (act.photoExamples && act.photoExamples.length > 0) {
+                            html += `<div class="detail-label" style="margin-top:0.65rem;font-size:0.7rem;">Example Photos (tap to open, copy link to save)</div>`;
+                            html += `<div class="photo-examples">`;
+                            act.photoExamples.forEach((pe, idx) => {
+                                const safeUrl = escapeHtml(pe.url);
+                                const safeAlt = escapeHtml(pe.alt);
+                                const safeCredit = pe.credit ? escapeHtml(pe.credit) : '';
+                                const pageUrl = pe.pageUrl ? escapeHtml(pe.pageUrl) : safeUrl;
+                                html += `<div class="photo-example">`;
+                                html += `<a href="${pageUrl}" target="_blank" rel="noopener noreferrer" title="Open example photo">`;
+                                html += `<img src="${safeUrl}" alt="${safeAlt}" loading="lazy" />`;
+                                html += `</a>`;
+                                html += `<div class="photo-example-caption">`;
+                                html += `<span class="photo-example-credit">${safeCredit ? '📷 ' + safeCredit : '📷 Unsplash'}</span>`;
+                                html += `<button class="photo-copy-btn" data-copy-url="${pageUrl}" title="Copy photo link">Copy</button>`;
+                                html += `</div></div>`;
+                            });
+                            html += `</div>`;
+                        }
+                        html += `</div>`;
                     } else {
                         html += `<div class="detail-section"><div class="detail-label">Photo Spot Tips</div><div class="detail-value not-provided">Not provided</div></div>`;
                     }
@@ -1606,6 +1751,15 @@
                             });
                         });
 
+                    // Filter key toggle
+                    document
+                        .querySelectorAll('[data-action="toggle-map-key"]')
+                        .forEach((btn) => {
+                            btn.addEventListener("click", () => {
+                                toggleMapFilterKey();
+                            });
+                        });
+
                     // Map marker clicks
                     document
                         .querySelectorAll(".map-marker")
@@ -1636,6 +1790,41 @@
                                 if (e.key === "Enter" || e.key === " ") {
                                     e.preventDefault();
                                     handler();
+                                }
+                            });
+                        });
+
+                    // Photo copy buttons
+                    document
+                        .querySelectorAll(".photo-copy-btn")
+                        .forEach((btn) => {
+                            btn.addEventListener("click", async (e) => {
+                                e.preventDefault();
+                                const url = btn.getAttribute("data-copy-url");
+                                try {
+                                    await navigator.clipboard.writeText(url);
+                                    btn.textContent = "Copied!";
+                                    btn.classList.add("copied");
+                                    setTimeout(() => {
+                                        btn.textContent = "Copy";
+                                        btn.classList.remove("copied");
+                                    }, 1500);
+                                } catch {
+                                    // Fallback for older browsers
+                                    const ta = document.createElement("textarea");
+                                    ta.value = url;
+                                    ta.style.position = "fixed";
+                                    ta.style.opacity = "0";
+                                    document.body.appendChild(ta);
+                                    ta.select();
+                                    document.execCommand("copy");
+                                    document.body.removeChild(ta);
+                                    btn.textContent = "Copied!";
+                                    btn.classList.add("copied");
+                                    setTimeout(() => {
+                                        btn.textContent = "Copy";
+                                        btn.classList.remove("copied");
+                                    }, 1500);
                                 }
                             });
                         });
@@ -1766,99 +1955,286 @@
                                     activityId: "fri-1",
                                     order: 1,
                                     name: "Breakfast at Billy Brunch Sevilla",
-                                    description: "Kick off the trip with a cozy, trendy brunch spot close to the hotel. Billy Brunch offers a rustic-chic vibe with beautifully plated all-day breakfast options in the heart of Seville.",
-                                    image: { url: "https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?w=400", alt: "Beautifully plated brunch dishes on a rustic table" },
-                                    location: { lat: 37.3926, lng: -5.9965, mapsUrl: "https://maps.google.com/?cid=3799796081122653283" },
+                                    description:
+                                        "Kick off the trip with a cozy, trendy brunch spot close to the hotel. Billy Brunch offers a rustic-chic vibe with beautifully plated all-day breakfast options in the heart of Seville.",
+                                    image: {
+                                        url: "https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?w=400",
+                                        alt: "Beautifully plated brunch dishes on a rustic table",
+                                    },
+                                    location: {
+                                        lat: 37.3926,
+                                        lng: -5.9965,
+                                        mapsUrl:
+                                            "https://maps.google.com/?cid=3799796081122653283",
+                                    },
                                     price: "$$",
-                                    tips: ["Try their signature pancakes or eggs benedict", "It's close to the hotel and has a cozy, trendy vibe to kick off the trip"],
-                                    photoSpotTips: ["Get a shot of the beautifully plated brunch dishes with the rustic-chic table decor"],
-                                    ratingSummary: "4.8/5 on Google Maps — Reviewers rave about the friendly service and all-day breakfast standards.",
-                                    reviewLinks: [{ sourceName: "Google Maps", url: "https://maps.google.com/?cid=3799796081122653283" }],
-                                    websiteUrl: "https://billybrunch.com/sevilla/",
+                                    tips: [
+                                        "Try their signature pancakes or eggs benedict",
+                                        "It's close to the hotel and has a cozy, trendy vibe to kick off the trip",
+                                    ],
+                                    photoSpotTips: [
+                                        "Get a shot of the beautifully plated brunch dishes with the rustic-chic table decor",
+                                    ],
+                                    ratingSummary:
+                                        "4.8/5 on Google Maps — Reviewers rave about the friendly service and all-day breakfast standards.",
+                                    reviewLinks: [
+                                        {
+                                            sourceName: "Google Maps",
+                                            url: "https://maps.google.com/?cid=3799796081122653283",
+                                        },
+                                    ],
+                                    websiteUrl:
+                                        "https://billybrunch.com/sevilla/",
                                 },
                                 {
                                     activityId: "fri-2",
                                     order: 2,
                                     name: "Seville Museum of Fine Arts",
-                                    description: "Explore masterpieces by El Greco and Velázquez in this stunning 17th-century former convent. Located in the beautiful Plaza del Museo, it's one of Spain's finest art collections and just a short walk from the hotel.",
-                                    image: { url: "https://images.unsplash.com/photo-1554907984-15263bfd63bd?w=400", alt: "Ornate gallery interior of an art museum" },
-                                    location: { lat: 37.3943, lng: -5.9986, mapsUrl: "https://maps.google.com/?cid=12964838942455151668" },
+                                    description:
+                                        "Explore masterpieces by El Greco and Velázquez in this stunning 17th-century former convent. Located in the beautiful Plaza del Museo, it's one of Spain's finest art collections and just a short walk from the hotel.",
+                                    image: {
+                                        url: "https://images.unsplash.com/photo-1554907984-15263bfd63bd?w=400",
+                                        alt: "Ornate gallery interior of an art museum",
+                                    },
+                                    location: {
+                                        lat: 37.3943,
+                                        lng: -5.9986,
+                                        mapsUrl:
+                                            "https://maps.google.com/?cid=12964838942455151668",
+                                    },
                                     price: "Free (for EU citizens) or €1.50",
-                                    tips: ["Explore masterpieces by El Greco and Velázquez", "Located in a stunning 17th-century palace right near the hotel, minimizing walking early on"],
-                                    photoSpotTips: ["The ornate courtyards and cloisters provide stunning, elegant backdrops without the heavy crowds of the Alcázar"],
-                                    ratingSummary: "4.7/5 on Google Maps — Highly rated for its peaceful atmosphere and impressive Andalusian art collection.",
-                                    reviewLinks: [{ sourceName: "Google Maps", url: "https://maps.google.com/?cid=12964838942455151668" }],
-                                    websiteUrl: "https://www.museosdeandalucia.es/web/museodebellasartesdesevilla",
+                                    tips: [
+                                        "Explore masterpieces by El Greco and Velázquez",
+                                        "Located in a stunning 17th-century palace right near the hotel, minimizing walking early on",
+                                    ],
+                                    photoSpotTips: [
+                                        "The ornate courtyards and cloisters provide stunning, elegant backdrops without the heavy crowds of the Alcázar",
+                                    ],
+                                    ratingSummary:
+                                        "4.7/5 on Google Maps — Highly rated for its peaceful atmosphere and impressive Andalusian art collection.",
+                                    reviewLinks: [
+                                        {
+                                            sourceName: "Google Maps",
+                                            url: "https://maps.google.com/?cid=12964838942455151668",
+                                        },
+                                    ],
+                                    websiteUrl:
+                                        "https://www.museosdeandalucia.es/web/museodebellasartesdesevilla",
                                 },
                                 {
                                     activityId: "fri-3",
                                     order: 3,
                                     name: "Supermarket Run at Mercadona",
-                                    description: "Quick and practical grocery stop at the Mercadona near Plaza de Armas. Stock up on bottled water, cheap local wines, jamón, and snacks for the hotel room.",
-                                    image: { url: "https://images.unsplash.com/photo-1604719312566-8912e9227c6a?w=400", alt: "Well-stocked supermarket aisle" },
-                                    location: { lat: 37.3923, lng: -6.0020, mapsUrl: "https://maps.google.com/?cid=6118353894998285428" },
+                                    description:
+                                        "Quick and practical grocery stop at the Mercadona near Plaza de Armas. Stock up on bottled water, cheap local wines, jamón, and snacks for the hotel room.",
+                                    image: {
+                                        url: "https://images.unsplash.com/photo-1604719312566-8912e9227c6a?w=400",
+                                        alt: "Well-stocked supermarket aisle",
+                                    },
+                                    location: {
+                                        lat: 37.3923,
+                                        lng: -6.002,
+                                        mapsUrl:
+                                            "https://maps.google.com/?cid=6118353894998285428",
+                                    },
                                     price: "$",
-                                    tips: ["Stock up on bottled water, cheap local wines, jamón, and snacks for the hotel room", "Great value and just a short walk from the museum"],
-                                    photoSpotTips: ["N/A — just a practical grocery stop!"],
-                                    ratingSummary: "4.2/5 on Google Maps — Reliable chain, appreciated by locals and tourists for its wide selection of affordable local produce.",
-                                    reviewLinks: [{ sourceName: "Google Maps", url: "https://maps.google.com/?cid=6118353894998285428" }],
+                                    tips: [
+                                        "Stock up on bottled water, cheap local wines, jamón, and snacks for the hotel room",
+                                        "Great value and just a short walk from the museum",
+                                    ],
+                                    photoSpotTips: [
+                                        "N/A — just a practical grocery stop!",
+                                    ],
+                                    ratingSummary:
+                                        "4.2/5 on Google Maps — Reliable chain, appreciated by locals and tourists for its wide selection of affordable local produce.",
+                                    reviewLinks: [
+                                        {
+                                            sourceName: "Google Maps",
+                                            url: "https://maps.google.com/?cid=6118353894998285428",
+                                        },
+                                    ],
                                     websiteUrl: "https://www.mercadona.es/",
                                 },
                                 {
                                     activityId: "fri-4",
                                     order: 4,
                                     name: "Tapas Lunch at Bar Dos de Mayo",
-                                    description: "A highly rated, casual tapas spot in a lively square. Sit outdoors if possible, order regional specialties, and share 4–5 tapas plates. Known for its robust wine list, homey feel, and authentic traditional food.",
-                                    image: { url: "https://images.unsplash.com/photo-1656423521731-9665583f100c?w=400", alt: "Spanish tapas spread on a restaurant table" },
-                                    location: { lat: 37.3927, lng: -5.9917, mapsUrl: "https://maps.google.com/?cid=3636918935676928771" },
+                                    description:
+                                        "A highly rated, casual tapas spot in a lively square. Sit outdoors if possible, order regional specialties, and share 4–5 tapas plates. Known for its robust wine list, homey feel, and authentic traditional food.",
+                                    image: {
+                                        url: "https://images.unsplash.com/photo-1656423521731-9665583f100c?w=400",
+                                        alt: "Spanish tapas spread on a restaurant table",
+                                    },
+                                    location: {
+                                        lat: 37.3927,
+                                        lng: -5.9917,
+                                        mapsUrl:
+                                            "https://maps.google.com/?cid=3636918935676928771",
+                                    },
                                     price: "$$",
-                                    tips: ["Sit outdoors in the square if possible", "Order regional specialties and share 4–5 tapas plates among the group", "Very casual and highly rated"],
-                                    photoSpotTips: ["The outdoor seating captures the quintessential vibrant Sevillian street dining vibe"],
-                                    ratingSummary: "4.5/5 on Google Maps — Visitors love the robust wine list, homey feel, and authentic traditional food.",
-                                    reviewLinks: [{ sourceName: "Google Maps", url: "https://maps.google.com/?cid=3636918935676928771" }],
-                                    websiteUrl: "http://www.bodegadosdemayo.com/",
+                                    tips: [
+                                        "Sit outdoors in the square if possible",
+                                        "Order regional specialties and share 4–5 tapas plates among the group",
+                                        "Very casual and highly rated",
+                                    ],
+                                    photoSpotTips: [
+                                        "The outdoor seating captures the quintessential vibrant Sevillian street dining vibe",
+                                    ],
+                                    photoExamples: [
+                                        {
+                                            url: "https://images.unsplash.com/photo-1740132438754-fcb12ff1eb74?w=400&auto=format",
+                                            alt: "Friends enjoying outdoor tapas dining at a European café terrace",
+                                            credit: "MChe Lee",
+                                            pageUrl: "https://unsplash.com/photos/GBHDUPem7g8",
+                                        },
+                                    ],
+                                    ratingSummary:
+                                        "4.5/5 on Google Maps — Visitors love the robust wine list, homey feel, and authentic traditional food.",
+                                    reviewLinks: [
+                                        {
+                                            sourceName: "Google Maps",
+                                            url: "https://maps.google.com/?cid=3636918935676928771",
+                                        },
+                                    ],
+                                    websiteUrl:
+                                        "http://www.bodegadosdemayo.com/",
                                 },
                                 {
                                     activityId: "fri-5",
                                     order: 5,
                                     name: "Shopping on Calle Sierpes at Natura",
-                                    description: "Stroll down Seville's main pedestrian shopping street, Calle Sierpes. Natura offers great boho clothes and cute gifts/souvenirs. Keep an eye out for independent boutiques along the charming side streets.",
-                                    image: { url: "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=400", alt: "Pedestrian shopping street with boutiques" },
-                                    location: { lat: 37.3895, lng: -5.9941, mapsUrl: "https://maps.google.com/?cid=8028310631854923318" },
+                                    description:
+                                        "Stroll down Seville's main pedestrian shopping street, Calle Sierpes. Natura offers great boho clothes and cute gifts/souvenirs. Keep an eye out for independent boutiques along the charming side streets.",
+                                    image: {
+                                        url: "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=400",
+                                        alt: "Pedestrian shopping street with boutiques",
+                                    },
+                                    location: {
+                                        lat: 37.3895,
+                                        lng: -5.9941,
+                                        mapsUrl:
+                                            "https://maps.google.com/?cid=8028310631854923318",
+                                    },
                                     price: "$–$$$",
-                                    tips: ["Stroll down Seville's main pedestrian shopping street", "Natura has great boho clothes and cute gifts/souvenirs", "Keep an eye out for independent boutiques along the side streets"],
-                                    photoSpotTips: ["Capture candid walking shots down the bustling, awning-shaded Calle Sierpes"],
-                                    ratingSummary: "4.3/5 on Google Maps — Shoppers like the variety of clothes, home goods, and relaxing store ambiance.",
-                                    reviewLinks: [{ sourceName: "Google Maps", url: "https://maps.google.com/?cid=8028310631854923318" }],
-                                    websiteUrl: "https://www.naturaselection.com/",
+                                    tips: [
+                                        "Stroll down Seville's main pedestrian shopping street",
+                                        "Natura has great boho clothes and cute gifts/souvenirs",
+                                        "Keep an eye out for independent boutiques along the side streets",
+                                    ],
+                                    photoSpotTips: [
+                                        "Capture candid walking shots down the bustling, awning-shaded Calle Sierpes",
+                                    ],
+                                    photoExamples: [
+                                        {
+                                            url: "https://images.unsplash.com/photo-1637333245124-db8d75a59b69?w=400&auto=format",
+                                            alt: "Woman walking past a yellow building in Sevilla",
+                                            credit: "Pier Francesco Grizi",
+                                            pageUrl: "https://unsplash.com/photos/jo5WNr7nTgs",
+                                        },
+                                        {
+                                            url: "https://images.unsplash.com/photo-1761507377433-8d1e26709400?w=400&auto=format",
+                                            alt: "People strolling down a narrow shopping street in Seville",
+                                            credit: "Jose Manuel Esp",
+                                            pageUrl: "https://unsplash.com/photos/T-bv68Twifg",
+                                        },
+                                    ],
+                                    ratingSummary:
+                                        "4.3/5 on Google Maps — Shoppers like the variety of clothes, home goods, and relaxing store ambiance.",
+                                    reviewLinks: [
+                                        {
+                                            sourceName: "Google Maps",
+                                            url: "https://maps.google.com/?cid=8028310631854923318",
+                                        },
+                                    ],
+                                    websiteUrl:
+                                        "https://www.naturaselection.com/",
                                 },
                                 {
                                     activityId: "fri-6",
                                     order: 6,
                                     name: "Sunset at Setas de Sevilla",
-                                    description: "Walk the winding rooftop pathways of the Metropol Parasol, the world's largest wooden structure. Time your visit for golden hour as the sun sets over the city for a truly magical experience and the best panoramic views of Seville.",
-                                    image: { url: "https://images.unsplash.com/photo-1583932274573-b39594a7b67a?w=400", alt: "Metropol Parasol wooden structure against the Seville skyline" },
-                                    location: { lat: 37.3934, lng: -5.9917, mapsUrl: "https://maps.google.com/?cid=13665238956315169476" },
+                                    description:
+                                        "Walk the winding rooftop pathways of the Metropol Parasol, the world's largest wooden structure. Time your visit for golden hour as the sun sets over the city for a truly magical experience and the best panoramic views of Seville.",
+                                    image: {
+                                        url: "https://images.unsplash.com/photo-1583932274573-b39594a7b67a?w=400",
+                                        alt: "Metropol Parasol wooden structure against the Seville skyline",
+                                    },
+                                    location: {
+                                        lat: 37.3934,
+                                        lng: -5.9917,
+                                        mapsUrl:
+                                            "https://maps.google.com/?cid=13665238956315169476",
+                                    },
                                     price: "€15",
-                                    tips: ["Walk the rooftop pathways for incredible city views", "Try to time it exactly for golden hour as the sun sets over the city for the best experience"],
-                                    photoSpotTips: ["The winding wooden walkways with the city skyline in the background make for the ultimate iconic Instagram photo"],
-                                    ratingSummary: "4.4/5 on Google Maps — Praised as a unique modern architectural contrast to the old city with the best panoramic views.",
-                                    reviewLinks: [{ sourceName: "Google Maps", url: "https://maps.google.com/?cid=13665238956315169476" }],
-                                    websiteUrl: "https://www.setasdesevilla.com/",
+                                    tips: [
+                                        "Walk the rooftop pathways for incredible city views",
+                                        "Try to time it exactly for golden hour as the sun sets over the city for the best experience",
+                                    ],
+                                    photoSpotTips: [
+                                        "The winding wooden walkways with the city skyline in the background make for the ultimate iconic Instagram photo",
+                                    ],
+                                    photoExamples: [
+                                        {
+                                            url: "https://images.unsplash.com/photo-1742749620967-b465e0a82096?w=400&auto=format",
+                                            alt: "Woman posing on steps with Seville cityscape in background",
+                                            credit: "Will Goodman",
+                                            pageUrl: "https://unsplash.com/photos/PsSrgDo9iNg",
+                                        },
+                                    ],
+                                    ratingSummary:
+                                        "4.4/5 on Google Maps — Praised as a unique modern architectural contrast to the old city with the best panoramic views.",
+                                    reviewLinks: [
+                                        {
+                                            sourceName: "Google Maps",
+                                            url: "https://maps.google.com/?cid=13665238956315169476",
+                                        },
+                                    ],
+                                    websiteUrl:
+                                        "https://www.setasdesevilla.com/",
                                 },
                                 {
                                     activityId: "fri-7",
                                     order: 7,
                                     name: "Late Tapas Dinner at Los Coloniales",
-                                    description: "A wildly popular and super affordable classic tapas bar just minutes from Las Setas. Known for generous portions, great sangria, and an unbeatable vibe. Put your name on the chalk waitlist and grab a drink outside while you wait.",
-                                    image: { url: "https://images.unsplash.com/photo-1559925393-8be0ec4767c8?w=400", alt: "Lively tapas bar with patrons dining and drinking" },
-                                    location: { lat: 37.3939, lng: -5.9934, mapsUrl: "https://maps.google.com/?cid=14305553480244891116" },
+                                    description:
+                                        "A wildly popular and super affordable classic tapas bar just minutes from Las Setas. Known for generous portions, great sangria, and an unbeatable vibe. Put your name on the chalk waitlist and grab a drink outside while you wait.",
+                                    image: {
+                                        url: "https://images.unsplash.com/photo-1559925393-8be0ec4767c8?w=400",
+                                        alt: "Lively tapas bar with patrons dining and drinking",
+                                    },
+                                    location: {
+                                        lat: 37.3939,
+                                        lng: -5.9934,
+                                        mapsUrl:
+                                            "https://maps.google.com/?cid=14305553480244891116",
+                                    },
                                     price: "$–$$",
-                                    tips: ["Put your name on the chalk waitlist and grab a drink outside while waiting", "Generous portions make this a great value dinner spot", "Try the sangria — it's a crowd favorite"],
-                                    photoSpotTips: ["Snap the bustling, lively atmosphere outside with people mingling over drinks while waiting for a table"],
-                                    ratingSummary: "4.3/5 on Google Maps — Known for generous portions, great sangria, and an unbeatable vibe.",
-                                    reviewLinks: [{ sourceName: "Google Maps", url: "https://maps.google.com/?cid=14305553480244891116" }],
-                                    websiteUrl: "http://www.tabernacoloniales.es/",
+                                    tips: [
+                                        "Put your name on the chalk waitlist and grab a drink outside while waiting",
+                                        "Generous portions make this a great value dinner spot",
+                                        "Try the sangria — it's a crowd favorite",
+                                    ],
+                                    photoSpotTips: [
+                                        "Snap the bustling, lively atmosphere outside with people mingling over drinks while waiting for a table",
+                                    ],
+                                    photoExamples: [
+                                        {
+                                            url: "https://images.unsplash.com/photo-1740132438754-fcb12ff1eb74?w=400&auto=format",
+                                            alt: "Friends enjoying outdoor tapas dining at a European café terrace",
+                                            credit: "MChe Lee",
+                                            pageUrl: "https://unsplash.com/photos/GBHDUPem7g8",
+                                        },
+                                    ],
+                                    ratingSummary:
+                                        "4.3/5 on Google Maps — Known for generous portions, great sangria, and an unbeatable vibe.",
+                                    reviewLinks: [
+                                        {
+                                            sourceName: "Google Maps",
+                                            url: "https://maps.google.com/?cid=14305553480244891116",
+                                        },
+                                    ],
+                                    websiteUrl:
+                                        "http://www.tabernacoloniales.es/",
                                 },
                             ],
                         },
@@ -1872,54 +2248,138 @@
                                     activityId: "sat-1",
                                     order: 1,
                                     name: "Breakfast at La Crème de la Crème",
-                                    description: "Start the day with French pastries, crêpes, or quiches at the sidewalk tables near Las Setas before heading across the river to Triana. A cozy café with excellent sweet treats.",
-                                    image: { url: "https://images.unsplash.com/photo-1484723091739-30a097e8f929?w=400", alt: "French crêpes and pastries on a café table" },
-                                    location: { lat: 37.3929, lng: -5.9907, mapsUrl: "https://maps.google.com/?cid=6254179950471859009" },
+                                    description:
+                                        "Start the day with French pastries, crêpes, or quiches at the sidewalk tables near Las Setas before heading across the river to Triana. A cozy café with excellent sweet treats.",
+                                    image: {
+                                        url: "https://images.unsplash.com/photo-1484723091739-30a097e8f929?w=400",
+                                        alt: "French crêpes and pastries on a café table",
+                                    },
+                                    location: {
+                                        lat: 37.3929,
+                                        lng: -5.9907,
+                                        mapsUrl:
+                                            "https://maps.google.com/?cid=6254179950471859009",
+                                    },
                                     price: "$$",
-                                    tips: ["Grab some French pastries, crêpes, or quiches at the sidewalk tables near Las Setas", "Great fuel-up spot before heading across the river to Triana"],
-                                    photoSpotTips: ["Snap photos of your coffee and pastries with the modern Las Setas structure towering in the background"],
-                                    ratingSummary: "4.5/5 on Google Maps — Loved for its cozy café vibe and excellent sweet treats.",
-                                    reviewLinks: [{ sourceName: "Google Maps", url: "https://maps.google.com/?cid=6254179950471859009" }],
-                                    websiteUrl: "https://www.lacremedelacreme.es/el-mejor-brunch-de-sevilla/",
+                                    tips: [
+                                        "Grab some French pastries, crêpes, or quiches at the sidewalk tables near Las Setas",
+                                        "Great fuel-up spot before heading across the river to Triana",
+                                    ],
+                                    photoSpotTips: [
+                                        "Snap photos of your coffee and pastries with the modern Las Setas structure towering in the background",
+                                    ],
+                                    ratingSummary:
+                                        "4.5/5 on Google Maps — Loved for its cozy café vibe and excellent sweet treats.",
+                                    reviewLinks: [
+                                        {
+                                            sourceName: "Google Maps",
+                                            url: "https://maps.google.com/?cid=6254179950471859009",
+                                        },
+                                    ],
+                                    websiteUrl:
+                                        "https://www.lacremedelacreme.es/el-mejor-brunch-de-sevilla/",
                                 },
                                 {
                                     activityId: "sat-2",
                                     order: 2,
                                     name: "Explore Mercado de Triana",
-                                    description: "Wander this vibrant indoor market on the Triana side of the river. A great place to buy spices, olive oil, or cured meats as souvenirs, and stop at the stalls inside for a casual midday bite.",
-                                    image: { url: "https://images.unsplash.com/photo-1533900298318-6b8da08a523e?w=400", alt: "Colorful indoor food market with fresh produce stalls" },
-                                    location: { lat: 37.3862, lng: -6.0040, mapsUrl: "https://maps.google.com/?cid=17389346938850283706" },
+                                    description:
+                                        "Wander this vibrant indoor market on the Triana side of the river. A great place to buy spices, olive oil, or cured meats as souvenirs, and stop at the stalls inside for a casual midday bite.",
+                                    image: {
+                                        url: "https://images.unsplash.com/photo-1533900298318-6b8da08a523e?w=400",
+                                        alt: "Colorful indoor food market with fresh produce stalls",
+                                    },
+                                    location: {
+                                        lat: 37.3862,
+                                        lng: -6.004,
+                                        mapsUrl:
+                                            "https://maps.google.com/?cid=17389346938850283706",
+                                    },
                                     price: "Free to enter",
-                                    tips: ["Wander the indoor bazaar — great for spices, olive oil, and cured meats as souvenirs", "Stop at the stalls inside for a casual midday bite"],
-                                    photoSpotTips: ["The colorful fruit, meat, and cheese stalls make for great vibrant, authentic travel photography"],
-                                    ratingSummary: "4.4/5 on Google Maps — Reviewers recommend it for its authentic local feel and great tapas stalls inside.",
-                                    reviewLinks: [{ sourceName: "Google Maps", url: "https://maps.google.com/?cid=17389346938850283706" }],
-                                    websiteUrl: "https://mercadodetrianasevilla.com/",
+                                    tips: [
+                                        "Wander the indoor bazaar — great for spices, olive oil, and cured meats as souvenirs",
+                                        "Stop at the stalls inside for a casual midday bite",
+                                    ],
+                                    photoSpotTips: [
+                                        "The colorful fruit, meat, and cheese stalls make for great vibrant, authentic travel photography",
+                                    ],
+                                    ratingSummary:
+                                        "4.4/5 on Google Maps — Reviewers recommend it for its authentic local feel and great tapas stalls inside.",
+                                    reviewLinks: [
+                                        {
+                                            sourceName: "Google Maps",
+                                            url: "https://maps.google.com/?cid=17389346938850283706",
+                                        },
+                                    ],
+                                    websiteUrl:
+                                        "https://mercadodetrianasevilla.com/",
                                 },
                                 {
                                     activityId: "sat-3",
                                     order: 3,
                                     name: "Ceramics Shopping at Santa Ana",
-                                    description: "Triana is historically famous for pottery. Buy authentic, hand-painted ceramic plates or bowls at Cerámica Santa Ana as high-quality, beautiful souvenirs. The shop has a massive selection and centuries of tradition behind it.",
-                                    image: { url: "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=400", alt: "Hand-painted Andalusian ceramic tiles and pottery" },
-                                    location: { lat: 37.3833, lng: -6.0054, mapsUrl: "https://maps.google.com/?cid=787557854369862840" },
+                                    description:
+                                        "Triana is historically famous for pottery. Buy authentic, hand-painted ceramic plates or bowls at Cerámica Santa Ana as high-quality, beautiful souvenirs. The shop has a massive selection and centuries of tradition behind it.",
+                                    image: {
+                                        url: "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=400",
+                                        alt: "Hand-painted Andalusian ceramic tiles and pottery",
+                                    },
+                                    location: {
+                                        lat: 37.3833,
+                                        lng: -6.0054,
+                                        mapsUrl:
+                                            "https://maps.google.com/?cid=787557854369862840",
+                                    },
                                     price: "$$",
-                                    tips: ["Triana is historically famous for pottery — this is the place to buy authentic souvenirs", "Buy hand-painted ceramic plates or bowls as high-quality, beautiful keepsakes"],
-                                    photoSpotTips: ["The vibrant tiled façade of the building itself is stunning and famous on social media"],
-                                    ratingSummary: "4.8/5 on Google Maps — Highly praised for its massive selection, quality craftsmanship, and history.",
-                                    reviewLinks: [{ sourceName: "Google Maps", url: "https://maps.google.com/?cid=787557854369862840" }],
+                                    tips: [
+                                        "Triana is historically famous for pottery — this is the place to buy authentic souvenirs",
+                                        "Buy hand-painted ceramic plates or bowls as high-quality, beautiful keepsakes",
+                                    ],
+                                    photoSpotTips: [
+                                        "The vibrant tiled façade of the building itself is stunning and famous on social media",
+                                    ],
+                                    ratingSummary:
+                                        "4.8/5 on Google Maps — Highly praised for its massive selection, quality craftsmanship, and history.",
+                                    reviewLinks: [
+                                        {
+                                            sourceName: "Google Maps",
+                                            url: "https://maps.google.com/?cid=787557854369862840",
+                                        },
+                                    ],
                                     websiteUrl: "http://ceramicasantaana.com/",
                                 },
                                 {
                                     activityId: "sat-4",
                                     order: 4,
                                     name: "Walk Across Puente de Isabel II",
-                                    description: "Walk back to the city center across the iconic Triana Bridge (Puente de Isabel II) and enjoy the river path towards the Torre del Oro. The views down the Guadalquivir river are stunning.",
-                                    image: { url: "https://images.unsplash.com/photo-1543783207-ec64e4d95325?w=400", alt: "Scenic river view with a historic bridge in Spain" },
-                                    location: { lat: 37.3862, lng: -6.0014, mapsUrl: "https://maps.google.com/?q=Puente+de+Isabel+II+Seville" },
+                                    description:
+                                        "Walk back to the city center across the iconic Triana Bridge (Puente de Isabel II) and enjoy the river path towards the Torre del Oro. The views down the Guadalquivir river are stunning.",
+                                    image: {
+                                        url: "https://images.unsplash.com/photo-1543783207-ec64e4d95325?w=400",
+                                        alt: "Scenic river view with a historic bridge in Spain",
+                                    },
+                                    location: {
+                                        lat: 37.3862,
+                                        lng: -6.0014,
+                                        mapsUrl:
+                                            "https://maps.google.com/?q=Puente+de+Isabel+II+Seville",
+                                    },
                                     price: "Free",
-                                    tips: ["Enjoy the walk back to the city center along the river path", "Walk towards the Torre del Oro for the best views"],
-                                    photoSpotTips: ["The view from the bridge looking down the Guadalquivir river towards the Torre del Oro is perfect"],
+                                    tips: [
+                                        "Enjoy the walk back to the city center along the river path",
+                                        "Walk towards the Torre del Oro for the best views",
+                                    ],
+                                    photoSpotTips: [
+                                        "The view from the bridge looking down the Guadalquivir river towards the Torre del Oro is perfect",
+                                    ],
+                                    photoExamples: [
+                                        {
+                                            url: "https://images.unsplash.com/photo-1665007019442-180419b71e0d?w=400&auto=format",
+                                            alt: "Person walking across a bridge in Seville with river views",
+                                            credit: "Hernan Gonzalez",
+                                            pageUrl: "https://unsplash.com/photos/YLgM4h9vxXU",
+                                        },
+                                    ],
                                     ratingSummary: null,
                                     reviewLinks: [],
                                     websiteUrl: null,
@@ -1928,43 +2388,129 @@
                                     activityId: "sat-5",
                                     order: 5,
                                     name: "Wander Barrio Santa Cruz & Bodega Santa Cruz",
-                                    description: "Get lost in the narrow streets of the historic Jewish Quarter (Barrio Santa Cruz), then have a cheap and casual standing tapas dinner at Bodega Santa Cruz Las Columnas. Going early avoids the massive crowds.",
-                                    image: { url: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=400", alt: "Narrow alley with overhanging balconies and orange trees in Seville" },
-                                    location: { lat: 37.3853, lng: -5.9886, mapsUrl: "https://maps.google.com/?cid=5255774528850342695" },
+                                    description:
+                                        "Get lost in the narrow streets of the historic Jewish Quarter (Barrio Santa Cruz), then have a cheap and casual standing tapas dinner at Bodega Santa Cruz Las Columnas. Going early avoids the massive crowds.",
+                                    image: {
+                                        url: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=400",
+                                        alt: "Narrow alley with overhanging balconies and orange trees in Seville",
+                                    },
+                                    location: {
+                                        lat: 37.3853,
+                                        lng: -5.9886,
+                                        mapsUrl:
+                                            "https://maps.google.com/?cid=5255774528850342695",
+                                    },
                                     price: "$–$$",
-                                    tips: ["Get lost in the narrow Jewish Quarter streets — they're magical", "Have a cheap and very casual standing tapas dinner at the bar", "Gets busy, so going early (around 4 PM) avoids the massive crowds"],
-                                    photoSpotTips: ["The extremely narrow alleys of Santa Cruz with overhanging balconies and orange trees are incredibly photogenic"],
-                                    ratingSummary: "4.4/5 on Google Maps — Famous for its buzzing atmosphere, fast service, and cheap, delicious bites.",
-                                    reviewLinks: [{ sourceName: "Google Maps", url: "https://maps.google.com/?cid=5255774528850342695" }],
-                                    websiteUrl: "http://facebook.com/BodegaSantaCruzSevilla",
+                                    tips: [
+                                        "Get lost in the narrow Jewish Quarter streets — they're magical",
+                                        "Have a cheap and very casual standing tapas dinner at the bar",
+                                        "Gets busy, so going early (around 4 PM) avoids the massive crowds",
+                                    ],
+                                    photoSpotTips: [
+                                        "The extremely narrow alleys of Santa Cruz with overhanging balconies and orange trees are incredibly photogenic",
+                                    ],
+                                    photoExamples: [
+                                        {
+                                            url: "https://images.unsplash.com/photo-1744698276062-a0ffe2246318?w=400&auto=format",
+                                            alt: "Woman in pink dress walking through a narrow Seville street",
+                                            credit: "Lianhao Qu",
+                                            pageUrl: "https://unsplash.com/photos/D0hAS0BqJeE",
+                                        },
+                                        {
+                                            url: "https://images.unsplash.com/photo-1609701113191-faf488c05744?w=400&auto=format",
+                                            alt: "Woman exploring a sunny Andalusia alleyway",
+                                            credit: "Amos from Stockphotos.com",
+                                            pageUrl: "https://unsplash.com/photos/8okuQaHrONA",
+                                        },
+                                    ],
+                                    ratingSummary:
+                                        "4.4/5 on Google Maps — Famous for its buzzing atmosphere, fast service, and cheap, delicious bites.",
+                                    reviewLinks: [
+                                        {
+                                            sourceName: "Google Maps",
+                                            url: "https://maps.google.com/?cid=5255774528850342695",
+                                        },
+                                    ],
+                                    websiteUrl:
+                                        "http://facebook.com/BodegaSantaCruzSevilla",
                                 },
                                 {
                                     activityId: "sat-6",
                                     order: 6,
                                     name: "Churros at Bar El Comercio",
-                                    description: "Head back into the center for some of the best traditional churros con chocolate in Seville. They serve them thick and doughy in an old-school bar with hanging hams and beautiful tiled walls.",
-                                    image: { url: "https://images.unsplash.com/photo-1624471747394-58bffa498291?w=400", alt: "Traditional churros con chocolate" },
-                                    location: { lat: 37.3889, lng: -5.9933, mapsUrl: "https://maps.google.com/?cid=14746623062742886370" },
+                                    description:
+                                        "Head back into the center for some of the best traditional churros con chocolate in Seville. They serve them thick and doughy in an old-school bar with hanging hams and beautiful tiled walls.",
+                                    image: {
+                                        url: "https://images.unsplash.com/photo-1624471747394-58bffa498291?w=400",
+                                        alt: "Traditional churros con chocolate",
+                                    },
+                                    location: {
+                                        lat: 37.3889,
+                                        lng: -5.9933,
+                                        mapsUrl:
+                                            "https://maps.google.com/?cid=14746623062742886370",
+                                    },
                                     price: "$",
-                                    tips: ["Head back into the center for some of the best traditional churros con chocolate in the city", "They serve them thick and doughy here — embrace the indulgence"],
-                                    photoSpotTips: ["The old-school interior with hanging hams and tiled walls creates a perfect moody Spanish aesthetic"],
-                                    ratingSummary: "4.4/5 on Google Maps — Locals and tourists alike agree they serve some of the best churros in Seville.",
-                                    reviewLinks: [{ sourceName: "Google Maps", url: "https://maps.google.com/?cid=14746623062742886370" }],
+                                    tips: [
+                                        "Head back into the center for some of the best traditional churros con chocolate in the city",
+                                        "They serve them thick and doughy here — embrace the indulgence",
+                                    ],
+                                    photoSpotTips: [
+                                        "The old-school interior with hanging hams and tiled walls creates a perfect moody Spanish aesthetic",
+                                    ],
+                                    ratingSummary:
+                                        "4.4/5 on Google Maps — Locals and tourists alike agree they serve some of the best churros in Seville.",
+                                    reviewLinks: [
+                                        {
+                                            sourceName: "Google Maps",
+                                            url: "https://maps.google.com/?cid=14746623062742886370",
+                                        },
+                                    ],
                                     websiteUrl: null,
                                 },
                                 {
                                     activityId: "sat-7",
                                     order: 7,
                                     name: "Flamenco & Drinks at La Carbonería",
-                                    description: "An old coal warehouse turned into an impromptu flamenco venue. It's not a formal sit-down show — just grab a pitcher of sangria, sit on the benches, and enjoy the raw, authentic performance in a rustic indoor courtyard.",
-                                    image: { url: "https://images.unsplash.com/photo-1535525153412-5a42439a210d?w=400", alt: "Passionate flamenco performance in a rustic venue" },
-                                    location: { lat: 37.3860, lng: -5.9863, mapsUrl: "https://maps.google.com/?cid=17061238220027078270" },
+                                    description:
+                                        "An old coal warehouse turned into an impromptu flamenco venue. It's not a formal sit-down show — just grab a pitcher of sangria, sit on the benches, and enjoy the raw, authentic performance in a rustic indoor courtyard.",
+                                    image: {
+                                        url: "https://images.unsplash.com/photo-1535525153412-5a42439a210d?w=400",
+                                        alt: "Passionate flamenco performance in a rustic venue",
+                                    },
+                                    location: {
+                                        lat: 37.386,
+                                        lng: -5.9863,
+                                        mapsUrl:
+                                            "https://maps.google.com/?cid=17061238220027078270",
+                                    },
                                     price: "Free entry (buy drinks)",
-                                    tips: ["Not a formal sit-down show — grab a pitcher of sangria and sit on the benches", "Arrive a bit early to get a good spot near the performers", "The vibe is casual and authentic — just relax and enjoy"],
-                                    photoSpotTips: ["The rustic indoor courtyard and fiery performers make for great low-light candid videos"],
-                                    ratingSummary: "4.3/5 on Google Maps — Beloved for its lack of pretension, free entry, and completely authentic, casual vibe.",
-                                    reviewLinks: [{ sourceName: "Google Maps", url: "https://maps.google.com/?cid=17061238220027078270" }],
-                                    websiteUrl: "http://lacarbonerialevies.blogspot.com.es/",
+                                    tips: [
+                                        "Not a formal sit-down show — grab a pitcher of sangria and sit on the benches",
+                                        "Arrive a bit early to get a good spot near the performers",
+                                        "The vibe is casual and authentic — just relax and enjoy",
+                                    ],
+                                    photoSpotTips: [
+                                        "The rustic indoor courtyard and fiery performers make for great low-light candid videos",
+                                    ],
+                                    photoExamples: [
+                                        {
+                                            url: "https://images.unsplash.com/photo-1662982937651-1e75f5819300?w=400&auto=format",
+                                            alt: "Street performers and musicians in a Spanish courtyard",
+                                            credit: "David L. Espina Rincon",
+                                            pageUrl: "https://unsplash.com/photos/0auPSkP8DM0",
+                                        },
+                                    ],
+                                    ratingSummary:
+                                        "4.3/5 on Google Maps — Beloved for its lack of pretension, free entry, and completely authentic, casual vibe.",
+                                    reviewLinks: [
+                                        {
+                                            sourceName: "Google Maps",
+                                            url: "https://maps.google.com/?cid=17061238220027078270",
+                                        },
+                                    ],
+                                    websiteUrl:
+                                        "http://lacarbonerialevies.blogspot.com.es/",
                                 },
                             ],
                         },
@@ -1978,85 +2524,247 @@
                                     activityId: "sun-1",
                                     order: 1,
                                     name: "Breakfast at MOKAMBO Alfalfa",
-                                    description: "Enjoy a healthy, aesthetic brunch at MOKAMBO near Plaza de la Alfalfa to fuel up for a heavy sightseeing day. Known for excellent brunch options, beautifully presented dishes, and friendly staff.",
-                                    image: { url: "https://images.unsplash.com/photo-1525351484163-7529414344d8?w=400", alt: "Avocado toast and fresh brunch spread at a modern café" },
-                                    location: { lat: 37.3903, lng: -5.9905, mapsUrl: "https://maps.google.com/?cid=12022455236043524027" },
+                                    description:
+                                        "Enjoy a healthy, aesthetic brunch at MOKAMBO near Plaza de la Alfalfa to fuel up for a heavy sightseeing day. Known for excellent brunch options, beautifully presented dishes, and friendly staff.",
+                                    image: {
+                                        url: "https://images.unsplash.com/photo-1525351484163-7529414344d8?w=400",
+                                        alt: "Avocado toast and fresh brunch spread at a modern café",
+                                    },
+                                    location: {
+                                        lat: 37.3903,
+                                        lng: -5.9905,
+                                        mapsUrl:
+                                            "https://maps.google.com/?cid=12022455236043524027",
+                                    },
                                     price: "$$",
-                                    tips: ["Enjoy a healthy, aesthetic brunch to fuel up for a heavy sightseeing day", "Great spot for avocado toast, smoothie bowls, and specialty coffee"],
-                                    photoSpotTips: ["The beautifully presented avocado toasts and modern interior are great for a food photo"],
-                                    ratingSummary: "4.8/5 on Google Maps — Top-rated for its excellent brunch options and friendly staff.",
-                                    reviewLinks: [{ sourceName: "Google Maps", url: "https://maps.google.com/?cid=12022455236043524027" }],
+                                    tips: [
+                                        "Enjoy a healthy, aesthetic brunch to fuel up for a heavy sightseeing day",
+                                        "Great spot for avocado toast, smoothie bowls, and specialty coffee",
+                                    ],
+                                    photoSpotTips: [
+                                        "The beautifully presented avocado toasts and modern interior are great for a food photo",
+                                    ],
+                                    ratingSummary:
+                                        "4.8/5 on Google Maps — Top-rated for its excellent brunch options and friendly staff.",
+                                    reviewLinks: [
+                                        {
+                                            sourceName: "Google Maps",
+                                            url: "https://maps.google.com/?cid=12022455236043524027",
+                                        },
+                                    ],
                                     websiteUrl: "http://www.mokambocoffee.com/",
                                 },
                                 {
                                     activityId: "sun-2",
                                     order: 2,
                                     name: "Tour the Royal Alcázar of Seville",
-                                    description: "Spend a couple of hours exploring the magnificent gardens and Moorish palace of the Real Alcázar. A breathtaking UNESCO World Heritage Site featuring stunning tilework, lush gardens, and centuries of history.",
-                                    image: { url: "https://images.unsplash.com/photo-1663788225253-0d8458196a8e?w=400", alt: "Courtyard of the Royal Alcázar of Seville with ornate arches" },
-                                    location: { lat: 37.3831, lng: -5.9902, mapsUrl: "https://maps.google.com/?cid=13450412327761477255" },
+                                    description:
+                                        "Spend a couple of hours exploring the magnificent gardens and Moorish palace of the Real Alcázar. A breathtaking UNESCO World Heritage Site featuring stunning tilework, lush gardens, and centuries of history.",
+                                    image: {
+                                        url: "https://images.unsplash.com/photo-1663788225253-0d8458196a8e?w=400",
+                                        alt: "Courtyard of the Royal Alcázar of Seville with ornate arches",
+                                    },
+                                    location: {
+                                        lat: 37.3831,
+                                        lng: -5.9902,
+                                        mapsUrl:
+                                            "https://maps.google.com/?cid=13450412327761477255",
+                                    },
                                     price: "€14.50",
-                                    tips: ["Spend a couple of hours exploring the gardens and Moorish palace", "Booking tickets weeks ahead is strictly required as it sells out!", "Don't miss the underground Baths of Lady María de Padilla"],
-                                    photoSpotTips: ["The Baths of Lady María de Padilla (underground arches) and the intricate Courtyard of the Maidens are stunning"],
-                                    ratingSummary: "4.7/5 on Google Maps — Described as breathtaking and a must-see landmark of Moorish architecture.",
-                                    reviewLinks: [{ sourceName: "Google Maps", url: "https://maps.google.com/?cid=13450412327761477255" }],
-                                    websiteUrl: "https://www.alcazarsevilla.org/",
+                                    tips: [
+                                        "Spend a couple of hours exploring the gardens and Moorish palace",
+                                        "Booking tickets weeks ahead is strictly required as it sells out!",
+                                        "Don't miss the underground Baths of Lady María de Padilla",
+                                    ],
+                                    photoSpotTips: [
+                                        "The Baths of Lady María de Padilla (underground arches) and the intricate Courtyard of the Maidens are stunning",
+                                    ],
+                                    photoExamples: [
+                                        {
+                                            url: "https://images.unsplash.com/photo-1742749620967-b465e0a82096?w=400&auto=format",
+                                            alt: "Woman posing on steps with Seville cityscape in background",
+                                            credit: "Will Goodman",
+                                            pageUrl: "https://unsplash.com/photos/PsSrgDo9iNg",
+                                        },
+                                    ],
+                                    ratingSummary:
+                                        "4.7/5 on Google Maps — Described as breathtaking and a must-see landmark of Moorish architecture.",
+                                    reviewLinks: [
+                                        {
+                                            sourceName: "Google Maps",
+                                            url: "https://maps.google.com/?cid=13450412327761477255",
+                                        },
+                                    ],
+                                    websiteUrl:
+                                        "https://www.alcazarsevilla.org/",
                                 },
                                 {
                                     activityId: "sun-3",
                                     order: 3,
                                     name: "Catedral de Sevilla & Giralda Tower",
-                                    description: "Visit the world's largest Gothic cathedral and climb the Giralda bell tower (it has ramps, not stairs!) for beautiful panoramic views of Seville. The cathedral opens at 2:30 PM on Sundays.",
-                                    image: { url: "https://images.unsplash.com/photo-1562883676-8c7feb83f09b?w=400", alt: "Seville Cathedral and Giralda Tower against a blue sky" },
-                                    location: { lat: 37.3861, lng: -5.9932, mapsUrl: "https://maps.google.com/?cid=16473499337161076197" },
+                                    description:
+                                        "Visit the world's largest Gothic cathedral and climb the Giralda bell tower (it has ramps, not stairs!) for beautiful panoramic views of Seville. The cathedral opens at 2:30 PM on Sundays.",
+                                    image: {
+                                        url: "https://images.unsplash.com/photo-1562883676-8c7feb83f09b?w=400",
+                                        alt: "Seville Cathedral and Giralda Tower against a blue sky",
+                                    },
+                                    location: {
+                                        lat: 37.3861,
+                                        lng: -5.9932,
+                                        mapsUrl:
+                                            "https://maps.google.com/?cid=16473499337161076197",
+                                    },
                                     price: "€12",
-                                    tips: ["Opens at 2:30 PM on Sundays — plan accordingly", "Climb the Giralda tower (it has ramps, not stairs) for beautiful views of the city", "Don't miss the Patio de los Naranjos (Courtyard of the Orange Trees)"],
-                                    photoSpotTips: ["The Patio de los Naranjos (Courtyard of the Orange Trees) inside the cathedral grounds is gorgeous"],
-                                    ratingSummary: "4.8/5 on Google Maps — Visitors are awestruck by its massive scale and the views from the bell tower.",
-                                    reviewLinks: [{ sourceName: "Google Maps", url: "https://maps.google.com/?cid=16473499337161076197" }],
-                                    websiteUrl: "https://www.catedraldesevilla.es/",
+                                    tips: [
+                                        "Opens at 2:30 PM on Sundays — plan accordingly",
+                                        "Climb the Giralda tower (it has ramps, not stairs) for beautiful views of the city",
+                                        "Don't miss the Patio de los Naranjos (Courtyard of the Orange Trees)",
+                                    ],
+                                    photoSpotTips: [
+                                        "The Patio de los Naranjos (Courtyard of the Orange Trees) inside the cathedral grounds is gorgeous",
+                                    ],
+                                    photoExamples: [
+                                        {
+                                            url: "https://images.unsplash.com/photo-1502910288415-7ec2ba6f5086?w=400&auto=format",
+                                            alt: "Couple near a historic church in Spain",
+                                            credit: "Joshua Newton",
+                                            pageUrl: "https://unsplash.com/photos/_sutqp0Q8pI",
+                                        },
+                                    ],
+                                    ratingSummary:
+                                        "4.8/5 on Google Maps — Visitors are awestruck by its massive scale and the views from the bell tower.",
+                                    reviewLinks: [
+                                        {
+                                            sourceName: "Google Maps",
+                                            url: "https://maps.google.com/?cid=16473499337161076197",
+                                        },
+                                    ],
+                                    websiteUrl:
+                                        "https://www.catedraldesevilla.es/",
                                 },
                                 {
                                     activityId: "sun-4",
                                     order: 4,
                                     name: "Afternoon at Plaza de España",
-                                    description: "Seville's most spectacular public square, built for the 1929 Ibero-American Exposition. Featuring a massive half-circle of ornate buildings, a canal with rowboats, and ceramic-tiled alcoves representing each Spanish province.",
-                                    image: { url: "https://images.unsplash.com/photo-1590071089561-13691b4a34c0?w=400", alt: "Plaza de España semicircular building with canal and bridges" },
-                                    location: { lat: 37.3772, lng: -5.9869, mapsUrl: "https://maps.google.com/?cid=9882856811052390969" },
+                                    description:
+                                        "Seville's most spectacular public square, built for the 1929 Ibero-American Exposition. Featuring a massive half-circle of ornate buildings, a canal with rowboats, and ceramic-tiled alcoves representing each Spanish province.",
+                                    image: {
+                                        url: "https://images.unsplash.com/photo-1590071089561-13691b4a34c0?w=400",
+                                        alt: "Plaza de España semicircular building with canal and bridges",
+                                    },
+                                    location: {
+                                        lat: 37.3772,
+                                        lng: -5.9869,
+                                        mapsUrl:
+                                            "https://maps.google.com/?cid=9882856811052390969",
+                                    },
                                     price: "Free",
-                                    tips: ["Rent a rowboat in the canal for a fun, relaxing experience", "Watch for flamenco dancers who often perform in the square", "Find your home province's ceramic-tiled alcove for a photo"],
-                                    photoSpotTips: ["Literally everywhere — sit on the ceramic tiled alcoves representing different Spanish provinces, or on the intricate bridges"],
-                                    ratingSummary: "4.8/5 on Google Maps — Universally loved as one of the most spectacular public squares in the world.",
-                                    reviewLinks: [{ sourceName: "Google Maps", url: "https://maps.google.com/?cid=9882856811052390969" }],
-                                    websiteUrl: "https://www.andalucia.org/es/sevilla-visitas-plaza-de-espana",
+                                    tips: [
+                                        "Rent a rowboat in the canal for a fun, relaxing experience",
+                                        "Watch for flamenco dancers who often perform in the square",
+                                        "Find your home province's ceramic-tiled alcove for a photo",
+                                    ],
+                                    photoSpotTips: [
+                                        "Literally everywhere — sit on the ceramic tiled alcoves representing different Spanish provinces, or on the intricate bridges",
+                                    ],
+                                    photoExamples: [
+                                        {
+                                            url: "https://images.unsplash.com/photo-1665007019442-180419b71e0d?w=400&auto=format",
+                                            alt: "Person walking across a bridge in Seville with river views",
+                                            credit: "Hernan Gonzalez",
+                                            pageUrl: "https://unsplash.com/photos/YLgM4h9vxXU",
+                                        },
+                                    ],
+                                    ratingSummary:
+                                        "4.8/5 on Google Maps — Universally loved as one of the most spectacular public squares in the world.",
+                                    reviewLinks: [
+                                        {
+                                            sourceName: "Google Maps",
+                                            url: "https://maps.google.com/?cid=9882856811052390969",
+                                        },
+                                    ],
+                                    websiteUrl:
+                                        "https://www.andalucia.org/es/sevilla-visitas-plaza-de-espana",
                                 },
                                 {
                                     activityId: "sun-5",
                                     order: 5,
                                     name: "Stroll Through Parque de María Luisa",
-                                    description: "This sprawling, romantic park is attached to Plaza de España and is full of fountains, gazebos, and orange trees. Perfect for cooling down in the shade after a busy afternoon of sightseeing.",
-                                    image: { url: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=400", alt: "Tree-lined pathway in a beautiful Mediterranean park" },
-                                    location: { lat: 37.3737, lng: -5.9872, mapsUrl: "https://maps.google.com/?cid=7545485340411095106" },
+                                    description:
+                                        "This sprawling, romantic park is attached to Plaza de España and is full of fountains, gazebos, and orange trees. Perfect for cooling down in the shade after a busy afternoon of sightseeing.",
+                                    image: {
+                                        url: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=400",
+                                        alt: "Tree-lined pathway in a beautiful Mediterranean park",
+                                    },
+                                    location: {
+                                        lat: 37.3737,
+                                        lng: -5.9872,
+                                        mapsUrl:
+                                            "https://maps.google.com/?cid=7545485340411095106",
+                                    },
                                     price: "Free",
-                                    tips: ["This sprawling, romantic park is attached to Plaza de España", "Full of fountains, gazebos, and orange trees — perfect for cooling down", "Great for a late-afternoon stroll in the shade"],
-                                    photoSpotTips: ["Find the Mount Gurugú waterfall or the hidden tile-covered pavilions for magical photo backdrops"],
-                                    ratingSummary: "4.8/5 on Google Maps — Locals love walking the shaded paths in the late afternoon.",
-                                    reviewLinks: [{ sourceName: "Google Maps", url: "https://maps.google.com/?cid=7545485340411095106" }],
-                                    websiteUrl: "https://www.sevilla.org/servicios/medio-ambiente-parques-jardines/parques/parques-y-jardines-historicos/parque-de-maria-luisa",
+                                    tips: [
+                                        "This sprawling, romantic park is attached to Plaza de España",
+                                        "Full of fountains, gazebos, and orange trees — perfect for cooling down",
+                                        "Great for a late-afternoon stroll in the shade",
+                                    ],
+                                    photoSpotTips: [
+                                        "Find the Mount Gurugú waterfall or the hidden tile-covered pavilions for magical photo backdrops",
+                                    ],
+                                    photoExamples: [
+                                        {
+                                            url: "https://images.unsplash.com/photo-1744698276062-a0ffe2246318?w=400&auto=format",
+                                            alt: "Woman in pink dress walking through a narrow Seville street",
+                                            credit: "Lianhao Qu",
+                                            pageUrl: "https://unsplash.com/photos/D0hAS0BqJeE",
+                                        },
+                                    ],
+                                    ratingSummary:
+                                        "4.8/5 on Google Maps — Locals love walking the shaded paths in the late afternoon.",
+                                    reviewLinks: [
+                                        {
+                                            sourceName: "Google Maps",
+                                            url: "https://maps.google.com/?cid=7545485340411095106",
+                                        },
+                                    ],
+                                    websiteUrl:
+                                        "https://www.sevilla.org/servicios/medio-ambiente-parques-jardines/parques/parques-y-jardines-historicos/parque-de-maria-luisa",
                                 },
                                 {
                                     activityId: "sun-6",
                                     order: 6,
                                     name: "Farewell Dinner at Ovejas Negras",
-                                    description: "A modern, slightly hip tapas spot with creative dishes — the perfect fun final dinner before heading home. Known for modern twists on classic tapas like risotto and patatas bravas. Gets busy, so arrive right when they open for dinner service.",
-                                    image: { url: "https://images.unsplash.com/photo-1544025162-d76694265947?w=400", alt: "Creative modern tapas dishes on a stylish table" },
-                                    location: { lat: 37.3918, lng: -5.9927, mapsUrl: "https://maps.google.com/?cid=14583278816180872665" },
+                                    description:
+                                        "A modern, slightly hip tapas spot with creative dishes — the perfect fun final dinner before heading home. Known for modern twists on classic tapas like risotto and patatas bravas. Gets busy, so arrive right when they open for dinner service.",
+                                    image: {
+                                        url: "https://images.unsplash.com/photo-1544025162-d76694265947?w=400",
+                                        alt: "Creative modern tapas dishes on a stylish table",
+                                    },
+                                    location: {
+                                        lat: 37.3918,
+                                        lng: -5.9927,
+                                        mapsUrl:
+                                            "https://maps.google.com/?cid=14583278816180872665",
+                                    },
                                     price: "$$",
-                                    tips: ["A modern, hip tapas spot with creative dishes — perfect for a fun final dinner", "Gets busy so arrive right when they open for dinner service", "Try the risotto and the patatas bravas — both are highly recommended"],
-                                    photoSpotTips: ["The industrial-chic decor and quirky art make it a very Instagrammable dining spot"],
-                                    ratingSummary: "4.4/5 on Google Maps — Highly praised for modern twists on tapas, like their risotto and patatas bravas.",
-                                    reviewLinks: [{ sourceName: "Google Maps", url: "https://maps.google.com/?cid=14583278816180872665" }],
-                                    websiteUrl: "http://www.ovejasnegrastapas.com/",
+                                    tips: [
+                                        "A modern, hip tapas spot with creative dishes — perfect for a fun final dinner",
+                                        "Gets busy so arrive right when they open for dinner service",
+                                        "Try the risotto and the patatas bravas — both are highly recommended",
+                                    ],
+                                    photoSpotTips: [
+                                        "The industrial-chic decor and quirky art make it a very Instagrammable dining spot",
+                                    ],
+                                    ratingSummary:
+                                        "4.4/5 on Google Maps — Highly praised for modern twists on tapas, like their risotto and patatas bravas.",
+                                    reviewLinks: [
+                                        {
+                                            sourceName: "Google Maps",
+                                            url: "https://maps.google.com/?cid=14583278816180872665",
+                                        },
+                                    ],
+                                    websiteUrl:
+                                        "http://www.ovejasnegrastapas.com/",
                                 },
                             ],
                         },

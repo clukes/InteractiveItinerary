@@ -160,6 +160,12 @@
                         "minLength": 1
                     }
                 },
+                "photoExamples": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/photoExample"
+                    }
+                },
                 "ratingSummary": {
                     "type": ["string", "null"]
                 },
@@ -185,6 +191,29 @@
                     "minLength": 1
                 },
                 "url": {
+                    "type": "string",
+                    "format": "uri"
+                }
+            }
+        },
+        "photoExample": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["url", "alt"],
+            "properties": {
+                "url": {
+                    "type": "string",
+                    "format": "uri"
+                },
+                "alt": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "credit": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "pageUrl": {
                     "type": "string",
                     "format": "uri"
                 }
