@@ -5,7 +5,7 @@
 **Status**: Draft  
 **Input**: User description: "I want to create an interactive itinerary that I can use on a trip. It should include day tabs, per-day map routes between activities, activity checklists, expandable activity details, and support loading itinerary data from a reusable file."
 
-## User Scenarios & Testing *(mandatory)*
+## User Scenarios & Testing _(mandatory)_
 
 ### User Story 1 - Navigate Daily Plan (Priority: P1)
 
@@ -81,7 +81,7 @@ As a traveler, I can load a structured itinerary data file so the same itinerary
 - The itinerary has many activities in one day, requiring clear scrolling and map point distinction.
 - A traveler changes an activity from done to skipped (or skipped to done) and expects the latest status to replace the previous one.
 
-## Requirements *(mandatory)*
+## Requirements _(mandatory)_
 
 ### Functional Requirements
 
@@ -108,7 +108,7 @@ As a traveler, I can load a structured itinerary data file so the same itinerary
 - **FR-019**: System MUST validate loaded itinerary data and provide user-readable error messages for invalid files.
 - **FR-020**: System MUST preserve each activity’s done/skipped status when switching between day tabs during the same itinerary session.
 
-### Constitution Alignment Requirements *(mandatory)*
+### Constitution Alignment Requirements _(mandatory)_
 
 - **CA-001**: Feature MUST be usable in a mobile-first layout and define the primary phone
   viewport assumptions.
@@ -123,7 +123,7 @@ As a traveler, I can load a structured itinerary data file so the same itinerary
 - **CA-007**: Feature completeness MUST include day navigation, route-aware maps, per-day checklists, expandable details, map/review/website links, and reusable file-driven itinerary loading.
 - **CA-008**: Accessibility expectations MUST include keyboard support for tab navigation and expand/collapse controls, visible focus states, meaningful alternative text for images, and descriptive link labels.
 
-### Key Entities *(include if feature involves data)*
+### Key Entities _(include if feature involves data)_
 
 - **Itinerary**: A complete trip plan containing trip title, optional date range, and an ordered collection of trip days.
 - **Trip Day**: A single day within the itinerary containing day label/order and a list of activities.
@@ -139,7 +139,7 @@ As a traveler, I can load a structured itinerary data file so the same itinerary
 - When third-party links are unavailable, the feature still provides readable local itinerary details.
 - The reusable itinerary file is prepared in a pre-agreed structured format documented with required fields.
 
-## Success Criteria *(mandatory)*
+## Success Criteria _(mandatory)_
 
 ### Measurable Outcomes
 
