@@ -500,6 +500,12 @@
                 color: #b06000;
                 border-color: #fef7e0;
             }
+            .activity-map-link {
+                margin-left: auto;
+            }
+            .activity-map-link .material-symbols-outlined {
+                font-size: 1rem;
+            }
 
             /* Status visual on card */
             .activity-card[data-status="done"] {
@@ -710,31 +716,6 @@
                 border-radius: 50%;
                 background: #ff5a5f;
             }
-            .activity-map-link {
-                position: relative;
-                display: inline-flex;
-                align-items: center;
-                gap: 0.25rem;
-                font-size: 0.75rem;
-                color: var(--brand);
-                cursor: pointer;
-                border: none;
-                background: none;
-                padding: 0.15rem 0.4rem;
-                margin: -0.35rem 1rem 0.55rem auto;
-                width: fit-content;
-                border-radius: var(--radius-sm);
-                transition: background 0.2s;
-                white-space: nowrap;
-            }
-            .activity-map-link:hover {
-                background: #e7f8f4;
-                text-decoration: underline;
-            }
-            .activity-map-link .material-symbols-outlined {
-                font-size: 0.875rem;
-            }
-
             /* === Photo Examples === */
             .photo-examples {
                 display: flex;
@@ -1613,13 +1594,11 @@
                     html += `<span class="material-symbols-outlined activity-expand-icon" aria-hidden="true">expand_more</span>`;
                     html += `</button>`;
 
-                    // Jump-to-map link
-                    html += `<button class="activity-map-link" data-scroll-to="legend-${act.activityId}" type="button" aria-label="Jump to ${escapeHtml(act.name)} on map"><span class="material-symbols-outlined" aria-hidden="true">map</span>Map</button>`;
-
                     // Status controls
                     html += `<div class="activity-status">`;
                     html += `<button class="status-btn btn-done" data-action="status" data-activity-id="${act.activityId}" data-status="done" data-active="${status === "done"}" aria-pressed="${status === "done"}" aria-label="Mark ${escapeHtml(act.name)} as done"><span class="material-symbols-outlined" style="font-size: 1rem; vertical-align: middle; margin-right: 4px;">check_circle</span>Done</button>`;
                     html += `<button class="status-btn btn-skipped" data-action="status" data-activity-id="${act.activityId}" data-status="skipped" data-active="${status === "skipped"}" aria-pressed="${status === "skipped"}" aria-label="Mark ${escapeHtml(act.name)} as skipped"><span class="material-symbols-outlined" style="font-size: 1rem; vertical-align: middle; margin-right: 4px;">cancel</span>Skip</button>`;
+                    html += `<button class="status-btn activity-map-link" data-scroll-to="legend-${act.activityId}" type="button" aria-label="Jump to ${escapeHtml(act.name)} on map"><span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 4px;" aria-hidden="true">map</span>Map</button>`;
                     html += `</div>`;
 
                     // Expandable details
