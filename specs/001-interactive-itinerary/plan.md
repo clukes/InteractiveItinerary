@@ -21,7 +21,7 @@ Build a mobile-first, single-file interactive trip itinerary web app with day ta
 
 ## Constitution Check
 
-*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+_GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
 
 - **Portable Delivery Gate**: ✅ PASS — App is a single `index.html` file with inline CSS/JS. No backend, no external runtime assets. Can be shared as a file and opened directly in any mobile browser.
 - **Mobile-First Gate**: ✅ PASS — Primary viewport targets 360px–430px. Touch-first interactions (tap to switch tabs, tap to expand, tap status buttons). CSS uses mobile-first responsive layout with no horizontal scroll at target widths. Tested via Playwright with Pixel 5 and iPhone 13 device emulation.

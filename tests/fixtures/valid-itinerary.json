@@ -1,94 +1,154 @@
 {
-  "schemaVersion": "1.0",
-  "tripId": "test-trip-001",
-  "title": "Test Trip to Paris",
-  "dateRange": { "start": "2026-04-01", "end": "2026-04-03" },
-  "days": [
-    {
-      "dayId": "day-1",
-      "dayNumber": 1,
-      "label": "Day 1",
-      "date": "2026-04-01",
-      "activities": [
+    "schemaVersion": "1.0",
+    "tripId": "test-trip-001",
+    "title": "Test Trip to Paris",
+    "dateRange": { "start": "2026-04-01", "end": "2026-04-03" },
+    "days": [
         {
-          "activityId": "act-1-1",
-          "order": 1,
-          "name": "Eiffel Tower",
-          "description": "Visit the iconic iron lattice tower on the Champ de Mars.",
-          "image": { "url": "https://example.com/eiffel.jpg", "alt": "Eiffel Tower at sunset" },
-          "location": { "lat": 48.8584, "lng": 2.2945, "mapsUrl": "https://maps.google.com/?q=Eiffel+Tower" },
-          "price": "€26.80",
-          "tips": ["Book summit tickets in advance", "Visit at sunset for best views"],
-          "photoSpotTips": ["Shoot from Trocadéro for classic framing", "Night photos capture the sparkle effect every hour"],
-          "ratingSummary": "4.7/5 — Must-see landmark",
-          "reviewLinks": [
-            { "sourceName": "TripAdvisor", "url": "https://www.tripadvisor.com/Attraction_Review-Eiffel_Tower" },
-            { "sourceName": "Google Reviews", "url": "https://maps.google.com/?q=Eiffel+Tower" }
-          ],
-          "websiteUrl": "https://www.toureiffel.paris/en"
+            "dayId": "day-1",
+            "dayNumber": 1,
+            "label": "Day 1",
+            "date": "2026-04-01",
+            "activities": [
+                {
+                    "activityId": "act-1-1",
+                    "order": 1,
+                    "name": "Eiffel Tower",
+                    "description": "Visit the iconic iron lattice tower on the Champ de Mars.",
+                    "image": {
+                        "url": "https://example.com/eiffel.jpg",
+                        "alt": "Eiffel Tower at sunset"
+                    },
+                    "location": {
+                        "lat": 48.8584,
+                        "lng": 2.2945,
+                        "mapsUrl": "https://maps.google.com/?q=Eiffel+Tower"
+                    },
+                    "price": "€26.80",
+                    "tips": [
+                        "Book summit tickets in advance",
+                        "Visit at sunset for best views"
+                    ],
+                    "photoSpotTips": [
+                        "Shoot from Trocadéro for classic framing",
+                        "Night photos capture the sparkle effect every hour"
+                    ],
+                    "ratingSummary": "4.7/5 — Must-see landmark",
+                    "reviewLinks": [
+                        {
+                            "sourceName": "TripAdvisor",
+                            "url": "https://www.tripadvisor.com/Attraction_Review-Eiffel_Tower"
+                        },
+                        {
+                            "sourceName": "Google Reviews",
+                            "url": "https://maps.google.com/?q=Eiffel+Tower"
+                        }
+                    ],
+                    "websiteUrl": "https://www.toureiffel.paris/en"
+                },
+                {
+                    "activityId": "act-1-2",
+                    "order": 2,
+                    "name": "Louvre Museum",
+                    "description": "World's largest art museum and a historic monument in Paris.",
+                    "image": {
+                        "url": "https://example.com/louvre.jpg",
+                        "alt": "Glass pyramid at the Louvre"
+                    },
+                    "location": {
+                        "lat": 48.8606,
+                        "lng": 2.3376,
+                        "mapsUrl": "https://maps.google.com/?q=Louvre+Museum"
+                    },
+                    "price": "€17",
+                    "tips": [
+                        "Enter via Carrousel du Louvre for shorter lines",
+                        "Plan at least 3 hours"
+                    ],
+                    "photoSpotTips": [
+                        "Frame the pyramid with the palace wings",
+                        "Sunset reflections in the pyramid glass are stunning"
+                    ],
+                    "ratingSummary": "4.8/5 — World-class art collection",
+                    "reviewLinks": [
+                        {
+                            "sourceName": "TripAdvisor",
+                            "url": "https://www.tripadvisor.com/Attraction_Review-Louvre"
+                        }
+                    ],
+                    "websiteUrl": "https://www.louvre.fr/en"
+                },
+                {
+                    "activityId": "act-1-3",
+                    "order": 3,
+                    "name": "Seine River Walk",
+                    "description": "Stroll along the banks of the Seine, a UNESCO World Heritage site.",
+                    "image": {
+                        "url": "https://example.com/seine.jpg",
+                        "alt": "Seine River with bridges"
+                    },
+                    "location": {
+                        "mapsUrl": "https://maps.google.com/?q=Seine+River+Paris"
+                    },
+                    "price": null,
+                    "tips": [
+                        "Walk from Pont Neuf to Pont Alexandre III for best views"
+                    ],
+                    "photoSpotTips": [
+                        "Golden hour light on the bridges creates perfect reflections"
+                    ],
+                    "ratingSummary": null,
+                    "reviewLinks": [],
+                    "websiteUrl": null
+                }
+            ]
         },
         {
-          "activityId": "act-1-2",
-          "order": 2,
-          "name": "Louvre Museum",
-          "description": "World's largest art museum and a historic monument in Paris.",
-          "image": { "url": "https://example.com/louvre.jpg", "alt": "Glass pyramid at the Louvre" },
-          "location": { "lat": 48.8606, "lng": 2.3376, "mapsUrl": "https://maps.google.com/?q=Louvre+Museum" },
-          "price": "€17",
-          "tips": ["Enter via Carrousel du Louvre for shorter lines", "Plan at least 3 hours"],
-          "photoSpotTips": ["Frame the pyramid with the palace wings", "Sunset reflections in the pyramid glass are stunning"],
-          "ratingSummary": "4.8/5 — World-class art collection",
-          "reviewLinks": [
-            { "sourceName": "TripAdvisor", "url": "https://www.tripadvisor.com/Attraction_Review-Louvre" }
-          ],
-          "websiteUrl": "https://www.louvre.fr/en"
+            "dayId": "day-2",
+            "dayNumber": 2,
+            "label": "Day 2",
+            "date": "2026-04-02",
+            "activities": [
+                {
+                    "activityId": "act-2-1",
+                    "order": 1,
+                    "name": "Montmartre & Sacré-Cœur",
+                    "description": "Explore the artistic hilltop neighborhood and visit the white basilica.",
+                    "image": {
+                        "url": "https://example.com/montmartre.jpg",
+                        "alt": "Sacré-Cœur Basilica"
+                    },
+                    "location": {
+                        "lat": 48.8867,
+                        "lng": 2.3431,
+                        "mapsUrl": "https://maps.google.com/?q=Sacre+Coeur"
+                    },
+                    "price": "Free",
+                    "tips": [
+                        "Take the funicular to save energy climbing",
+                        "Visit Place du Tertre for artist portraits"
+                    ],
+                    "photoSpotTips": [
+                        "Shoot from the steps for sweeping city panorama",
+                        "Capture street artists at Place du Tertre"
+                    ],
+                    "ratingSummary": "4.6/5 — Charming artistic quarter",
+                    "reviewLinks": [
+                        {
+                            "sourceName": "Google Reviews",
+                            "url": "https://maps.google.com/?q=Sacre+Coeur"
+                        }
+                    ],
+                    "websiteUrl": "https://www.sacre-coeur-montmartre.com/english/"
+                }
+            ]
         },
         {
-          "activityId": "act-1-3",
-          "order": 3,
-          "name": "Seine River Walk",
-          "description": "Stroll along the banks of the Seine, a UNESCO World Heritage site.",
-          "image": { "url": "https://example.com/seine.jpg", "alt": "Seine River with bridges" },
-          "location": { "mapsUrl": "https://maps.google.com/?q=Seine+River+Paris" },
-          "price": null,
-          "tips": ["Walk from Pont Neuf to Pont Alexandre III for best views"],
-          "photoSpotTips": ["Golden hour light on the bridges creates perfect reflections"],
-          "ratingSummary": null,
-          "reviewLinks": [],
-          "websiteUrl": null
+            "dayId": "day-3",
+            "dayNumber": 3,
+            "label": "Day 3",
+            "date": "2026-04-03",
+            "activities": []
         }
-      ]
-    },
-    {
-      "dayId": "day-2",
-      "dayNumber": 2,
-      "label": "Day 2",
-      "date": "2026-04-02",
-      "activities": [
-        {
-          "activityId": "act-2-1",
-          "order": 1,
-          "name": "Montmartre & Sacré-Cœur",
-          "description": "Explore the artistic hilltop neighborhood and visit the white basilica.",
-          "image": { "url": "https://example.com/montmartre.jpg", "alt": "Sacré-Cœur Basilica" },
-          "location": { "lat": 48.8867, "lng": 2.3431, "mapsUrl": "https://maps.google.com/?q=Sacre+Coeur" },
-          "price": "Free",
-          "tips": ["Take the funicular to save energy climbing", "Visit Place du Tertre for artist portraits"],
-          "photoSpotTips": ["Shoot from the steps for sweeping city panorama", "Capture street artists at Place du Tertre"],
-          "ratingSummary": "4.6/5 — Charming artistic quarter",
-          "reviewLinks": [
-            { "sourceName": "Google Reviews", "url": "https://maps.google.com/?q=Sacre+Coeur" }
-          ],
-          "websiteUrl": "https://www.sacre-coeur-montmartre.com/english/"
-        }
-      ]
-    },
-    {
-      "dayId": "day-3",
-      "dayNumber": 3,
-      "label": "Day 3",
-      "date": "2026-04-03",
-      "activities": []
-    }
-  ]
+    ]
 }

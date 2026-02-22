@@ -1,21 +1,21 @@
 {
-  "name": "interactive-itinerary",
-  "version": "1.0.0",
-  "description": "A mobile-first standalone HTML interactive trip itinerary with day tabs, route maps, activity checklists, and reusable file loading",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "test:unit": "vitest run --config vitest.config.js tests/unit/",
-    "test:integration": "vitest run --config vitest.config.js tests/integration/",
-    "test:e2e": "npx playwright test --config playwright.config.cjs",
-    "test": "npm run test:unit && npm run test:integration && npm run test:e2e"
-  },
-  "devDependencies": {
-    "@playwright/test": "^1.50.0",
-    "ajv": "^8.17.0",
-    "ajv-formats": "^3.0.0",
-    "jsdom": "^25.0.0",
-    "serve": "^14.2.5",
-    "vitest": "^3.0.0"
-  }
+    "name": "interactive-itinerary",
+    "version": "1.0.0",
+    "description": "A mobile-first standalone HTML interactive trip itinerary with day tabs, route maps, activity checklists, and reusable file loading",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "test:unit": "vitest run --config vitest.config.js tests/unit/",
+        "test:integration": "vitest run --config vitest.config.js tests/integration/",
+        "test:e2e": "npx playwright test --config playwright.config.cjs",
+        "test": "npm run test:unit && npm run test:integration && npm run test:e2e"
+    },
+    "devDependencies": {
+        "@playwright/test": "^1.50.0",
+        "ajv": "^8.17.0",
+        "ajv-formats": "^3.0.0",
+        "jsdom": "^25.0.0",
+        "serve": "^14.2.5",
+        "vitest": "^3.0.0"
+    }
 }

@@ -20,16 +20,19 @@ A mobile-first, standalone HTML interactive trip itinerary with day tabs, per-da
 ## Development
 
 ### Prerequisites
+
 - Node.js 20+
 - npm 10+
 
 ### Setup
+
 ```bash
 npm install
 npx playwright install chromium webkit
 ```
 
 ### Running Tests
+
 ```bash
 npm run test:unit        # Unit tests (Vitest)
 npm run test:integration # Integration tests (Vitest + jsdom)
