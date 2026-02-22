@@ -409,6 +409,7 @@
                     box-shadow 0.2s,
                     transform 0.2s;
                 border: 1px solid #ecdeca;
+                position: relative;
             }
             .activity-card:hover {
                 box-shadow: var(--shadow-card);
@@ -456,6 +457,11 @@
                 font-size: 1.25rem;
                 color: #6b7982;
                 transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            .activity-card[data-expanded="true"] .activity-name {
+                white-space: normal;
+                overflow: visible;
+                text-overflow: unset;
             }
             .activity-card[data-expanded="true"] .activity-expand-icon {
                 transform: rotate(180deg);
@@ -690,11 +696,44 @@
                 border-radius: 999px;
                 padding: 0.3rem 0.65rem;
             }
+            .map-legend-item[data-scroll-to] {
+                cursor: pointer;
+                transition: background 0.2s, border-color 0.2s;
+            }
+            .map-legend-item[data-scroll-to]:hover {
+                background: #eae3d5;
+                border-color: #d4c5a9;
+            }
             .map-legend-dot {
                 width: 10px;
                 height: 10px;
                 border-radius: 50%;
                 background: #ff5a5f;
+            }
+            .activity-map-link {
+                position: absolute;
+                top: 0.5rem;
+                right: 2.5rem;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.25rem;
+                font-size: 0.75rem;
+                color: var(--brand);
+                cursor: pointer;
+                border: none;
+                background: none;
+                padding: 0.15rem 0.4rem;
+                border-radius: var(--radius-sm);
+                transition: background 0.2s;
+                white-space: nowrap;
+                z-index: 1;
+            }
+            .activity-map-link:hover {
+                background: #e7f8f4;
+                text-decoration: underline;
+            }
+            .activity-map-link .material-symbols-outlined {
+                font-size: 0.875rem;
             }
 
             /* === Photo Examples === */
@@ -1370,7 +1409,7 @@
                         if (missingMap.length > 0) {
                             html += '<div class="map-legend">';
                             missingMap.forEach((a) => {
-                                html += `<span class="map-legend-item"><span class="map-badge"><span class="material-symbols-outlined" style="font-size: 1rem;">location_off</span> Map unavailable</span> ${escapeHtml(a.name)}</span>`;
+                                html += `<span class="map-legend-item" id="legend-${a.activityId}" data-scroll-to="card-${a.activityId}" role="link" tabindex="0"><span class="map-badge"><span class="material-symbols-outlined" style="font-size: 1rem;">location_off</span> Map unavailable</span> ${escapeHtml(a.name)}</span>`;
                             });
                             html += "</div>";
                         }
@@ -1437,11 +1476,11 @@
                     );
                     html += '<div class="map-legend">';
                     mapValidActivities.forEach((a, i) => {
-                        html += `<span class="map-legend-item"><span class="map-legend-dot"></span> ${i + 1}. ${escapeHtml(a.name)}</span>`;
+                        html += `<span class="map-legend-item" id="legend-${a.activityId}" data-scroll-to="card-${a.activityId}" role="link" tabindex="0"><span class="map-legend-dot"></span> ${i + 1}. ${escapeHtml(a.name)}</span>`;
                     });
                     if (missingMap.length > 0) {
                         missingMap.forEach((a) => {
-                            html += `<span class="map-legend-item"><span class="map-badge"><span class="material-symbols-outlined" style="font-size: 1rem;">location_off</span> Map unavailable</span> ${escapeHtml(a.name)}</span>`;
+                            html += `<span class="map-legend-item" id="legend-${a.activityId}" data-scroll-to="card-${a.activityId}" role="link" tabindex="0"><span class="map-badge"><span class="material-symbols-outlined" style="font-size: 1rem;">location_off</span> Map unavailable</span> ${escapeHtml(a.name)}</span>`;
                         });
                     }
                     html += "</div></div>";
@@ -1564,7 +1603,7 @@
                         typeof act.location.lat === "number" &&
                         typeof act.location.lng === "number";
 
-                    let html = `<div class="activity-card" data-activity-id="${act.activityId}" data-status="${status}" data-expanded="${isExpanded}">`;
+                    let html = `<div class="activity-card" id="card-${act.activityId}" data-activity-id="${act.activityId}" data-status="${status}" data-expanded="${isExpanded}">`;
 
                     // Header (expand/collapse trigger)
                     html += `<button class="activity-header" data-action="toggle" data-activity-id="${act.activityId}" aria-expanded="${isExpanded}" aria-controls="details-${act.activityId}">`;
@@ -1574,6 +1613,9 @@
                         html += `<span class="map-badge"><span class="material-symbols-outlined" style="font-size: 1rem;">location_off</span> No map</span>`;
                     html += `<span class="material-symbols-outlined activity-expand-icon" aria-hidden="true">expand_more</span>`;
                     html += `</button>`;
+
+                    // Jump-to-map link
+                    html += `<button class="activity-map-link" data-scroll-to="legend-${act.activityId}" type="button" aria-label="Jump to ${escapeHtml(act.name)} on map"><span class="material-symbols-outlined" aria-hidden="true">map</span>Map</button>`;
 
                     // Status controls
                     html += `<div class="activity-status">`;
@@ -1721,6 +1763,33 @@
                         .forEach((btn) => {
                             btn.addEventListener("click", () => {
                                 toggleMapFilterKey();
+                            });
+                        });
+
+                    // Cross-link scrolling (legend <-> activity cards)
+                    document
+                        .querySelectorAll("[data-scroll-to]")
+                        .forEach((el) => {
+                            const handler = (e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                const targetId = el.getAttribute("data-scroll-to");
+                                const target = document.getElementById(targetId);
+                                if (target) {
+                                    target.scrollIntoView({ behavior: "smooth", block: "center" });
+                                    target.style.outline = "2px solid var(--brand)";
+                                    target.style.outlineOffset = "2px";
+                                    setTimeout(() => {
+                                        target.style.outline = "";
+                                        target.style.outlineOffset = "";
+                                    }, 1500);
+                                }
+                            };
+                            el.addEventListener("click", handler);
+                            el.addEventListener("keydown", (e) => {
+                                if (e.key === "Enter" || e.key === " ") {
+                                    handler(e);
+                                }
                             });
                         });
 
