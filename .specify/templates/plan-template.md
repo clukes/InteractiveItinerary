@@ -31,7 +31,16 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+- **Portable Delivery Gate**: Solution runs as a static web app deliverable that can be shared
+  and opened directly on mobile browsers without backend dependency for core flows.
+- **Mobile-First Gate**: Primary journeys are designed for phone viewport first, with touch-first
+  interaction patterns and responsive layout strategy documented.
+- **Itinerary Completeness Gate**: Planned scope covers required itinerary interaction types
+  (maps, lists, links, review summaries, ratings, checklists) or explicitly documents omissions.
+- **Simplicity & Performance Gate**: Dependency choices are justified, bundle/runtime constraints
+  are stated, and mobile responsiveness risks have mitigation steps.
+- **Accessibility Gate**: Plan includes semantic structure, labeling, contrast, and keyboard
+  fallback expectations for core interactions.
 
 ## Project Structure
 
