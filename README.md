@@ -1,69 +1,82 @@
 # Interactive Trip Itinerary
 
-A mobile-first, standalone HTML interactive trip itinerary with day tabs, per-day route visualization, activity checklists, expandable details, and reusable JSON file loading.
+A mobile-first, single-file web app for browsing a multi-day itinerary with maps, checklists, and rich activity details.
 
-## Quick Start
+## Screenshot Tour
 
-1. **Open directly**: Open `index.html` in any modern browser — it works standalone with embedded demo data.
-2. **Load your own trip**: Click "Load Itinerary" and select a JSON file matching the [itinerary schema](specs/001-interactive-itinerary/contracts/itinerary-file.schema.json).
+### Day view + route map
 
-## Features
+![Day 1 default view showing day tabs, route map, and activity cards](tests/e2e/screenshots/day1-default.png)
 
-- **Day Navigation**: Switch between trip days via tabs; only the selected day's content is displayed
-- **Route Map**: SVG-rendered route visualization with numbered markers for activities with coordinates
-- **Google Maps Integration**: Open any activity location directly in Google Maps
-- **Activity Checklist**: Mark activities as done or skipped with mutually exclusive status
-- **Expandable Details**: View full activity info including image, description, price, tips, photo tips, ratings, reviews, and website
-- **File Loading**: Load itinerary JSON files with schema + semantic validation and clear error feedback
-- **Accessibility**: Full keyboard support, ARIA tabs/disclosure, visible focus states
+### Checklist progress on another day
 
-## Development
+![Day 2 view with completed checklist state](tests/e2e/screenshots/day2-with-done.png)
 
-### Prerequisites
+### Activity details expanded
 
-- Node.js 20+
-- npm 10+
+![Expanded activity panel with details, tips, and links](tests/e2e/screenshots/activity-expanded.png)
 
-### Setup
+### Custom itinerary loaded
+
+![Loaded Paris itinerary from JSON file](tests/e2e/screenshots/paris-loaded.png)
+
+### Validation feedback for invalid files
+
+![Validation errors shown after loading an invalid itinerary file](tests/e2e/screenshots/validation-errors.png)
+
+## What It Does
+
+- Day-by-day tabs with keyboard-accessible navigation
+- Visual route map with numbered stops and map links
+- Per-activity checklist with done/skip state
+- Expandable details with image, notes, ratings, and website
+- JSON itinerary loading with schema and semantic validation
+- Graceful empty-day support
+
+## Run Locally
+
+1. Install dependencies:
 
 ```bash
 npm install
-npx playwright install chromium webkit
 ```
 
-### Running Tests
+2. Start a local server:
 
 ```bash
-npm run test:unit        # Unit tests (Vitest)
-npm run test:integration # Integration tests (Vitest + jsdom)
-npm run test:e2e         # End-to-end tests (Playwright mobile viewports)
-npm run test             # All tests in sequence
+npx serve -l 3000 -s .
 ```
 
-## Portability
+3. Open:
 
-The entire application is a **single `index.html` file** with inline CSS and JavaScript. No build step, no bundling, no external runtime dependencies. Copy the file anywhere and it works.
-
-## Itinerary File Format
-
-See the full JSON schema at [itinerary-file.schema.json](specs/001-interactive-itinerary/contracts/itinerary-file.schema.json). Key structure:
-
-```json
-{
-  "schemaVersion": "1.0",
-  "tripId": "my-trip",
-  "title": "My Trip",
-  "dateRange": { "start": "2026-01-01", "end": "2026-01-03" },
-  "days": [
-    {
-      "dayId": "day-1",
-      "dayNumber": 1,
-      "label": "Day 1",
-      "activities": [...]
-    }
-  ]
-}
+```text
+http://localhost:3000
 ```
+
+You can also open `index.html` directly in a browser for basic use.
+
+## Load Your Own Itinerary
+
+Use **Load Itinerary** in the app and select a JSON file that matches the schema:
+
+- [Schema: itinerary-file.schema.json](specs/001-interactive-itinerary/contracts/itinerary-file.schema.json)
+- [Example: valid-itinerary.json](tests/fixtures/valid-itinerary.json)
+- [Example: seville-itinerary.json](seville-itinerary.json)
+
+## Testing
+
+```bash
+npm run test:unit
+npm run test:integration
+npm run test:e2e
+npm run test
+```
+
+## Tech Notes
+
+- App is implemented in a single `index.html` file (inline CSS + JS)
+- No build step required for runtime
+- End-to-end coverage includes mobile viewports via Playwright
 
 ## License
 

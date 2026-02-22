@@ -123,7 +123,12 @@ test.describe("Map Markers and Route", () => {
             const state = window.__itineraryState;
             const itinerary = state?.itinerary;
             if (!itinerary || !Array.isArray(itinerary.days)) {
-                return { mappedCount: 0, routeCount: 0, markerNumbers: [], mappedNames: [] };
+                return {
+                    mappedCount: 0,
+                    routeCount: 0,
+                    markerNumbers: [],
+                    mappedNames: [],
+                };
             }
 
             const day =
