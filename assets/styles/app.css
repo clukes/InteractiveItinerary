@@ -732,11 +732,9 @@ input:focus-visible {
 .map-hotel-marker {
     cursor: pointer;
 }
-.map-hotel-marker circle {
-    transition: r 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.map-hotel-marker:hover .map-hotel-marker-core {
-    r: 9;
+.map-hotel-marker:hover .map-hotel-marker-pin {
+    fill: #1a5ad4;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 .route-line {
     fill: none;
@@ -764,21 +762,22 @@ input:focus-visible {
 .map-marker-shadow {
     fill: rgba(20, 24, 30, 0.24);
 }
-.map-hotel-marker-core {
+.map-hotel-marker-pin {
     fill: #2f6cf5;
     stroke: #ffffff;
-    stroke-width: 2;
+    stroke-width: 1.5;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+    transition: fill 0.2s, filter 0.2s;
 }
-.map-hotel-marker-ring {
-    fill: transparent;
-    stroke: rgba(47, 108, 245, 0.32);
-    stroke-width: 7;
+.map-hotel-marker-inner {
+    fill: #ffffff;
+    pointer-events: none;
 }
 .map-hotel-marker-shadow {
-    fill: rgba(20, 24, 30, 0.24);
+    fill: rgba(20, 24, 30, 0.18);
 }
 .map-hotel-marker-house {
-    fill: #ffffff;
+    fill: #2f6cf5;
     pointer-events: none;
 }
 
@@ -818,20 +817,19 @@ input:focus-visible {
     background: #ff5a5f;
 }
 .map-legend-home-icon {
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: #2f6cf5;
+    width: 14px;
+    height: 18px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid #ffffff;
-    box-shadow: 0 0 0 1px rgba(47, 108, 245, 0.25);
+    flex-shrink: 0;
 }
 .map-legend-home-icon svg {
-    width: 10px;
-    height: 10px;
-    fill: #ffffff;
+    width: 14px;
+    height: 18px;
+}
+.map-legend-pin-path {
+    fill: #2f6cf5;
 }
 /* === Photo Examples === */
 .photo-examples {

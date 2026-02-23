@@ -20,6 +20,8 @@ const html = fs.readFileSync(
     "utf-8",
 );
 
+const unlockedItineraryStorageKey = "itinerary_unlocked_data_v1";
+
 const appScripts = [
     fs.readFileSync(
         path.resolve(__dirname, "../../assets/scripts/modules/validation.js"),
@@ -126,5 +128,50 @@ describe("Locked mode demo fallback", () => {
 
         expect(title.textContent).toBe("Private Itinerary");
         expect(unlockPanel.style.display).toBe("none");
+        const persisted = window.localStorage.getItem(
+            unlockedItineraryStorageKey,
+        );
+        expect(persisted).toContain("Private Itinerary");
+    });
+
+    it("restores unlocked itinerary from storage after refresh", async () => {
+        const persistedUnlocked = {
+            ...demoFixture,
+            title: "Persisted Private Itinerary",
+        };
+
+        dom.window.localStorage.setItem(
+            unlockedItineraryStorageKey,
+            JSON.stringify(persistedUnlocked),
+        );
+
+        const refreshDom = new JSDOM(html, {
+            runScripts: "outside-only",
+            url: "https://example.com/",
+        });
+
+        refreshDom.window.localStorage.setItem(
+            unlockedItineraryStorageKey,
+            JSON.stringify(persistedUnlocked),
+        );
+
+        const refreshFetchMock = vi.fn(async () => ({
+            ok: true,
+            json: async () => demoFixture,
+        }));
+        refreshDom.window.fetch = refreshFetchMock;
+
+        appScripts.forEach((script) => refreshDom.window.eval(script));
+        await flushBootstrap();
+
+        const title = refreshDom.window.document.getElementById("app-title");
+        const unlockPanel =
+            refreshDom.window.document.getElementById("unlock-panel");
+        const status = refreshDom.window.document.getElementById("file-status");
+
+        expect(title.textContent).toBe("Persisted Private Itinerary");
+        expect(unlockPanel.style.display).toBe("none");
+        expect(status.textContent).toContain("Restored unlocked itinerary");
+        expect(refreshFetchMock).toHaveBeenCalledTimes(0);
     });
 });

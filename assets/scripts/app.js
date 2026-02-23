@@ -26,6 +26,8 @@
         ...(window.__itineraryConfig || {}),
     };
 
+    const unlockedItineraryStorageKey = "itinerary_unlocked_data_v1";
+
     // ── App State ──
     const state = {
         itinerary: null,
@@ -86,6 +88,37 @@
             return raw ? JSON.parse(raw) : null;
         } catch (_) {
             return null;
+        }
+    }
+
+    function saveUnlockedItineraryToStorage(itinerary) {
+        try {
+            localStorage.setItem(
+                unlockedItineraryStorageKey,
+                JSON.stringify(itinerary),
+            );
+        } catch (_) {
+            /* storage unavailable */
+        }
+    }
+
+    function loadUnlockedItineraryFromStorage() {
+        try {
+            const raw = localStorage.getItem(unlockedItineraryStorageKey);
+            if (!raw) return null;
+            const parsed = JSON.parse(raw);
+            if (!parsed || typeof parsed !== "object") return null;
+            return parsed;
+        } catch (_) {
+            return null;
+        }
+    }
+
+    function clearUnlockedItineraryFromStorage() {
+        try {
+            localStorage.removeItem(unlockedItineraryStorageKey);
+        } catch (_) {
+            /* storage unavailable */
         }
     }
 
@@ -235,6 +268,8 @@
         if (!loaded) {
             throw new Error("Returned itinerary failed validation.");
         }
+
+        saveUnlockedItineraryToStorage(data);
 
         state.isDemoLockedMode = false;
         renderHeader();
@@ -840,6 +875,20 @@
             setUnlockPanelVisible(false);
             await bootstrapDefaultItinerary();
             return;
+        }
+
+        const persistedUnlockedItinerary = loadUnlockedItineraryFromStorage();
+        if (persistedUnlockedItinerary) {
+            const restored = loadItinerary(persistedUnlockedItinerary, {
+                restoreFromStorage: true,
+            });
+            if (restored) {
+                state.isDemoLockedMode = false;
+                setUnlockPanelVisible(false);
+                updateFileStatus("Restored unlocked itinerary.", "success");
+                return;
+            }
+            clearUnlockedItineraryFromStorage();
         }
 
         setUnlockPanelVisible(true);

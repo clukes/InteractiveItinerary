@@ -138,11 +138,15 @@
         });
 
         if (hotelPoint) {
-            const housePath = `M ${hotelPoint.x} ${hotelPoint.y - 7} L ${hotelPoint.x - 7} ${hotelPoint.y - 1} L ${hotelPoint.x - 7} ${hotelPoint.y + 7} L ${hotelPoint.x - 2} ${hotelPoint.y + 7} L ${hotelPoint.x - 2} ${hotelPoint.y + 2} L ${hotelPoint.x + 2} ${hotelPoint.y + 2} L ${hotelPoint.x + 2} ${hotelPoint.y + 7} L ${hotelPoint.x + 7} ${hotelPoint.y + 7} L ${hotelPoint.x + 7} ${hotelPoint.y - 1} Z`;
+            const cx = hotelPoint.x;
+            const cy = hotelPoint.y;
+            const headY = cy - 14;
+            const pinPath = `M ${cx} ${cy} C ${cx - 5} ${cy - 7} ${cx - 9} ${cy - 10} ${cx - 9} ${headY} A 9 9 0 1 1 ${cx + 9} ${headY} C ${cx + 9} ${cy - 10} ${cx + 5} ${cy - 7} ${cx} ${cy} Z`;
+            const housePath = `M ${cx} ${headY - 4.5} L ${cx - 4.5} ${headY - 0.5} L ${cx - 3} ${headY - 0.5} L ${cx - 3} ${headY + 4} L ${cx - 1} ${headY + 4} L ${cx - 1} ${headY + 1.5} L ${cx + 1} ${headY + 1.5} L ${cx + 1} ${headY + 4} L ${cx + 3} ${headY + 4} L ${cx + 3} ${headY - 0.5} L ${cx + 4.5} ${headY - 0.5} Z`;
             svg += `<g class="map-hotel-marker" role="button" tabindex="0" data-hotel-maps-url="${escapeHtml(hotel.location.mapsUrl)}" aria-label="Open hotel ${escapeHtml(hotel.name)} in Google Maps">`;
-            svg += `<circle class="map-hotel-marker-shadow" cx="${hotelPoint.x}" cy="${hotelPoint.y + 10}" r="6"/>`;
-            svg += `<circle class="map-hotel-marker-ring" cx="${hotelPoint.x}" cy="${hotelPoint.y}" r="10"/>`;
-            svg += `<circle class="map-hotel-marker-core" cx="${hotelPoint.x}" cy="${hotelPoint.y}" r="8"/>`;
+            svg += `<ellipse class="map-hotel-marker-shadow" cx="${cx}" cy="${cy + 3}" rx="5" ry="2"/>`;
+            svg += `<path class="map-hotel-marker-pin" d="${pinPath}"/>`;
+            svg += `<circle class="map-hotel-marker-inner" cx="${cx}" cy="${headY}" r="6.5"/>`;
             svg += `<path class="map-hotel-marker-house" d="${housePath}"/>`;
             svg += `</g>`;
         }
@@ -158,7 +162,7 @@
         );
         html += '<div class="map-legend">';
         if (hasHotelMapData) {
-            html += `<span class="map-legend-item" id="legend-hotel" data-scroll-to="card-${sortedActivities[0].activityId}" role="link" tabindex="0"><span class="map-legend-home-icon" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 5L4 11V20H10V14H14V20H20V11L12 5Z"/></svg></span> Hotel: ${escapeHtml(hotel.name)}</span>`;
+            html += `<span class="map-legend-item" id="legend-hotel" data-scroll-to="card-${sortedActivities[0].activityId}" role="link" tabindex="0"><span class="map-legend-home-icon" aria-hidden="true"><svg viewBox="0 0 24 30" xmlns="http://www.w3.org/2000/svg"><path class="map-legend-pin-path" d="M12 28 C9 23 3 17 3 11 A9 9 0 1 1 21 11 C21 17 15 23 12 28Z"/><circle cx="12" cy="11" r="6.5" fill="#fff"/><path d="M12 7 L7.5 10.5 L9 10.5 L9 14.5 L10.8 14.5 L10.8 12 L13.2 12 L13.2 14.5 L15 14.5 L15 10.5 L16.5 10.5Z" fill="#2f6cf5"/></svg></span> Hotel: ${escapeHtml(hotel.name)}</span>`;
         }
         mapValidActivities.forEach((a, i) => {
             html += `<span class="map-legend-item" id="legend-${a.activityId}" data-scroll-to="card-${a.activityId}" role="link" tabindex="0"><span class="map-legend-dot"></span> ${i + 1}. ${escapeHtml(a.name)}</span>`;
