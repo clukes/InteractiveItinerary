@@ -1,4 +1,8 @@
 export default {
+    /**
+     * @param {Request} request
+     * @param {{ ALLOWED_ORIGIN?: string; ITINERARY_PASSWORD?: string; ITINERARY_KV: { get: (key: string) => Promise<string | null> } }} env
+     */
     async fetch(request, env) {
         const requestUrl = new URL(request.url);
         const origin = request.headers.get("Origin") || "";
@@ -94,6 +98,12 @@ export default {
     },
 };
 
+/**
+ * @param {unknown} payload
+ * @param {number} status
+ * @param {string} origin
+ * @param {boolean} allowOrigin
+ */
 function jsonResponse(payload, status, origin, allowOrigin) {
     return new Response(JSON.stringify(payload), {
         status,
@@ -104,6 +114,10 @@ function jsonResponse(payload, status, origin, allowOrigin) {
     });
 }
 
+/**
+ * @param {string} origin
+ * @param {boolean} allowOrigin
+ */
 function corsHeaders(origin, allowOrigin) {
     return {
         "Access-Control-Allow-Origin": allowOrigin ? origin : "null",

@@ -51,19 +51,19 @@ So this plan uses **out-of-band password delivery** (for example Bitwarden/1Pass
 - [x] If failure, show friendly error and do not reveal details.
 
 ### 5) Password retrieval “elsewhere” (required)
-- [ ] **[MANUAL]** Choose out-of-band password delivery:
+- [x] **[MANUAL]** Choose out-of-band password delivery:
   - Shared vault item (Bitwarden/1Password), or
   - Encrypted message app (Signal), or
   - Manual one-time distribution.
-- [ ] **[MANUAL]** Do **not** store this password in repo, JS, or public config.
-- [ ] **[MANUAL]** Rotate password after any accidental exposure.
+- [x] **[MANUAL]** Do **not** store this password in repo, JS, or public config.
+- [x] **[MANUAL]** Rotate password after any accidental exposure.
 
 ### 6) Deploy and verify
-- [ ] Deploy Worker and note endpoint URL.
-- [ ] Update frontend config with Worker URL.
-- [ ] Deploy GitHub Pages.
+- [x] Deploy Worker and note endpoint URL.
+- [x] Update frontend config with Worker URL.
+- [x] Deploy GitHub Pages.
 - [ ] Test with correct and wrong password.
-- [ ] Confirm no real itinerary data is visible in page source/network until successful auth.
+- [x] Confirm no real itinerary data is visible in page source/network until successful auth.
 
 ---
 

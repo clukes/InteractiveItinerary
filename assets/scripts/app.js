@@ -136,9 +136,26 @@
         return {
             panel: document.getElementById("unlock-panel"),
             input: document.getElementById("unlock-password"),
+            toggle: document.getElementById("toggle-unlock-password"),
             button: document.getElementById("unlock-button"),
             help: document.getElementById("unlock-help"),
         };
+    }
+
+    function setUnlockPasswordVisibility(isVisible) {
+        const unlockElements = getUnlockElements();
+        if (!unlockElements.input || !unlockElements.toggle) return;
+
+        unlockElements.input.type = isVisible ? "text" : "password";
+        unlockElements.toggle.textContent = isVisible ? "Hide" : "Show";
+        unlockElements.toggle.setAttribute(
+            "aria-label",
+            isVisible ? "Hide password" : "Show password",
+        );
+        unlockElements.toggle.setAttribute(
+            "aria-pressed",
+            isVisible ? "true" : "false",
+        );
     }
 
     function setUnlockPanelVisible(isVisible) {
@@ -151,6 +168,9 @@
         const unlockElements = getUnlockElements();
         if (unlockElements.input) {
             unlockElements.input.disabled = isDisabled;
+        }
+        if (unlockElements.toggle) {
+            unlockElements.toggle.disabled = isDisabled;
         }
         if (unlockElements.button) {
             unlockElements.button.disabled = isDisabled;
@@ -201,6 +221,16 @@
         const unlockElements = getUnlockElements();
         if (!unlockElements.button || !unlockElements.input) return;
 
+        setUnlockPasswordVisibility(false);
+
+        if (unlockElements.toggle) {
+            unlockElements.toggle.addEventListener("click", () => {
+                setUnlockPasswordVisibility(
+                    unlockElements.input.type === "password",
+                );
+            });
+        }
+
         const submitUnlock = async () => {
             const password = unlockElements.input.value;
             if (!password) {
@@ -214,6 +244,7 @@
                 await unlockItineraryWithPassword(password);
                 updateFileStatus("Itinerary unlocked successfully.", "success");
                 unlockElements.input.value = "";
+                setUnlockPasswordVisibility(false);
             } catch (err) {
                 updateFileStatus(
                     err && err.message
