@@ -1,5 +1,0 @@
-- add itinerary from A on telegram
-- remove the expensive things 
-- add in times
-- supermarket run should go back to hotel after. would be good to do friday morning
-- flight is at 9 on sunday. make sure airport is in at the end
