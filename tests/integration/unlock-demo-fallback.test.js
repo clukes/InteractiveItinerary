@@ -298,4 +298,50 @@ describe("Locked mode demo fallback", () => {
 
         expect(refreshButton.hidden).toBe(false);
     });
+
+    it("hard refresh button disables itself and navigates with cache-busting query", async () => {
+        const hardRefreshButton = document.getElementById("hard-refresh-button");
+        const navigateSpy = vi.fn();
+        window.__itineraryHardRefreshNavigate = navigateSpy;
+
+        hardRefreshButton.click();
+        await flushBootstrap();
+
+        expect(hardRefreshButton.disabled).toBe(true);
+        expect(navigateSpy).toHaveBeenCalledTimes(1);
+        expect(navigateSpy.mock.calls[0][0]).toContain("_gh_refresh=");
+    });
+
+    it("hard refresh still works when unlock controls are unavailable", async () => {
+        const headerOnlyDom = new JSDOM(html, {
+            runScripts: "outside-only",
+            url: "https://example.com/",
+        });
+
+        const unlockPanel =
+            headerOnlyDom.window.document.getElementById("unlock-panel");
+        if (unlockPanel) {
+            unlockPanel.remove();
+        }
+
+        const headerFetchMock = vi.fn(async () => ({
+            ok: true,
+            json: async () => demoFixture,
+        }));
+        headerOnlyDom.window.fetch = headerFetchMock;
+
+        const navigateSpy = vi.fn();
+        headerOnlyDom.window.__itineraryHardRefreshNavigate = navigateSpy;
+
+        appScripts.forEach((script) => headerOnlyDom.window.eval(script));
+        await flushBootstrap();
+
+        const hardRefreshButton =
+            headerOnlyDom.window.document.getElementById("hard-refresh-button");
+        hardRefreshButton.click();
+        await flushBootstrap();
+
+        expect(navigateSpy).toHaveBeenCalledTimes(1);
+        expect(navigateSpy.mock.calls[0][0]).toContain("_gh_refresh=");
+    });
 });

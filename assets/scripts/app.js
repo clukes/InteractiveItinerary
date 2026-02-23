@@ -243,6 +243,11 @@
 
         const url = new URL(window.location.href);
         url.searchParams.set("_gh_refresh", String(Date.now()));
+        const navigate = window.__itineraryHardRefreshNavigate;
+        if (typeof navigate === "function") {
+            navigate(url.toString());
+            return;
+        }
         window.location.assign(url.toString());
     }
 
