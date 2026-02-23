@@ -34,6 +34,7 @@
         expandedActivityId: null,
         fileLoadState: "idle", // idle|loading|loaded|validation_error
         mapFilterKeyHidden: window.innerWidth <= 640,
+        isDemoLockedMode: false,
     };
 
     // Expose state for testing
@@ -178,6 +179,7 @@
     }
 
     async function showDemoItineraryLockedState() {
+        state.isDemoLockedMode = true;
         await bootstrapDefaultItinerary();
         updateFileStatus(
             "Showing demo itinerary. Enter password to unlock your itinerary.",
@@ -234,6 +236,8 @@
             throw new Error("Returned itinerary failed validation.");
         }
 
+        state.isDemoLockedMode = false;
+        renderHeader();
         setUnlockPanelVisible(false);
     }
 
@@ -294,7 +298,9 @@
             datesEl.textContent = "";
             return;
         }
-        titleEl.textContent = state.itinerary.title;
+        titleEl.textContent = state.isDemoLockedMode
+            ? "DEMO ITINERARY"
+            : state.itinerary.title;
         if (state.itinerary.dateRange) {
             datesEl.textContent = `${state.itinerary.dateRange.start} — ${state.itinerary.dateRange.end}`;
         } else {
@@ -830,6 +836,7 @@
         bindUnlockEvents();
 
         if (isLocalDevelopmentHost()) {
+            state.isDemoLockedMode = false;
             setUnlockPanelVisible(false);
             await bootstrapDefaultItinerary();
             return;

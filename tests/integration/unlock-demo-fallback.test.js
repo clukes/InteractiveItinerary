@@ -77,12 +77,14 @@ describe("Locked mode demo fallback", () => {
         const unlockPanel = document.getElementById("unlock-panel");
         const tabs = document.querySelectorAll('[role="tab"]');
         const status = document.getElementById("file-status");
+        const title = document.getElementById("app-title");
 
         await waitForStatusText(status, "Showing demo itinerary");
 
         expect(unlockPanel.style.display).toBe("block");
         expect(tabs.length).toBeGreaterThan(0);
         expect(status.textContent).toContain("Showing demo itinerary");
+        expect(title.textContent).toBe("DEMO ITINERARY");
         expect(fetchMock).toHaveBeenCalledTimes(1);
     });
 
@@ -98,5 +100,31 @@ describe("Locked mode demo fallback", () => {
         expect(status.textContent).toContain("Showing demo itinerary");
         expect(status.className).toBe("file-status");
         expect(fetchMock).toHaveBeenCalledTimes(2);
+    });
+
+    it("replaces DEMO ITINERARY title after correct password unlock", async () => {
+        const unlockInput = document.getElementById("unlock-password");
+        const unlockButton = document.getElementById("unlock-button");
+        const status = document.getElementById("file-status");
+        const title = document.getElementById("app-title");
+        const unlockPanel = document.getElementById("unlock-panel");
+
+        await waitForStatusText(status, "Showing demo itinerary");
+
+        const unlockedFixture = {
+            ...demoFixture,
+            title: "Private Itinerary",
+        };
+        fetchMock.mockResolvedValueOnce({
+            ok: true,
+            json: async () => unlockedFixture,
+        });
+
+        unlockInput.value = "correct-password";
+        unlockButton.click();
+        await waitForStatusText(status, "Itinerary unlocked successfully.");
+
+        expect(title.textContent).toBe("Private Itinerary");
+        expect(unlockPanel.style.display).toBe("none");
     });
 });
