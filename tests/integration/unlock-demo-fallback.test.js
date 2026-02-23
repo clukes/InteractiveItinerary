@@ -110,6 +110,7 @@ describe("Locked mode demo fallback", () => {
         const status = document.getElementById("file-status");
         const title = document.getElementById("app-title");
         const unlockPanel = document.getElementById("unlock-panel");
+        const refreshButton = document.getElementById("refresh-itinerary-button");
 
         await waitForStatusText(status, "Showing demo itinerary");
 
@@ -128,10 +129,43 @@ describe("Locked mode demo fallback", () => {
 
         expect(title.textContent).toBe("Private Itinerary");
         expect(unlockPanel.style.display).toBe("none");
+        expect(refreshButton.hidden).toBe(false);
         const persisted = window.localStorage.getItem(
             unlockedItineraryStorageKey,
         );
         expect(persisted).toContain("Private Itinerary");
+    });
+
+    it("refresh button clears cache and returns to unlock flow", async () => {
+        const unlockInput = document.getElementById("unlock-password");
+        const unlockButton = document.getElementById("unlock-button");
+        const status = document.getElementById("file-status");
+        const refreshButton = document.getElementById("refresh-itinerary-button");
+        const unlockPanel = document.getElementById("unlock-panel");
+
+        await waitForStatusText(status, "Showing demo itinerary");
+
+        const unlockedFixture = {
+            ...demoFixture,
+            title: "Private Itinerary",
+        };
+        fetchMock.mockResolvedValueOnce({
+            ok: true,
+            json: async () => unlockedFixture,
+        });
+
+        unlockInput.value = "correct-password";
+        unlockButton.click();
+        await waitForStatusText(status, "Itinerary unlocked successfully.");
+
+        refreshButton.click();
+        await waitForStatusText(status, "Server refresh requested.");
+
+        expect(unlockPanel.style.display).toBe("block");
+        expect(refreshButton.hidden).toBe(true);
+        expect(
+            window.localStorage.getItem(unlockedItineraryStorageKey),
+        ).toBeNull();
     });
 
     it("restores unlocked itinerary from storage after refresh", async () => {

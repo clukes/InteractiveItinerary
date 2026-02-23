@@ -172,8 +172,15 @@
             input: document.getElementById("unlock-password"),
             toggle: document.getElementById("toggle-unlock-password"),
             button: document.getElementById("unlock-button"),
+            refreshButton: document.getElementById("refresh-itinerary-button"),
             help: document.getElementById("unlock-help"),
         };
+    }
+
+    function setRefreshButtonVisible(isVisible) {
+        const unlockElements = getUnlockElements();
+        if (!unlockElements.refreshButton) return;
+        unlockElements.refreshButton.hidden = !isVisible;
     }
 
     function setUnlockPasswordVisibility(isVisible) {
@@ -211,11 +218,13 @@
         }
     }
 
-    async function showDemoItineraryLockedState() {
+    async function showDemoItineraryLockedState(statusMessage) {
         state.isDemoLockedMode = true;
+        setRefreshButtonVisible(false);
         await bootstrapDefaultItinerary();
         updateFileStatus(
-            "Showing demo itinerary. Enter password to unlock your itinerary.",
+            statusMessage ||
+                "Showing demo itinerary. Enter password to unlock your itinerary.",
             "",
         );
     }
@@ -274,6 +283,7 @@
         state.isDemoLockedMode = false;
         renderHeader();
         setUnlockPanelVisible(false);
+        setRefreshButtonVisible(true);
     }
 
     function bindUnlockEvents() {
@@ -323,6 +333,18 @@
                 submitUnlock();
             }
         });
+
+        if (unlockElements.refreshButton) {
+            unlockElements.refreshButton.addEventListener("click", async () => {
+                clearUnlockedItineraryFromStorage();
+                unlockElements.input.value = "";
+                setUnlockPanelVisible(true);
+                unlockElements.input.focus();
+                await showDemoItineraryLockedState(
+                    "Server refresh requested. Enter password to load latest itinerary.",
+                );
+            });
+        }
     }
 
     function renderHeader() {
@@ -873,6 +895,7 @@
         if (isLocalDevelopmentHost()) {
             state.isDemoLockedMode = false;
             setUnlockPanelVisible(false);
+            setRefreshButtonVisible(false);
             await bootstrapDefaultItinerary();
             return;
         }
@@ -885,6 +908,7 @@
             if (restored) {
                 state.isDemoLockedMode = false;
                 setUnlockPanelVisible(false);
+                setRefreshButtonVisible(true);
                 updateFileStatus("Restored unlocked itinerary.", "success");
                 return;
             }
@@ -892,6 +916,7 @@
         }
 
         setUnlockPanelVisible(true);
+        setRefreshButtonVisible(false);
         await showDemoItineraryLockedState();
     }
 

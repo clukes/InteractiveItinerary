@@ -201,6 +201,24 @@ input:focus-visible {
     color: #b31412;
 }
 
+.refresh-itinerary-button {
+    margin: 0.45rem 1rem 0;
+    border: 1px solid #e5d9c8;
+    border-radius: 10px;
+    padding: 0.48rem 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    font-family: inherit;
+    color: var(--text-secondary);
+    background: var(--surface-muted);
+    cursor: pointer;
+}
+
+.refresh-itinerary-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
 /* === Day Tabs === */
 .day-tabs {
     display: flex;

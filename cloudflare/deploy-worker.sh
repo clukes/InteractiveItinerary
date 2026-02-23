@@ -19,8 +19,13 @@ fi
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 WORKER_PATH="$SCRIPT_DIR/worker.js"
-DEFAULT_PRIVATE_ITINERARY_PATH="$REPO_ROOT/private/local-itineraries/seville-itinerary.private.json"
-ITINERARY_SOURCE_PATH="${ITINERARY_SOURCE_PATH:-$DEFAULT_PRIVATE_ITINERARY_PATH}"
+DEFAULT_PRIVATE_ITINERARY_PATHS=(
+    "$REPO_ROOT/private/local-itineraries/seville-itinerary.private.json"
+    "$REPO_ROOT/private/seville-itinerary.private.json"
+    "$REPO_ROOT/private/seville-itinerary.json"
+    "$REPO_ROOT/private/default-itinerary.json"
+)
+ITINERARY_SOURCE_PATH="${ITINERARY_SOURCE_PATH:-}"
 STAMP_DIR="$REPO_ROOT/.cloudflare"
 STAMP_PATH="$STAMP_DIR/worker-deploy-stamp"
 
@@ -38,9 +43,21 @@ fi
 echo "Deploying Cloudflare Worker '$WORKER_NAME' from $WORKER_PATH..."
 "${COMMAND[@]}"
 
+if [[ -z "$ITINERARY_SOURCE_PATH" ]]; then
+    for candidate in "${DEFAULT_PRIVATE_ITINERARY_PATHS[@]}"; do
+        if [[ -f "$candidate" ]]; then
+            ITINERARY_SOURCE_PATH="$candidate"
+            break
+        fi
+    done
+fi
+
 if [[ ! -f "$ITINERARY_SOURCE_PATH" ]]; then
     echo "Error: itinerary source file not found at $ITINERARY_SOURCE_PATH"
-    echo "Expected default private path: $DEFAULT_PRIVATE_ITINERARY_PATH"
+    echo "Checked default private paths:"
+    for candidate in "${DEFAULT_PRIVATE_ITINERARY_PATHS[@]}"; do
+        echo "  - $candidate"
+    done
     echo "Set ITINERARY_SOURCE_PATH to a private JSON file and re-run deploy."
     exit 1
 fi
