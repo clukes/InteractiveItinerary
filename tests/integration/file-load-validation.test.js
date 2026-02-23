@@ -3,7 +3,7 @@
  * Tests: missing data labeling, full activity-detail field rendering,
  *        valid file replacement, invalid-file rollback behavior
  */
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import { JSDOM } from "jsdom";
 import fs from "fs";
 import path from "path";
@@ -27,19 +27,34 @@ const invalidFixture = JSON.parse(
     ),
 );
 
-beforeEach(async () => {
-    const html = fs.readFileSync(
-        path.resolve(__dirname, "../../index.html"),
+const html = fs.readFileSync(
+    path.resolve(__dirname, "../../index.html"),
+    "utf-8",
+);
+const appScripts = [
+    fs.readFileSync(
+        path.resolve(__dirname, "../../assets/scripts/modules/validation.js"),
         "utf-8",
-    );
+    ),
+    fs.readFileSync(
+        path.resolve(__dirname, "../../assets/scripts/modules/map-rendering.js"),
+        "utf-8",
+    ),
+    fs.readFileSync(path.resolve(__dirname, "../../assets/scripts/app.js"), "utf-8"),
+];
+
+beforeEach(async () => {
     dom = new JSDOM(html, {
-        runScripts: "dangerously",
-        resources: "usable",
+        runScripts: "outside-only",
         url: "http://localhost/",
     });
     window = dom.window;
     document = dom.window.document;
-    await new Promise((r) => setTimeout(r, 200));
+    window.fetch = vi.fn(async () => ({
+        ok: true,
+        json: async () => validFixture,
+    }));
+    appScripts.forEach((script) => window.eval(script));
 
     window.__loadItinerary(validFixture);
 });

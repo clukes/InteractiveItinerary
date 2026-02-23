@@ -22,8 +22,9 @@ Aligned with `quickstart.md` requirements. Test at 360px and 430px viewport widt
 
 ## Portability
 
-- [ ] App is shareable as a single `index.html` file and works without bundling any external local assets
-- [ ] Open copied standalone `index.html` from a separate folder — core features work with no required local runtime assets
+- [ ] App runs correctly when served over HTTP static hosting (local server or production static host)
+- [ ] Relative paths resolve for `assets/styles/app.css`, `assets/scripts/app.js`, and `assets/data/default-itinerary.json`
+- [ ] App works when hosted under a subpath (GitHub Pages project site) without root-absolute path assumptions
 
 ## Performance
 

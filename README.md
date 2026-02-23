@@ -1,6 +1,6 @@
 # Interactive Trip Itinerary
 
-A mobile-first, single-file web app for browsing a multi-day itinerary with maps, checklists, and rich activity details.
+A mobile-first, static web app for browsing a multi-day itinerary with maps, checklists, and rich activity details.
 
 ## Screenshot Tour
 
@@ -37,7 +37,7 @@ npx serve -l 3000 -s .
 http://localhost:3000
 ```
 
-You can also open `index.html` directly in a browser for basic use.
+Use HTTP static hosting (local server, GitHub Pages, Netlify, etc.). Do not use `file://` URLs.
 
 ## Load Your Own Itinerary
 
@@ -58,7 +58,9 @@ npm run test
 
 ## Tech Notes
 
-- App is implemented in a single `index.html` file (inline CSS + JS)
+- App uses static multi-file layout: `index.html` + `assets/styles/app.css` + `assets/scripts/app.js`
+- Default itinerary seed data is stored in `assets/data/default-itinerary.json`
+- Paths are relative (no root-absolute URLs), so deployment is safe under subpaths (for example GitHub Pages project sites)
 - No build step required for runtime
 - End-to-end coverage includes mobile viewports via Playwright
 
