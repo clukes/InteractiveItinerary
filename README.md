@@ -56,6 +56,35 @@ npm run test:e2e
 npm run test
 ```
 
+## Deploy Cloudflare Worker
+
+Deploy `cloudflare/worker.js` with:
+
+```bash
+npm run deploy:worker -- <worker-name> [environment]
+```
+
+Example:
+
+```bash
+npm run deploy:worker -- interactive-itinerary-worker production
+```
+
+Prerequisites:
+
+- Run `npx wrangler login` once
+- Configure required Worker bindings/secrets (for example `ITINERARY_KV`, `ITINERARY_PASSWORD`)
+
+## Enforce Worker Deploy Before Push
+
+Install repo git hooks once:
+
+```bash
+npm run setup:hooks
+```
+
+After setup, pushes are blocked if `cloudflare/worker.js` does not match the last successful deploy stamp.
+
 ## Tech Notes
 
 - App uses static multi-file layout: `index.html` + `assets/styles/app.css` + `assets/scripts/app.js`

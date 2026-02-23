@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+WORKER_PATH="$REPO_ROOT/cloudflare/worker.js"
+STAMP_PATH="$REPO_ROOT/.cloudflare/worker-deploy-stamp"
+
+if [[ ! -f "$WORKER_PATH" ]]; then
+    exit 0
+fi
+
+LOCAL_HASH="$(shasum -a 256 "$WORKER_PATH" | awk '{print $1}')"
+
+if [[ ! -f "$STAMP_PATH" ]]; then
+    echo "Push blocked: worker deploy stamp not found."
+    echo "Run: npm run deploy:worker -- <worker-name> [environment]"
+    exit 1
+fi
+
+STAMP_HASH="$(grep '^worker_hash=' "$STAMP_PATH" | head -n 1 | cut -d'=' -f2-)"
+
+if [[ -z "${STAMP_HASH:-}" ]]; then
+    echo "Push blocked: worker deploy stamp is invalid."
+    echo "Run: npm run deploy:worker -- <worker-name> [environment]"
+    exit 1
+fi
+
+if [[ "$LOCAL_HASH" != "$STAMP_HASH" ]]; then
+    echo "Push blocked: cloudflare/worker.js changed since last deploy."
+    echo "Run: npm run deploy:worker -- <worker-name> [environment]"
+    exit 1
+fi
+
+exit 0

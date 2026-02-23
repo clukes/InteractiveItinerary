@@ -33,4 +33,7 @@ HTML5, CSS3, JavaScript (ES2023): Follow standard conventions
 - 001-interactive-itinerary: Added HTML5, CSS3, JavaScript (ES2023) + Leaflet (map rendering), npm tooling for local dev/testing, Playwright (E2E), Vitest (unit)
 
 <!-- MANUAL ADDITIONS START -->
+- Deployment rule: whenever `cloudflare/worker.js` is modified, run the deploy command before handoff.
+- Deploy command: `npm run deploy:worker -- <worker-name> [environment]`
+- Minimum verification after worker changes: confirm deploy command starts successfully and report result in final summary.
 <!-- MANUAL ADDITIONS END -->

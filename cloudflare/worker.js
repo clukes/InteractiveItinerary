@@ -13,7 +13,10 @@ export default {
         if (request.method === "OPTIONS") {
             return new Response(null, {
                 status: 204,
-                headers: corsHeaders(originAllowed ? origin : "", originAllowed),
+                headers: corsHeaders(
+                    originAllowed ? origin : "",
+                    originAllowed,
+                ),
             });
         }
 
@@ -27,12 +30,7 @@ export default {
         }
 
         if (!originAllowed) {
-            return jsonResponse(
-                { error: "Forbidden origin." },
-                403,
-                "",
-                false,
-            );
+            return jsonResponse({ error: "Forbidden origin." }, 403, "", false);
         }
 
         if (request.method !== "POST") {
@@ -64,15 +62,26 @@ export default {
                 : "";
 
         if (!providedPassword || providedPassword !== expectedPassword) {
+            return jsonResponse({ error: "Unauthorized." }, 401, origin, true);
+        }
+
+        let rawItinerary = "";
+        try {
+            rawItinerary = await getStoredItinerary(env);
+        } catch (error) {
             return jsonResponse(
-                { error: "Unauthorized." },
-                401,
+                {
+                    error:
+                        error instanceof Error && error.message
+                            ? error.message
+                            : "Itinerary unavailable.",
+                },
+                500,
                 origin,
                 true,
             );
         }
 
-        const rawItinerary = await env.ITINERARY_KV.get("active-itinerary");
         if (!rawItinerary) {
             return jsonResponse(
                 { error: "Itinerary unavailable." },
@@ -125,4 +134,24 @@ function corsHeaders(origin, allowOrigin) {
         "Access-Control-Allow-Headers": "Content-Type",
         Vary: "Origin",
     };
+}
+
+/**
+ * @param {{ ITINERARY_KV?: { get: (key: string) => Promise<string | null> }; ITINERARY_JSON?: string }} env
+ */
+async function getStoredItinerary(env) {
+    if (env.ITINERARY_KV && typeof env.ITINERARY_KV.get === "function") {
+        const fromKv = await env.ITINERARY_KV.get("active-itinerary");
+        if (typeof fromKv === "string" && fromKv.trim()) {
+            return fromKv;
+        }
+    }
+
+    if (typeof env.ITINERARY_JSON === "string" && env.ITINERARY_JSON.trim()) {
+        return env.ITINERARY_JSON;
+    }
+
+    throw new Error(
+        "Itinerary data is not configured. Set KV key 'active-itinerary' or ITINERARY_JSON.",
+    );
 }

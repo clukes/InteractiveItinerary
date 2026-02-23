@@ -8,7 +8,9 @@
         "test:unit": "vitest run --config vitest.config.js tests/unit/",
         "test:integration": "vitest run --config vitest.config.js tests/integration/",
         "test:e2e": "npx playwright test --config playwright.config.cjs",
-        "test": "npm run test:unit && npm run test:integration && npm run test:e2e"
+        "test": "npm run test:unit && npm run test:integration && npm run test:e2e",
+        "deploy:worker": "bash ./cloudflare/deploy-worker.sh",
+        "setup:hooks": "bash ./scripts/install-git-hooks.sh"
     },
     "devDependencies": {
         "@playwright/test": "^1.50.0",

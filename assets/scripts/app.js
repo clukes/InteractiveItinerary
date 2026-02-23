@@ -177,6 +177,14 @@
         }
     }
 
+    async function showDemoItineraryLockedState() {
+        await bootstrapDefaultItinerary();
+        updateFileStatus(
+            "Showing demo itinerary. Enter password to unlock your itinerary.",
+            "",
+        );
+    }
+
     async function unlockItineraryWithPassword(password) {
         const endpoint = appConfig.workerAuthEndpoint;
 
@@ -195,17 +203,28 @@
             body: JSON.stringify({ password }),
         });
 
+        let responseJson = null;
+        try {
+            responseJson = await response.json();
+        } catch (_) {
+            responseJson = null;
+        }
+
         if (response.status === 401) {
             throw new Error("Incorrect password.");
         }
 
         if (!response.ok) {
+            const serverError =
+                responseJson && typeof responseJson.error === "string"
+                    ? responseJson.error
+                    : "";
             throw new Error(
-                `Unable to load itinerary (status ${response.status}).`,
+                serverError || `Unable to load itinerary (status ${response.status}).`,
             );
         }
 
-        const data = await response.json();
+        const data = responseJson;
         const loaded = loadItinerary(data, {
             restoreFromStorage: true,
         });
@@ -234,7 +253,7 @@
         const submitUnlock = async () => {
             const password = unlockElements.input.value;
             if (!password) {
-                updateFileStatus("Enter a password to continue.", "error");
+                await showDemoItineraryLockedState();
                 return;
             }
 
@@ -816,7 +835,7 @@
         }
 
         setUnlockPanelVisible(true);
-        updateFileStatus("Itinerary is locked. Enter password to load.", "");
+        await showDemoItineraryLockedState();
     }
 
     bootstrap();
