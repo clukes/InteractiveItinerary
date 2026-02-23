@@ -220,7 +220,8 @@
                     ? responseJson.error
                     : "";
             throw new Error(
-                serverError || `Unable to load itinerary (status ${response.status}).`,
+                serverError ||
+                    `Unable to load itinerary (status ${response.status}).`,
             );
         }
 

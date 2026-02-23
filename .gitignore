@@ -34,3 +34,5 @@ private/local-itineraries/
 
 # Local Cloudflare deploy state
 .cloudflare/
+
+wrangler.toml
