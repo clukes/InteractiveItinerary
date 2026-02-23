@@ -452,6 +452,17 @@
                 text-overflow: ellipsis;
                 white-space: nowrap;
             }
+            .activity-time {
+                flex: 0 0 auto;
+                font-size: 0.74rem;
+                font-weight: 600;
+                color: #325362;
+                background: #f0e8dc;
+                border: 1px solid #e5d4be;
+                border-radius: 999px;
+                padding: 0.22rem 0.56rem;
+                line-height: 1;
+            }
             .activity-expand-icon {
                 flex: 0 0 auto;
                 font-size: 1.25rem;
@@ -1589,6 +1600,8 @@
                     html += `<button class="activity-header" data-action="toggle" data-activity-id="${act.activityId}" aria-expanded="${isExpanded}" aria-controls="details-${act.activityId}">`;
                     html += `<span class="activity-order">${act.order}</span>`;
                     html += `<span class="activity-name">${escapeHtml(act.name)}</span>`;
+                    if (act.time)
+                        html += `<span class="activity-time">${escapeHtml(act.time)}</span>`;
                     if (!hasMapData)
                         html += `<span class="map-badge"><span class="material-symbols-outlined" style="font-size: 1rem;">location_off</span> No map</span>`;
                     html += `<span class="material-symbols-outlined activity-expand-icon" aria-hidden="true">expand_more</span>`;
@@ -1622,6 +1635,9 @@
 
                     // Description
                     html += `<div class="detail-section"><div class="detail-label">Description</div><div class="detail-value">${escapeHtml(act.description || "")}</div></div>`;
+
+                    // Time
+                    html += `<div class="detail-section"><div class="detail-label">Time</div><div class="detail-value${act.time === null || act.time === undefined ? " not-provided" : ""}">${act.time !== null && act.time !== undefined ? escapeHtml(act.time) : "Not provided"}</div></div>`;
 
                     // Google Maps Link
                     if (act.location && act.location.mapsUrl) {
@@ -1974,6 +1990,7 @@
                                 {
                                     activityId: "fri-1",
                                     order: 1,
+                                    time: "09:30 AM",
                                     name: "Breakfast at Billy Brunch Sevilla",
                                     description:
                                         "Kick off the trip with a cozy, trendy brunch spot close to the hotel. Billy Brunch offers a rustic-chic vibe with beautifully plated all-day breakfast options in the heart of Seville.",
@@ -2009,6 +2026,7 @@
                                 {
                                     activityId: "fri-2",
                                     order: 2,
+                                    time: "10:30 AM",
                                     name: "Seville Museum of Fine Arts",
                                     description:
                                         "Explore masterpieces by El Greco and Velázquez in this stunning 17th-century former convent. Located in the beautiful Plaza del Museo, it's one of Spain's finest art collections and just a short walk from the hotel.",
@@ -2044,6 +2062,7 @@
                                 {
                                     activityId: "fri-3",
                                     order: 3,
+                                    time: "12:30 PM",
                                     name: "Supermarket Run at Mercadona",
                                     description:
                                         "Quick and practical grocery stop at the Mercadona near Plaza de Armas. Stock up on bottled water, cheap local wines, jamón, and snacks for the hotel room.",
@@ -2078,6 +2097,7 @@
                                 {
                                     activityId: "fri-4",
                                     order: 4,
+                                    time: "01:30 PM",
                                     name: "Tapas Lunch at Bar Dos de Mayo",
                                     description:
                                         "A highly rated, casual tapas spot in a lively square. Sit outdoors if possible, order regional specialties, and share 4–5 tapas plates. Known for its robust wine list, homey feel, and authentic traditional food.",
@@ -2123,6 +2143,7 @@
                                 {
                                     activityId: "fri-5",
                                     order: 5,
+                                    time: "04:00 PM",
                                     name: "Shopping on Calle Sierpes at Natura",
                                     description:
                                         "Stroll down Seville's main pedestrian shopping street, Calle Sierpes. Natura offers great boho clothes and cute gifts/souvenirs. Keep an eye out for independent boutiques along the charming side streets.",
@@ -2175,6 +2196,7 @@
                                 {
                                     activityId: "fri-6",
                                     order: 6,
+                                    time: "06:30 PM",
                                     name: "Sunset at Setas de Sevilla",
                                     description:
                                         "Walk the winding rooftop pathways of the Metropol Parasol, the world's largest wooden structure. Time your visit for golden hour as the sun sets over the city for a truly magical experience and the best panoramic views of Seville.",
@@ -2219,6 +2241,7 @@
                                 {
                                     activityId: "fri-7",
                                     order: 7,
+                                    time: "08:30 PM",
                                     name: "Late Tapas Dinner at Los Coloniales",
                                     description:
                                         "A wildly popular and super affordable classic tapas bar just minutes from Las Setas. Known for generous portions, great sangria, and an unbeatable vibe. Put your name on the chalk waitlist and grab a drink outside while you wait.",
@@ -2272,6 +2295,7 @@
                                 {
                                     activityId: "sat-1",
                                     order: 1,
+                                    time: "09:30 AM",
                                     name: "Breakfast at La Crème de la Crème",
                                     description:
                                         "Start the day with French pastries, crêpes, or quiches at the sidewalk tables near Las Setas before heading across the river to Triana. A cozy café with excellent sweet treats.",
@@ -2307,6 +2331,7 @@
                                 {
                                     activityId: "sat-2",
                                     order: 2,
+                                    time: "11:00 AM",
                                     name: "Explore Mercado de Triana",
                                     description:
                                         "Wander this vibrant indoor market on the Triana side of the river. A great place to buy spices, olive oil, or cured meats as souvenirs, and stop at the stalls inside for a casual midday bite.",
@@ -2342,6 +2367,7 @@
                                 {
                                     activityId: "sat-3",
                                     order: 3,
+                                    time: "12:30 PM",
                                     name: "Ceramics Shopping at Santa Ana",
                                     description:
                                         "Triana is historically famous for pottery. Buy authentic, hand-painted ceramic plates or bowls at Cerámica Santa Ana as high-quality, beautiful souvenirs. The shop has a massive selection and centuries of tradition behind it.",
@@ -2376,6 +2402,7 @@
                                 {
                                     activityId: "sat-4",
                                     order: 4,
+                                    time: "02:00 PM",
                                     name: "Walk Across Puente de Isabel II",
                                     description:
                                         "Walk back to the city center across the iconic Triana Bridge (Puente de Isabel II) and enjoy the river path towards the Torre del Oro. The views down the Guadalquivir river are stunning.",
@@ -2413,6 +2440,7 @@
                                 {
                                     activityId: "sat-5",
                                     order: 5,
+                                    time: "04:00 PM",
                                     name: "Wander Barrio Santa Cruz & Bodega Santa Cruz",
                                     description:
                                         "Get lost in the narrow streets of the historic Jewish Quarter (Barrio Santa Cruz), then have a cheap and casual standing tapas dinner at Bodega Santa Cruz Las Columnas. Going early avoids the massive crowds.",
@@ -2465,6 +2493,7 @@
                                 {
                                     activityId: "sat-6",
                                     order: 6,
+                                    time: "06:30 PM",
                                     name: "Churros at Bar El Comercio",
                                     description:
                                         "Head back into the center for some of the best traditional churros con chocolate in Seville. They serve them thick and doughy in an old-school bar with hanging hams and beautiful tiled walls.",
@@ -2499,6 +2528,7 @@
                                 {
                                     activityId: "sat-7",
                                     order: 7,
+                                    time: "08:30 PM",
                                     name: "Flamenco & Drinks at La Carbonería",
                                     description:
                                         "An old coal warehouse turned into an impromptu flamenco venue. It's not a formal sit-down show — just grab a pitcher of sangria, sit on the benches, and enjoy the raw, authentic performance in a rustic indoor courtyard.",
@@ -2552,6 +2582,7 @@
                                 {
                                     activityId: "sun-1",
                                     order: 1,
+                                    time: "09:30 AM",
                                     name: "Breakfast at MOKAMBO Alfalfa",
                                     description:
                                         "Enjoy a healthy, aesthetic brunch at MOKAMBO near Plaza de la Alfalfa to fuel up for a heavy sightseeing day. Known for excellent brunch options, beautifully presented dishes, and friendly staff.",
@@ -2586,6 +2617,7 @@
                                 {
                                     activityId: "sun-2",
                                     order: 2,
+                                    time: "11:00 AM",
                                     name: "Tour the Royal Alcázar of Seville",
                                     description:
                                         "Spend a couple of hours exploring the magnificent gardens and Moorish palace of the Real Alcázar. A breathtaking UNESCO World Heritage Site featuring stunning tilework, lush gardens, and centuries of history.",
@@ -2631,6 +2663,7 @@
                                 {
                                     activityId: "sun-3",
                                     order: 3,
+                                    time: "02:30 PM",
                                     name: "Catedral de Sevilla & Giralda Tower",
                                     description:
                                         "Visit the world's largest Gothic cathedral and climb the Giralda bell tower (it has ramps, not stairs!) for beautiful panoramic views of Seville. The cathedral opens at 2:30 PM on Sundays.",
@@ -2676,6 +2709,7 @@
                                 {
                                     activityId: "sun-4",
                                     order: 4,
+                                    time: "04:30 PM",
                                     name: "Afternoon at Plaza de España",
                                     description:
                                         "Seville's most spectacular public square, built for the 1929 Ibero-American Exposition. Featuring a massive half-circle of ornate buildings, a canal with rowboats, and ceramic-tiled alcoves representing each Spanish province.",
@@ -2721,6 +2755,7 @@
                                 {
                                     activityId: "sun-5",
                                     order: 5,
+                                    time: "05:30 PM",
                                     name: "Stroll Through Parque de María Luisa",
                                     description:
                                         "This sprawling, romantic park is attached to Plaza de España and is full of fountains, gazebos, and orange trees. Perfect for cooling down in the shade after a busy afternoon of sightseeing.",
@@ -2766,6 +2801,7 @@
                                 {
                                     activityId: "sun-6",
                                     order: 6,
+                                    time: "07:00 PM",
                                     name: "Farewell Dinner at Ovejas Negras",
                                     description:
                                         "A modern, slightly hip tapas spot with creative dishes — the perfect fun final dinner before heading home. Known for modern twists on classic tapas like risotto and patatas bravas. Gets busy, so arrive right when they open for dinner service.",
