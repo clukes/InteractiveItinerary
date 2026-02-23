@@ -26,13 +26,11 @@ Thumbs.db
 *.log
 npm-debug.log*
 
-# Local notes
-self-todo.txt
-
-# Local private itinerary archives (do not commit)
-private/local-itineraries/
+private/
+plans/
 
 # Local Cloudflare deploy state
 .cloudflare/
 
 wrangler.toml
+.wrangler/
