@@ -110,7 +110,9 @@ describe("Locked mode demo fallback", () => {
         const status = document.getElementById("file-status");
         const title = document.getElementById("app-title");
         const unlockPanel = document.getElementById("unlock-panel");
-        const refreshButton = document.getElementById("refresh-itinerary-button");
+        const refreshButton = document.getElementById(
+            "refresh-itinerary-button",
+        );
 
         await waitForStatusText(status, "Showing demo itinerary");
 
@@ -141,7 +143,9 @@ describe("Locked mode demo fallback", () => {
         const unlockInput = document.getElementById("unlock-password");
         const unlockButton = document.getElementById("unlock-button");
         const status = document.getElementById("file-status");
-        const refreshButton = document.getElementById("refresh-itinerary-button");
+        const refreshButton = document.getElementById(
+            "refresh-itinerary-button",
+        );
         const devModeButton = document.getElementById("dev-mode-button");
         const unlockPanel = document.getElementById("unlock-panel");
 
@@ -171,7 +175,7 @@ describe("Locked mode demo fallback", () => {
         ).toBeNull();
     });
 
-    it("does not restore unlocked itinerary from storage after refresh", async () => {
+    it("restores unlocked itinerary from storage after refresh", async () => {
         const persistedUnlocked = {
             ...demoFixture,
             title: "Persisted Private Itinerary",
@@ -205,22 +209,20 @@ describe("Locked mode demo fallback", () => {
         const unlockPanel =
             refreshDom.window.document.getElementById("unlock-panel");
         const status = refreshDom.window.document.getElementById("file-status");
-        const persistedAfterReload = refreshDom.window.localStorage.getItem(
-            unlockedItineraryStorageKey,
-        );
-
-        expect(title.textContent).toBe("DEMO ITINERARY");
-        expect(unlockPanel.style.display).toBe("block");
-        expect(status.textContent).toContain("Showing demo itinerary");
-        expect(persistedAfterReload).toBeNull();
-        expect(refreshFetchMock).toHaveBeenCalledTimes(1);
+        expect(title.textContent).toBe("Persisted Private Itinerary");
+        expect(unlockPanel.style.display).toBe("none");
+        expect(status.hidden).toBe(true);
+        expect(status.textContent).toBe("");
+        expect(refreshFetchMock).toHaveBeenCalledTimes(0);
     });
 
     it("shows refresh and unlock success status only when dev mode is enabled", async () => {
         const unlockInput = document.getElementById("unlock-password");
         const unlockButton = document.getElementById("unlock-button");
         const status = document.getElementById("file-status");
-        const refreshButton = document.getElementById("refresh-itinerary-button");
+        const refreshButton = document.getElementById(
+            "refresh-itinerary-button",
+        );
         const devModeButton = document.getElementById("dev-mode-button");
 
         await waitForStatusText(status, "Showing demo itinerary");

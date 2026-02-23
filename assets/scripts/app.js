@@ -340,7 +340,10 @@
             try {
                 await unlockItineraryWithPassword(password);
                 if (state.isDevModeEnabled) {
-                    updateFileStatus("Itinerary unlocked successfully.", "success");
+                    updateFileStatus(
+                        "Itinerary unlocked successfully.",
+                        "success",
+                    );
                 } else {
                     clearFileStatus();
                 }
@@ -941,6 +944,20 @@
 
         const persistedUnlockedItinerary = loadUnlockedItineraryFromStorage();
         if (persistedUnlockedItinerary) {
+            const restored = loadItinerary(persistedUnlockedItinerary, {
+                restoreFromStorage: true,
+            });
+            if (restored) {
+                state.isDemoLockedMode = false;
+                setUnlockPanelVisible(false);
+                setRefreshButtonVisible(true);
+                if (state.isDevModeEnabled) {
+                    updateFileStatus("Restored unlocked itinerary.", "success");
+                } else {
+                    clearFileStatus();
+                }
+                return;
+            }
             clearUnlockedItineraryFromStorage();
         }
 
