@@ -120,10 +120,16 @@ input:focus-visible {
     margin-top: 0.25rem;
 }
 
-.dev-mode-button {
+.header-actions {
     position: absolute;
     top: 0.5rem;
     right: 0.6rem;
+    display: inline-flex;
+    gap: 0.4rem;
+    z-index: 1;
+}
+
+.header-icon-button {
     width: 2rem;
     height: 2rem;
     border: 1px solid rgba(255, 255, 255, 0.4);
@@ -134,11 +140,19 @@ input:focus-visible {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    z-index: 1;
 }
 
-.dev-mode-button .material-symbols-outlined {
+.header-icon-button .material-symbols-outlined {
     font-size: 1rem;
+}
+
+.header-icon-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.dev-mode-button {
+    position: relative;
 }
 
 .dev-mode-button[aria-pressed="true"] {

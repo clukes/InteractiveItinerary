@@ -201,9 +201,47 @@
             toggle: document.getElementById("toggle-unlock-password"),
             button: document.getElementById("unlock-button"),
             refreshButton: document.getElementById("refresh-itinerary-button"),
+            hardRefreshButton: document.getElementById("hard-refresh-button"),
             devModeButton: document.getElementById("dev-mode-button"),
             help: document.getElementById("unlock-help"),
         };
+    }
+
+    async function hardRefreshPage() {
+        const unlockElements = getUnlockElements();
+        if (unlockElements.hardRefreshButton) {
+            unlockElements.hardRefreshButton.disabled = true;
+        }
+
+        try {
+            if (
+                "serviceWorker" in navigator &&
+                typeof navigator.serviceWorker.getRegistrations === "function"
+            ) {
+                const registrations =
+                    await navigator.serviceWorker.getRegistrations();
+                await Promise.all(
+                    registrations.map((registration) =>
+                        registration.unregister(),
+                    ),
+                );
+            }
+        } catch (_) {
+            /* no-op */
+        }
+
+        try {
+            if ("caches" in window && typeof caches.keys === "function") {
+                const cacheKeys = await caches.keys();
+                await Promise.all(cacheKeys.map((cacheKey) => caches.delete(cacheKey)));
+            }
+        } catch (_) {
+            /* no-op */
+        }
+
+        const url = new URL(window.location.href);
+        url.searchParams.set("_gh_refresh", String(Date.now()));
+        window.location.replace(url.toString());
     }
 
     function setRefreshButtonVisible(isVisible) {
@@ -287,10 +325,7 @@
     async function unlockItineraryWithPassword(password) {
         const endpoint = appConfig.workerAuthEndpoint;
 
-        if (
-            typeof endpoint !== "string" ||
-            !endpoint.trim()
-        ) {
+        if (typeof endpoint !== "string" || !endpoint.trim()) {
             throw new Error("Worker endpoint is not configured yet.");
         }
 
@@ -403,6 +438,12 @@
             });
         }
 
+        if (unlockElements.hardRefreshButton) {
+            unlockElements.hardRefreshButton.addEventListener("click", () => {
+                hardRefreshPage();
+            });
+        }
+
         if (unlockElements.refreshButton) {
             unlockElements.refreshButton.addEventListener("click", async () => {
                 if (!state.isDevModeEnabled) return;
@@ -423,10 +464,7 @@
         if (!password) return false;
 
         const endpoint = appConfig.workerAuthEndpoint;
-        if (
-            typeof endpoint !== "string" ||
-            !endpoint.trim()
-        ) {
+        if (typeof endpoint !== "string" || !endpoint.trim()) {
             return false;
         }
 
@@ -458,7 +496,10 @@
             setRefreshButtonVisible(true);
 
             if (state.isDevModeEnabled) {
-                updateFileStatus("Refreshed unlocked itinerary from server.", "success");
+                updateFileStatus(
+                    "Refreshed unlocked itinerary from server.",
+                    "success",
+                );
             } else {
                 clearFileStatus();
             }

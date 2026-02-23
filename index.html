@@ -21,17 +21,30 @@
         <header class="app-header">
             <h1 id="app-title">Interactive Trip Itinerary</h1>
             <div class="trip-dates" id="app-dates"></div>
-            <button
-                id="dev-mode-button"
-                class="dev-mode-button"
-                type="button"
-                aria-label="Enable developer mode"
-                aria-pressed="false"
-            >
-                <span class="material-symbols-outlined" aria-hidden="true"
-                    >code</span
+            <div class="header-actions">
+                <button
+                    id="hard-refresh-button"
+                    class="header-icon-button"
+                    type="button"
+                    aria-label="Hard refresh page"
+                    title="Hard refresh page"
                 >
-            </button>
+                    <span class="material-symbols-outlined" aria-hidden="true"
+                        >refresh</span
+                    >
+                </button>
+                <button
+                    id="dev-mode-button"
+                    class="header-icon-button dev-mode-button"
+                    type="button"
+                    aria-label="Enable developer mode"
+                    aria-pressed="false"
+                >
+                    <span class="material-symbols-outlined" aria-hidden="true"
+                        >code</span
+                    >
+                </button>
+            </div>
         </header>
 
         <section
