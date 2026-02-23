@@ -21,6 +21,7 @@ const html = fs.readFileSync(
 );
 
 const unlockedItineraryStorageKey = "itinerary_unlocked_data_v1";
+const unlockedPasswordStorageKey = "itinerary_unlocked_password_v1";
 
 const appScripts = [
     fs.readFileSync(
@@ -175,7 +176,7 @@ describe("Locked mode demo fallback", () => {
         ).toBeNull();
     });
 
-    it("restores unlocked itinerary from storage after refresh", async () => {
+    it("restores unlocked state and refreshes unlocked data from server after refresh", async () => {
         const persistedUnlocked = {
             ...demoFixture,
             title: "Persisted Private Itinerary",
@@ -195,10 +196,19 @@ describe("Locked mode demo fallback", () => {
             unlockedItineraryStorageKey,
             JSON.stringify(persistedUnlocked),
         );
+        refreshDom.window.localStorage.setItem(
+            unlockedPasswordStorageKey,
+            "correct-password",
+        );
+
+        const refreshedUnlocked = {
+            ...demoFixture,
+            title: "Fresh Server Itinerary",
+        };
 
         const refreshFetchMock = vi.fn(async () => ({
             ok: true,
-            json: async () => demoFixture,
+            json: async () => refreshedUnlocked,
         }));
         refreshDom.window.fetch = refreshFetchMock;
 
@@ -209,11 +219,52 @@ describe("Locked mode demo fallback", () => {
         const unlockPanel =
             refreshDom.window.document.getElementById("unlock-panel");
         const status = refreshDom.window.document.getElementById("file-status");
-        expect(title.textContent).toBe("Persisted Private Itinerary");
+        expect(title.textContent).toBe("Fresh Server Itinerary");
         expect(unlockPanel.style.display).toBe("none");
         expect(status.hidden).toBe(true);
         expect(status.textContent).toBe("");
-        expect(refreshFetchMock).toHaveBeenCalledTimes(0);
+        expect(refreshFetchMock).toHaveBeenCalledTimes(1);
+    });
+
+    it("keeps unlocked fallback data when server refresh fails after reload", async () => {
+        const persistedUnlocked = {
+            ...demoFixture,
+            title: "Persisted Private Itinerary",
+        };
+
+        const refreshDom = new JSDOM(html, {
+            runScripts: "outside-only",
+            url: "https://example.com/",
+        });
+
+        refreshDom.window.localStorage.setItem(
+            unlockedItineraryStorageKey,
+            JSON.stringify(persistedUnlocked),
+        );
+        refreshDom.window.localStorage.setItem(
+            unlockedPasswordStorageKey,
+            "correct-password",
+        );
+
+        const refreshFetchMock = vi.fn(async () => ({
+            ok: false,
+            status: 500,
+            json: async () => ({ error: "server unavailable" }),
+        }));
+        refreshDom.window.fetch = refreshFetchMock;
+
+        appScripts.forEach((script) => refreshDom.window.eval(script));
+        await flushBootstrap();
+
+        const title = refreshDom.window.document.getElementById("app-title");
+        const unlockPanel =
+            refreshDom.window.document.getElementById("unlock-panel");
+        const status = refreshDom.window.document.getElementById("file-status");
+
+        expect(title.textContent).toBe("Persisted Private Itinerary");
+        expect(unlockPanel.style.display).toBe("none");
+        expect(status.hidden).toBe(true);
+        expect(refreshFetchMock).toHaveBeenCalledTimes(1);
     });
 
     it("shows refresh and unlock success status only when dev mode is enabled", async () => {

@@ -27,6 +27,7 @@
     };
 
     const unlockedItineraryStorageKey = "itinerary_unlocked_data_v1";
+    const unlockedPasswordStorageKey = "itinerary_unlocked_password_v1";
 
     // ── App State ──
     const state = {
@@ -118,6 +119,32 @@
     function clearUnlockedItineraryFromStorage() {
         try {
             localStorage.removeItem(unlockedItineraryStorageKey);
+        } catch (_) {
+            /* storage unavailable */
+        }
+    }
+
+    function saveUnlockPasswordToStorage(password) {
+        if (typeof password !== "string" || !password) return;
+        try {
+            localStorage.setItem(unlockedPasswordStorageKey, password);
+        } catch (_) {
+            /* storage unavailable */
+        }
+    }
+
+    function loadUnlockPasswordFromStorage() {
+        try {
+            const raw = localStorage.getItem(unlockedPasswordStorageKey);
+            return typeof raw === "string" && raw ? raw : null;
+        } catch (_) {
+            return null;
+        }
+    }
+
+    function clearUnlockPasswordFromStorage() {
+        try {
+            localStorage.removeItem(unlockedPasswordStorageKey);
         } catch (_) {
             /* storage unavailable */
         }
@@ -262,7 +289,7 @@
 
         if (
             typeof endpoint !== "string" ||
-            endpoint.includes("REPLACE_WITH_YOUR_WORKER_SUBDOMAIN")
+            !endpoint.trim()
         ) {
             throw new Error("Worker endpoint is not configured yet.");
         }
@@ -307,6 +334,7 @@
         }
 
         saveUnlockedItineraryToStorage(data);
+        saveUnlockPasswordToStorage(password);
 
         state.isDemoLockedMode = false;
         renderHeader();
@@ -379,6 +407,7 @@
             unlockElements.refreshButton.addEventListener("click", async () => {
                 if (!state.isDevModeEnabled) return;
                 clearUnlockedItineraryFromStorage();
+                clearUnlockPasswordFromStorage();
                 unlockElements.input.value = "";
                 setUnlockPanelVisible(true);
                 unlockElements.input.focus();
@@ -386,6 +415,57 @@
                     "Server refresh requested. Enter password to load latest itinerary.",
                 );
             });
+        }
+    }
+
+    async function refreshUnlockedItineraryFromServer() {
+        const password = loadUnlockPasswordFromStorage();
+        if (!password) return false;
+
+        const endpoint = appConfig.workerAuthEndpoint;
+        if (
+            typeof endpoint !== "string" ||
+            !endpoint.trim()
+        ) {
+            return false;
+        }
+
+        try {
+            const response = await fetch(endpoint, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ password }),
+            });
+
+            if (!response || !response.ok) {
+                return false;
+            }
+
+            const data = await response.json();
+            const loaded = loadItinerary(data, {
+                restoreFromStorage: true,
+            });
+            if (!loaded) {
+                return false;
+            }
+
+            saveUnlockedItineraryToStorage(data);
+            state.isDemoLockedMode = false;
+            renderHeader();
+            setUnlockPanelVisible(false);
+            setRefreshButtonVisible(true);
+
+            if (state.isDevModeEnabled) {
+                updateFileStatus("Refreshed unlocked itinerary from server.", "success");
+            } else {
+                clearFileStatus();
+            }
+
+            return true;
+        } catch (_) {
+            return false;
         }
     }
 
@@ -951,14 +1031,21 @@
                 state.isDemoLockedMode = false;
                 setUnlockPanelVisible(false);
                 setRefreshButtonVisible(true);
-                if (state.isDevModeEnabled) {
-                    updateFileStatus("Restored unlocked itinerary.", "success");
-                } else {
-                    clearFileStatus();
+                const refreshed = await refreshUnlockedItineraryFromServer();
+                if (!refreshed) {
+                    if (state.isDevModeEnabled) {
+                        updateFileStatus(
+                            "Using locally cached unlocked itinerary.",
+                            "success",
+                        );
+                    } else {
+                        clearFileStatus();
+                    }
                 }
                 return;
             }
             clearUnlockedItineraryFromStorage();
+            clearUnlockPasswordFromStorage();
         }
 
         setUnlockPanelVisible(true);
