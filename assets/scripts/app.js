@@ -37,6 +37,7 @@
         fileLoadState: "idle", // idle|loading|loaded|validation_error
         mapFilterKeyHidden: window.innerWidth <= 640,
         isDemoLockedMode: false,
+        isDevModeEnabled: false,
     };
 
     // Expose state for testing
@@ -173,6 +174,7 @@
             toggle: document.getElementById("toggle-unlock-password"),
             button: document.getElementById("unlock-button"),
             refreshButton: document.getElementById("refresh-itinerary-button"),
+            devModeButton: document.getElementById("dev-mode-button"),
             help: document.getElementById("unlock-help"),
         };
     }
@@ -180,7 +182,33 @@
     function setRefreshButtonVisible(isVisible) {
         const unlockElements = getUnlockElements();
         if (!unlockElements.refreshButton) return;
-        unlockElements.refreshButton.hidden = !isVisible;
+        unlockElements.refreshButton.hidden =
+            !isVisible || !state.isDevModeEnabled;
+    }
+
+    function clearFileStatus() {
+        const el = document.getElementById("file-status");
+        if (!el) return;
+        el.hidden = true;
+        el.textContent = "";
+        el.className = "file-status";
+    }
+
+    function setDevModeEnabled(isEnabled) {
+        state.isDevModeEnabled = !!isEnabled;
+        const unlockElements = getUnlockElements();
+        if (unlockElements.devModeButton) {
+            unlockElements.devModeButton.setAttribute(
+                "aria-pressed",
+                state.isDevModeEnabled ? "true" : "false",
+            );
+        }
+
+        const shouldShowRefresh =
+            !state.isDemoLockedMode &&
+            unlockElements.panel &&
+            unlockElements.panel.style.display === "none";
+        setRefreshButtonVisible(shouldShowRefresh);
     }
 
     function setUnlockPasswordVisibility(isVisible) {
@@ -311,7 +339,11 @@
             updateFileStatus("Unlocking itinerary...", "");
             try {
                 await unlockItineraryWithPassword(password);
-                updateFileStatus("Itinerary unlocked successfully.", "success");
+                if (state.isDevModeEnabled) {
+                    updateFileStatus("Itinerary unlocked successfully.", "success");
+                } else {
+                    clearFileStatus();
+                }
                 unlockElements.input.value = "";
                 setUnlockPasswordVisibility(false);
             } catch (err) {
@@ -334,8 +366,15 @@
             }
         });
 
+        if (unlockElements.devModeButton) {
+            unlockElements.devModeButton.addEventListener("click", () => {
+                setDevModeEnabled(!state.isDevModeEnabled);
+            });
+        }
+
         if (unlockElements.refreshButton) {
             unlockElements.refreshButton.addEventListener("click", async () => {
+                if (!state.isDevModeEnabled) return;
                 clearUnlockedItineraryFromStorage();
                 unlockElements.input.value = "";
                 setUnlockPanelVisible(true);
@@ -902,16 +941,6 @@
 
         const persistedUnlockedItinerary = loadUnlockedItineraryFromStorage();
         if (persistedUnlockedItinerary) {
-            const restored = loadItinerary(persistedUnlockedItinerary, {
-                restoreFromStorage: true,
-            });
-            if (restored) {
-                state.isDemoLockedMode = false;
-                setUnlockPanelVisible(false);
-                setRefreshButtonVisible(true);
-                updateFileStatus("Restored unlocked itinerary.", "success");
-                return;
-            }
             clearUnlockedItineraryFromStorage();
         }
 

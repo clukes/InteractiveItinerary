@@ -120,6 +120,32 @@ input:focus-visible {
     margin-top: 0.25rem;
 }
 
+.dev-mode-button {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.6rem;
+    width: 2rem;
+    height: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 999px;
+    background: rgba(13, 48, 57, 0.18);
+    color: #f7fcff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1;
+}
+
+.dev-mode-button .material-symbols-outlined {
+    font-size: 1rem;
+}
+
+.dev-mode-button[aria-pressed="true"] {
+    background: rgba(247, 252, 255, 0.24);
+    border-color: rgba(247, 252, 255, 0.8);
+}
+
 /* === Unlock Panel === */
 .unlock-panel {
     margin: 1rem;
@@ -162,6 +188,7 @@ input:focus-visible {
     background: var(--surface-muted);
     cursor: pointer;
     white-space: nowrap;
+    min-width: 0;
 }
 .unlock-button {
     border: none;
@@ -174,6 +201,7 @@ input:focus-visible {
     background: linear-gradient(135deg, var(--brand), #11a6a8);
     cursor: pointer;
     white-space: nowrap;
+    min-width: 0;
 }
 .unlock-button:disabled {
     opacity: 0.6;
@@ -939,6 +967,7 @@ input:focus-visible {
 @media (max-width: 640px) {
     .unlock-controls {
         flex-wrap: wrap;
+        width: 100%;
     }
 
     .unlock-input {
@@ -949,6 +978,12 @@ input:focus-visible {
     .unlock-button {
         flex: 1 1 calc(50% - 0.25rem);
         text-align: center;
+        white-space: normal;
+        word-break: break-word;
+    }
+
+    .unlock-button {
+        padding-inline: 0.65rem;
     }
 
     .map-shell {
@@ -970,5 +1005,12 @@ input:focus-visible {
     .map-overlay-grid {
         grid-template-columns: 1fr;
         gap: 0.24rem;
+    }
+}
+
+@media (max-width: 430px) {
+    .unlock-toggle,
+    .unlock-button {
+        flex: 1 1 100%;
     }
 }

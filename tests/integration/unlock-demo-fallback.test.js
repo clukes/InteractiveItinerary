@@ -125,11 +125,12 @@ describe("Locked mode demo fallback", () => {
 
         unlockInput.value = "correct-password";
         unlockButton.click();
-        await waitForStatusText(status, "Itinerary unlocked successfully.");
+        await flushBootstrap();
 
         expect(title.textContent).toBe("Private Itinerary");
         expect(unlockPanel.style.display).toBe("none");
-        expect(refreshButton.hidden).toBe(false);
+        expect(refreshButton.hidden).toBe(true);
+        expect(status.hidden).toBe(true);
         const persisted = window.localStorage.getItem(
             unlockedItineraryStorageKey,
         );
@@ -141,6 +142,7 @@ describe("Locked mode demo fallback", () => {
         const unlockButton = document.getElementById("unlock-button");
         const status = document.getElementById("file-status");
         const refreshButton = document.getElementById("refresh-itinerary-button");
+        const devModeButton = document.getElementById("dev-mode-button");
         const unlockPanel = document.getElementById("unlock-panel");
 
         await waitForStatusText(status, "Showing demo itinerary");
@@ -154,6 +156,7 @@ describe("Locked mode demo fallback", () => {
             json: async () => unlockedFixture,
         });
 
+        devModeButton.click();
         unlockInput.value = "correct-password";
         unlockButton.click();
         await waitForStatusText(status, "Itinerary unlocked successfully.");
@@ -168,7 +171,7 @@ describe("Locked mode demo fallback", () => {
         ).toBeNull();
     });
 
-    it("restores unlocked itinerary from storage after refresh", async () => {
+    it("does not restore unlocked itinerary from storage after refresh", async () => {
         const persistedUnlocked = {
             ...demoFixture,
             title: "Persisted Private Itinerary",
@@ -202,10 +205,44 @@ describe("Locked mode demo fallback", () => {
         const unlockPanel =
             refreshDom.window.document.getElementById("unlock-panel");
         const status = refreshDom.window.document.getElementById("file-status");
+        const persistedAfterReload = refreshDom.window.localStorage.getItem(
+            unlockedItineraryStorageKey,
+        );
 
-        expect(title.textContent).toBe("Persisted Private Itinerary");
-        expect(unlockPanel.style.display).toBe("none");
-        expect(status.textContent).toContain("Restored unlocked itinerary");
-        expect(refreshFetchMock).toHaveBeenCalledTimes(0);
+        expect(title.textContent).toBe("DEMO ITINERARY");
+        expect(unlockPanel.style.display).toBe("block");
+        expect(status.textContent).toContain("Showing demo itinerary");
+        expect(persistedAfterReload).toBeNull();
+        expect(refreshFetchMock).toHaveBeenCalledTimes(1);
+    });
+
+    it("shows refresh and unlock success status only when dev mode is enabled", async () => {
+        const unlockInput = document.getElementById("unlock-password");
+        const unlockButton = document.getElementById("unlock-button");
+        const status = document.getElementById("file-status");
+        const refreshButton = document.getElementById("refresh-itinerary-button");
+        const devModeButton = document.getElementById("dev-mode-button");
+
+        await waitForStatusText(status, "Showing demo itinerary");
+
+        const unlockedFixture = {
+            ...demoFixture,
+            title: "Private Itinerary",
+        };
+        fetchMock.mockResolvedValueOnce({
+            ok: true,
+            json: async () => unlockedFixture,
+        });
+
+        unlockInput.value = "correct-password";
+        unlockButton.click();
+        await flushBootstrap();
+
+        expect(refreshButton.hidden).toBe(true);
+        expect(status.hidden).toBe(true);
+
+        devModeButton.click();
+
+        expect(refreshButton.hidden).toBe(false);
     });
 });
