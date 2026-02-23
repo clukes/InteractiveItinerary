@@ -142,6 +142,7 @@ input:focus-visible {
 }
 .unlock-input {
     flex: 1;
+    min-width: 0;
     border: 1px solid #e5d9c8;
     border-radius: 10px;
     padding: 0.56rem 0.7rem;
@@ -936,6 +937,20 @@ input:focus-visible {
 }
 
 @media (max-width: 640px) {
+    .unlock-controls {
+        flex-wrap: wrap;
+    }
+
+    .unlock-input {
+        flex: 1 1 100%;
+    }
+
+    .unlock-toggle,
+    .unlock-button {
+        flex: 1 1 calc(50% - 0.25rem);
+        text-align: center;
+    }
+
     .map-shell {
         display: flex;
         flex-direction: column;
