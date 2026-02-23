@@ -233,7 +233,9 @@
         try {
             if ("caches" in window && typeof caches.keys === "function") {
                 const cacheKeys = await caches.keys();
-                await Promise.all(cacheKeys.map((cacheKey) => caches.delete(cacheKey)));
+                await Promise.all(
+                    cacheKeys.map((cacheKey) => caches.delete(cacheKey)),
+                );
             }
         } catch (_) {
             /* no-op */
@@ -241,7 +243,7 @@
 
         const url = new URL(window.location.href);
         url.searchParams.set("_gh_refresh", String(Date.now()));
-        window.location.replace(url.toString());
+        window.location.assign(url.toString());
     }
 
     function setRefreshButtonVisible(isVisible) {
@@ -379,58 +381,59 @@
 
     function bindUnlockEvents() {
         const unlockElements = getUnlockElements();
-        if (!unlockElements.button || !unlockElements.input) return;
 
-        setUnlockPasswordVisibility(false);
+        if (unlockElements.button && unlockElements.input) {
+            setUnlockPasswordVisibility(false);
 
-        if (unlockElements.toggle) {
-            unlockElements.toggle.addEventListener("click", () => {
-                setUnlockPasswordVisibility(
-                    unlockElements.input.type === "password",
-                );
+            if (unlockElements.toggle) {
+                unlockElements.toggle.addEventListener("click", () => {
+                    setUnlockPasswordVisibility(
+                        unlockElements.input.type === "password",
+                    );
+                });
+            }
+
+            const submitUnlock = async () => {
+                const password = unlockElements.input.value;
+                if (!password) {
+                    await showDemoItineraryLockedState();
+                    return;
+                }
+
+                setUnlockControlsDisabled(true);
+                updateFileStatus("Unlocking itinerary...", "");
+                try {
+                    await unlockItineraryWithPassword(password);
+                    if (state.isDevModeEnabled) {
+                        updateFileStatus(
+                            "Itinerary unlocked successfully.",
+                            "success",
+                        );
+                    } else {
+                        clearFileStatus();
+                    }
+                    unlockElements.input.value = "";
+                    setUnlockPasswordVisibility(false);
+                } catch (err) {
+                    updateFileStatus(
+                        err && err.message
+                            ? err.message
+                            : "Unable to unlock itinerary.",
+                        "error",
+                    );
+                } finally {
+                    setUnlockControlsDisabled(false);
+                }
+            };
+
+            unlockElements.button.addEventListener("click", submitUnlock);
+            unlockElements.input.addEventListener("keydown", (event) => {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    submitUnlock();
+                }
             });
         }
-
-        const submitUnlock = async () => {
-            const password = unlockElements.input.value;
-            if (!password) {
-                await showDemoItineraryLockedState();
-                return;
-            }
-
-            setUnlockControlsDisabled(true);
-            updateFileStatus("Unlocking itinerary...", "");
-            try {
-                await unlockItineraryWithPassword(password);
-                if (state.isDevModeEnabled) {
-                    updateFileStatus(
-                        "Itinerary unlocked successfully.",
-                        "success",
-                    );
-                } else {
-                    clearFileStatus();
-                }
-                unlockElements.input.value = "";
-                setUnlockPasswordVisibility(false);
-            } catch (err) {
-                updateFileStatus(
-                    err && err.message
-                        ? err.message
-                        : "Unable to unlock itinerary.",
-                    "error",
-                );
-            } finally {
-                setUnlockControlsDisabled(false);
-            }
-        };
-
-        unlockElements.button.addEventListener("click", submitUnlock);
-        unlockElements.input.addEventListener("keydown", (event) => {
-            if (event.key === "Enter") {
-                event.preventDefault();
-                submitUnlock();
-            }
-        });
 
         if (unlockElements.devModeButton) {
             unlockElements.devModeButton.addEventListener("click", () => {

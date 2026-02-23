@@ -979,6 +979,21 @@ input:focus-visible {
 }
 
 @media (max-width: 640px) {
+    .header-actions {
+        top: 0.4rem;
+        right: 0.45rem;
+        gap: 0.3rem;
+    }
+
+    .header-icon-button {
+        width: 2.25rem;
+        height: 2.25rem;
+    }
+
+    .header-icon-button .material-symbols-outlined {
+        font-size: 1.1rem;
+    }
+
     .unlock-controls {
         flex-wrap: wrap;
         width: 100%;
@@ -1023,6 +1038,10 @@ input:focus-visible {
 }
 
 @media (max-width: 430px) {
+    .header-actions {
+        right: 0.35rem;
+    }
+
     .unlock-toggle,
     .unlock-button {
         flex: 1 1 100%;
