@@ -19,7 +19,8 @@ fi
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 WORKER_PATH="$SCRIPT_DIR/worker.js"
-ITINERARY_SOURCE_PATH="${ITINERARY_SOURCE_PATH:-$REPO_ROOT/seville-itinerary.json}"
+DEFAULT_PRIVATE_ITINERARY_PATH="$REPO_ROOT/private/local-itineraries/seville-itinerary.private.json"
+ITINERARY_SOURCE_PATH="${ITINERARY_SOURCE_PATH:-$DEFAULT_PRIVATE_ITINERARY_PATH}"
 STAMP_DIR="$REPO_ROOT/.cloudflare"
 STAMP_PATH="$STAMP_DIR/worker-deploy-stamp"
 
@@ -37,25 +38,27 @@ fi
 echo "Deploying Cloudflare Worker '$WORKER_NAME' from $WORKER_PATH..."
 "${COMMAND[@]}"
 
-if [[ -f "$ITINERARY_SOURCE_PATH" ]]; then
-    KV_COMMAND=(
-        npx wrangler kv key put
-        active-itinerary
-        --binding ITINERARY_KV
-        --path "$ITINERARY_SOURCE_PATH"
-        --remote
-    )
-
-    if [[ -n "$DEPLOY_ENV" ]]; then
-        KV_COMMAND+=(--env "$DEPLOY_ENV")
-    fi
-
-    echo "Seeding remote KV key 'active-itinerary' from $ITINERARY_SOURCE_PATH..."
-    "${KV_COMMAND[@]}"
-else
-    echo "Warning: Itinerary source file not found at $ITINERARY_SOURCE_PATH"
-    echo "Skipping KV seed step. Worker may return 500 until key 'active-itinerary' is populated."
+if [[ ! -f "$ITINERARY_SOURCE_PATH" ]]; then
+    echo "Error: itinerary source file not found at $ITINERARY_SOURCE_PATH"
+    echo "Expected default private path: $DEFAULT_PRIVATE_ITINERARY_PATH"
+    echo "Set ITINERARY_SOURCE_PATH to a private JSON file and re-run deploy."
+    exit 1
 fi
+
+KV_COMMAND=(
+    npx wrangler kv key put
+    active-itinerary
+    --binding ITINERARY_KV
+    --path "$ITINERARY_SOURCE_PATH"
+    --remote
+)
+
+if [[ -n "$DEPLOY_ENV" ]]; then
+    KV_COMMAND+=(--env "$DEPLOY_ENV")
+fi
+
+echo "Seeding remote KV key 'active-itinerary' from $ITINERARY_SOURCE_PATH..."
+"${KV_COMMAND[@]}"
 
 mkdir -p "$STAMP_DIR"
 WORKER_HASH="$(shasum -a 256 "$WORKER_PATH" | awk '{print $1}')"

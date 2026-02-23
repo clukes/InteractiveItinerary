@@ -74,8 +74,9 @@ Prerequisites:
 
 - Run `npx wrangler login` once
 - Configure required Worker bindings/secrets (for example `ITINERARY_KV`, `ITINERARY_PASSWORD`)
-- Deploy script auto-seeds remote KV key `active-itinerary` from `seville-itinerary.json`
-- Override seed file with `ITINERARY_SOURCE_PATH=/absolute/path/to/itinerary.json npm run deploy:worker -- <worker-name>`
+- Place your real itinerary in git-ignored path `private/local-itineraries/seville-itinerary.private.json`
+- Deploy script seeds remote KV key `active-itinerary` from that private path by default
+- Override seed file with `ITINERARY_SOURCE_PATH=/absolute/path/to/private-itinerary.json npm run deploy:worker -- <worker-name>`
 
 ## Enforce Worker Deploy Before Push
 

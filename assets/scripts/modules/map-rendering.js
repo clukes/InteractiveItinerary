@@ -1,7 +1,8 @@
 (function (global) {
     "use strict";
 
-    const modules = global.__itineraryModules || (global.__itineraryModules = {});
+    const modules =
+        global.__itineraryModules || (global.__itineraryModules = {});
 
     function renderMapSection(
         sortedActivities,
@@ -21,10 +22,7 @@
             typeof hotel.location.mapsUrl === "string" &&
             hotel.location.mapsUrl.trim().length > 0;
         const mappedCount = mapValidActivities.length;
-        const missingCount = Math.max(
-            0,
-            sortedActivities.length - mappedCount,
-        );
+        const missingCount = Math.max(0, sortedActivities.length - mappedCount);
         let html =
             '<div class="map-section"><h2>Route Map</h2><div class="map-subtitle">A little visual journey for your day.</div>';
         const missingPill =
@@ -261,7 +259,8 @@
             for (let tileY = minTileY; tileY <= maxTileY; tileY++) {
                 if (tileY < 0 || tileY >= tileCount) continue;
 
-                const wrappedTileX = ((tileX % tileCount) + tileCount) % tileCount;
+                const wrappedTileX =
+                    ((tileX % tileCount) + tileCount) % tileCount;
                 const x = tileX * tileSize - geometry.mapLeft;
                 const y = tileY * tileSize - geometry.mapTop;
                 const tileUrl = `https://basemaps.cartocdn.com/light_all/${geometry.zoom}/${wrappedTileX}/${tileY}.png`;
