@@ -28,3 +28,6 @@ npm-debug.log*
 
 # Local notes
 self-todo.txt
+
+# Local private itinerary archives (do not commit)
+private/local-itineraries/

@@ -11,12 +11,15 @@
 1. Install dependencies:
     - `npm install`
 2. Start local static server:
-3. Open `index.html` in browser and verify default itinerary renders from inline data.
-4. Open app in browser and verify default itinerary renders.
+  - `npx serve -l 3000 -s .`
+3. Open `http://localhost:3000` and verify the default itinerary renders.
+4. Confirm default seed data is loaded from `assets/data/default-itinerary.json`.
+
+Use HTTP static hosting for local/dev/prod runs. Do not open with `file://` URLs.
 
 ## Stage-by-Stage Implementation and Test Plan
 
-- Establish single-file architecture in `index.html` with inline `<style>` and `<script>` blocks (no required external files).
+- Establish static multi-file architecture using `index.html`, `assets/styles/app.css`, and `assets/scripts/app.js`.
   Implementation scope:
 
 Required tests before moving on:
@@ -39,7 +42,7 @@ Required tests before moving on:
 
 ### Stage 4 — Story P4: Reusable File Loading + Validation
 
-- [ ] App is shareable as a single `index.html` file and works without bundling any external local assets.
+- [ ] App is static-host deployable with relative asset/data paths (`assets/styles/app.css`, `assets/scripts/app.js`, `assets/data/default-itinerary.json`).
 
 ## End-to-End Verification Commands
 

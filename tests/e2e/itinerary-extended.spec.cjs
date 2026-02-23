@@ -192,6 +192,70 @@ test.describe("Map Markers and Route", () => {
     });
 });
 
+// ─── Hotel Marker ─────────────────────────────────────────────────────────────
+
+test.describe("Hotel Marker", () => {
+    test.beforeEach(async ({ page }) => {
+        await page.goto("/");
+        await expect(page.locator("#app-title")).toContainText(
+            "Sample City Weekend",
+        );
+        await expect(page.locator('[role="tab"]').first()).toContainText(
+            "Day 1",
+        );
+    });
+
+    test("hotel marker is visible and has home icon path", async ({ page }) => {
+        const hotelMarker = page.locator(".map-hotel-marker");
+        await expect(hotelMarker).toHaveCount(1);
+        await expect(hotelMarker.locator(".map-hotel-marker-house")).toHaveCount(
+            1,
+        );
+    });
+
+    test("hotel marker opens expected Google Maps URL for Day 1 and Day 2", async ({
+        page,
+        context,
+    }) => {
+        const popupContains = (popupUrl, expectedFragment) => {
+            if (popupUrl.includes(expectedFragment)) return true;
+            try {
+                const parsed = new URL(popupUrl);
+                const continueParam =
+                    parsed.searchParams.get("continue") ||
+                    parsed.searchParams.get("q") ||
+                    "";
+                const decoded = decodeURIComponent(continueParam);
+                return (
+                    continueParam.includes(expectedFragment) ||
+                    decoded.includes(expectedFragment)
+                );
+            } catch {
+                return false;
+            }
+        };
+
+        const day1PopupPromise = context.waitForEvent("page");
+        await page.locator(".map-hotel-marker").click();
+        const day1Popup = await day1PopupPromise;
+        expect(
+            popupContains(day1Popup.url(), "Sample+Hotel+Central"),
+        ).toBe(true);
+        await day1Popup.close();
+
+        await page.locator('[role="tab"]', { hasText: "Day 2" }).click();
+        await expect(page.locator(".map-hotel-marker")).toHaveCount(1);
+
+        const day2PopupPromise = context.waitForEvent("page");
+        await page.locator(".map-hotel-marker").click();
+        const day2Popup = await day2PopupPromise;
+        expect(
+            popupContains(day2Popup.url(), "Sample+Hotel+North"),
+        ).toBe(true);
+        await day2Popup.close();
+    });
+});
+
 // ─── Activities Missing Map Data ────────────────────────────────────────────────
 
 test.describe("Activities without map coordinates", () => {

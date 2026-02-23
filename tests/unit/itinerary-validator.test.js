@@ -3,28 +3,28 @@
  * Tests: valid sample passes, malformed required fields fail with readable reasons,
  *        semantic rules (date order, unique dayNumber, unique activity order per day)
  */
-import { describe, it, expect, beforeAll } from "vitest";
+import { describe, it, expect, beforeAll, vi } from "vitest";
 import { JSDOM } from "jsdom";
 import fs from "fs";
 import path from "path";
 
 let validateItinerary;
 
-beforeAll(async () => {
-    const html = fs.readFileSync(
-        path.resolve(__dirname, "../../index.html"),
+const html = fs.readFileSync(
+    path.resolve(__dirname, "../../index.html"),
+    "utf-8",
+);
+const appScripts = [
+    fs.readFileSync(
+        path.resolve(__dirname, "../../assets/scripts/modules/validation.js"),
         "utf-8",
-    );
-    const dom = new JSDOM(html, {
-        runScripts: "dangerously",
-        resources: "usable",
-        url: "http://localhost/",
-    });
-
-    // Wait for scripts to execute
-    await new Promise((r) => setTimeout(r, 200));
-    validateItinerary = dom.window.__validateItinerary;
-});
+    ),
+    fs.readFileSync(
+        path.resolve(__dirname, "../../assets/scripts/modules/map-rendering.js"),
+        "utf-8",
+    ),
+    fs.readFileSync(path.resolve(__dirname, "../../assets/scripts/app.js"), "utf-8"),
+];
 
 const validFixture = JSON.parse(
     fs.readFileSync(
@@ -32,6 +32,22 @@ const validFixture = JSON.parse(
         "utf-8",
     ),
 );
+
+beforeAll(async () => {
+    const dom = new JSDOM(html, {
+        runScripts: "outside-only",
+        url: "http://localhost/",
+    });
+
+    dom.window.fetch = vi.fn(async () => ({
+        ok: true,
+        json: async () => validFixture,
+    }));
+    appScripts.forEach((script) => dom.window.eval(script));
+
+    validateItinerary = dom.window.__validateItinerary;
+});
+
 const invalidFixture = JSON.parse(
     fs.readFileSync(
         path.resolve(
