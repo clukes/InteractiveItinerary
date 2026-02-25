@@ -1035,22 +1035,41 @@
         if (!text) return escapeHtml(text);
 
         // Extract rating scores (e.g. "Google Maps 4.8/5 (320 reviews); TripAdvisor 4.5/5 (45 reviews)")
-        const scoreRegex = /([\w\s.]+?)\s+(\d\.\d)\/5\s*\(([\d,]+)\s*reviews?\)/g;
+        const scoreRegex =
+            /([\w\s.]+?)\s+(\d\.\d)\/5\s*\(([\d,]+)\s*reviews?\)/g;
         const scores = [];
         let match;
         while ((match = scoreRegex.exec(text)) !== null) {
-            scores.push({ source: match[1].trim(), rating: match[2], count: match[3] });
+            scores.push({
+                source: match[1].trim(),
+                rating: match[2],
+                count: match[3],
+            });
         }
 
         // Extract Likes and Dislikes sections
         const likesMatch = text.match(/Likes:\s*(.+?)(?=\s*Dislikes:|$)/i);
         const dislikesMatch = text.match(/Dislikes:\s*(.+?)$/i);
-        const likes = likesMatch ? likesMatch[1].split(';').map(s => s.trim()).filter(Boolean) : [];
-        const dislikes = dislikesMatch ? dislikesMatch[1].split(';').map(s => s.trim()).filter(Boolean) : [];
+        const likes = likesMatch
+            ? likesMatch[1]
+                  .split(";")
+                  .map((s) => s.trim())
+                  .filter(Boolean)
+            : [];
+        const dislikes = dislikesMatch
+            ? dislikesMatch[1]
+                  .split(";")
+                  .map((s) => s.trim())
+                  .filter(Boolean)
+            : [];
 
         // Extract summary sentence (between scores and Likes)
-        let summary = '';
-        const afterScores = text.replace(scoreRegex, '').replace(/Likes:.*/is, '').replace(/^[;.\s]+/, '').trim();
+        let summary = "";
+        const afterScores = text
+            .replace(scoreRegex, "")
+            .replace(/Likes:.*/is, "")
+            .replace(/^[;.\s]+/, "")
+            .trim();
         if (afterScores) summary = afterScores;
 
         // If no structured data found, fall back to escaped text
@@ -1058,15 +1077,15 @@
             return escapeHtml(text);
         }
 
-        let html = '';
+        let html = "";
 
         // Score badges
         if (scores.length > 0) {
             html += '<div class="rating-scores">';
-            scores.forEach(s => {
-                html += `<span class="rating-badge"><strong>${escapeHtml(s.rating)}</strong>/5 ${escapeHtml(s.source)} <span class="rating-count">(${escapeHtml(s.count)})</span></span>`;
+            scores.forEach((s) => {
+                html += `<span class="rating-badge"><span class="rating-score">${escapeHtml(s.rating)}/5</span> ${escapeHtml(s.source)} <span class="rating-count">(${escapeHtml(s.count)})</span></span>`;
             });
-            html += '</div>';
+            html += "</div>";
         }
 
         // Summary
@@ -1076,16 +1095,22 @@
 
         // Likes
         if (likes.length > 0) {
-            html += '<div class="rating-pros"><span class="rating-list-label">Likes</span><ul>';
-            likes.forEach(l => { html += `<li>${escapeHtml(l)}</li>`; });
-            html += '</ul></div>';
+            html +=
+                '<div class="rating-pros"><span class="rating-list-label">Likes</span><ul>';
+            likes.forEach((l) => {
+                html += `<li>${escapeHtml(l)}</li>`;
+            });
+            html += "</ul></div>";
         }
 
         // Dislikes
         if (dislikes.length > 0) {
-            html += '<div class="rating-cons"><span class="rating-list-label">Dislikes</span><ul>';
-            dislikes.forEach(d => { html += `<li>${escapeHtml(d)}</li>`; });
-            html += '</ul></div>';
+            html +=
+                '<div class="rating-cons"><span class="rating-list-label">Dislikes</span><ul>';
+            dislikes.forEach((d) => {
+                html += `<li>${escapeHtml(d)}</li>`;
+            });
+            html += "</ul></div>";
         }
 
         return html;
