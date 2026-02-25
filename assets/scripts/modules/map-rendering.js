@@ -132,7 +132,7 @@
         }
 
         points.forEach((p) => {
-            svg += `<g class="map-marker" data-activity-id="${p.activity.activityId}" role="button" tabindex="0" aria-label="Open ${escapeHtml(p.activity.name)} in Google Maps">`;
+            svg += `<g class="map-marker" data-activity-id="${p.activity.activityId}" data-marker-x="${p.x}" data-marker-y="${p.y}" role="button" tabindex="0" aria-label="Open ${escapeHtml(p.activity.name)} in Google Maps">`;
             svg += `<circle class="map-marker-shadow" cx="${p.x}" cy="${p.y + 10}" r="6"/>`;
             svg += `<circle class="map-marker-ring" cx="${p.x}" cy="${p.y}" r="10"/>`;
             svg += `<circle class="map-marker-core" cx="${p.x}" cy="${p.y}" r="8"/>`;
@@ -146,7 +146,7 @@
             const headY = cy - 14;
             const pinPath = `M ${cx} ${cy} C ${cx - 5} ${cy - 7} ${cx - 9} ${cy - 10} ${cx - 9} ${headY} A 9 9 0 1 1 ${cx + 9} ${headY} C ${cx + 9} ${cy - 10} ${cx + 5} ${cy - 7} ${cx} ${cy} Z`;
             const housePath = `M ${cx} ${headY - 4.5} L ${cx - 4.5} ${headY - 0.5} L ${cx - 3} ${headY - 0.5} L ${cx - 3} ${headY + 4} L ${cx - 1} ${headY + 4} L ${cx - 1} ${headY + 1.5} L ${cx + 1} ${headY + 1.5} L ${cx + 1} ${headY + 4} L ${cx + 3} ${headY + 4} L ${cx + 3} ${headY - 0.5} L ${cx + 4.5} ${headY - 0.5} Z`;
-            svg += `<g class="map-hotel-marker" role="button" tabindex="0" data-hotel-maps-url="${escapeHtml(hotel.location.mapsUrl)}" aria-label="Open hotel ${escapeHtml(hotel.name)} in Google Maps">`;
+            svg += `<g class="map-hotel-marker" role="button" tabindex="0" data-marker-x="${cx}" data-marker-y="${cy}" data-hotel-maps-url="${escapeHtml(hotel.location.mapsUrl)}" aria-label="Open hotel ${escapeHtml(hotel.name)} in Google Maps">`;
             svg += `<ellipse class="map-hotel-marker-shadow" cx="${cx}" cy="${cy + 3}" rx="5" ry="2"/>`;
             svg += `<path class="map-hotel-marker-pin" d="${pinPath}"/>`;
             svg += `<circle class="map-hotel-marker-inner" cx="${cx}" cy="${headY}" r="6.5"/>`;

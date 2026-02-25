@@ -43,10 +43,27 @@
             vbY = Math.max(-h * (1 - margin), Math.min(BASE_HEIGHT - h * margin, vbY));
         }
 
+        function applyMarkerScaleCompensation() {
+            const inverseScale = 1 / scale;
+            const markers = svg.querySelectorAll(".map-marker, .map-hotel-marker");
+            markers.forEach((marker) => {
+                const x = Number(marker.getAttribute("data-marker-x"));
+                const y = Number(marker.getAttribute("data-marker-y"));
+                if (!Number.isFinite(x) || !Number.isFinite(y)) return;
+                const tx = (1 - inverseScale) * x;
+                const ty = (1 - inverseScale) * y;
+                marker.setAttribute(
+                    "transform",
+                    `translate(${tx} ${ty}) scale(${inverseScale})`,
+                );
+            });
+        }
+
         function applyViewBox() {
             const w = currentVBWidth();
             const h = currentVBHeight();
             svg.setAttribute("viewBox", `${vbX} ${vbY} ${w} ${h}`);
+            applyMarkerScaleCompensation();
             updateCursorStyle();
         }
 
