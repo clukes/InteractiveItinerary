@@ -774,7 +774,7 @@
         }
 
         // Rating Summary
-        html += `<div class="detail-section"><div class="detail-label">Rating</div><div class="detail-value${act.ratingSummary === null || act.ratingSummary === undefined ? " not-provided" : ""}">${act.ratingSummary !== null && act.ratingSummary !== undefined ? escapeHtml(act.ratingSummary) : "Not provided"}</div></div>`;
+        html += `<div class="detail-section"><div class="detail-label">Rating</div><div class="detail-value${act.ratingSummary === null || act.ratingSummary === undefined ? " not-provided" : ""}">${act.ratingSummary !== null && act.ratingSummary !== undefined ? formatRatingSummary(act.ratingSummary) : "Not provided"}</div></div>`;
 
         // Review Links
         if (act.reviewLinks && act.reviewLinks.length > 0) {
@@ -1031,6 +1031,66 @@
     }
 
     // ── Utility ──
+    function formatRatingSummary(text) {
+        if (!text) return escapeHtml(text);
+
+        // Extract rating scores (e.g. "Google Maps 4.8/5 (320 reviews); TripAdvisor 4.5/5 (45 reviews)")
+        const scoreRegex = /([\w\s.]+?)\s+(\d\.\d)\/5\s*\(([\d,]+)\s*reviews?\)/g;
+        const scores = [];
+        let match;
+        while ((match = scoreRegex.exec(text)) !== null) {
+            scores.push({ source: match[1].trim(), rating: match[2], count: match[3] });
+        }
+
+        // Extract Likes and Dislikes sections
+        const likesMatch = text.match(/Likes:\s*(.+?)(?=\s*Dislikes:|$)/i);
+        const dislikesMatch = text.match(/Dislikes:\s*(.+?)$/i);
+        const likes = likesMatch ? likesMatch[1].split(';').map(s => s.trim()).filter(Boolean) : [];
+        const dislikes = dislikesMatch ? dislikesMatch[1].split(';').map(s => s.trim()).filter(Boolean) : [];
+
+        // Extract summary sentence (between scores and Likes)
+        let summary = '';
+        const afterScores = text.replace(scoreRegex, '').replace(/Likes:.*/is, '').replace(/^[;.\s]+/, '').trim();
+        if (afterScores) summary = afterScores;
+
+        // If no structured data found, fall back to escaped text
+        if (scores.length === 0 && !likes.length && !dislikes.length) {
+            return escapeHtml(text);
+        }
+
+        let html = '';
+
+        // Score badges
+        if (scores.length > 0) {
+            html += '<div class="rating-scores">';
+            scores.forEach(s => {
+                html += `<span class="rating-badge"><strong>${escapeHtml(s.rating)}</strong>/5 ${escapeHtml(s.source)} <span class="rating-count">(${escapeHtml(s.count)})</span></span>`;
+            });
+            html += '</div>';
+        }
+
+        // Summary
+        if (summary) {
+            html += `<p class="rating-summary-text">${escapeHtml(summary)}</p>`;
+        }
+
+        // Likes
+        if (likes.length > 0) {
+            html += '<div class="rating-pros"><span class="rating-list-label">Likes</span><ul>';
+            likes.forEach(l => { html += `<li>${escapeHtml(l)}</li>`; });
+            html += '</ul></div>';
+        }
+
+        // Dislikes
+        if (dislikes.length > 0) {
+            html += '<div class="rating-cons"><span class="rating-list-label">Dislikes</span><ul>';
+            dislikes.forEach(d => { html += `<li>${escapeHtml(d)}</li>`; });
+            html += '</ul></div>';
+        }
+
+        return html;
+    }
+
     function escapeHtml(str) {
         if (typeof str !== "string") return "";
         const div = document.createElement("div");
