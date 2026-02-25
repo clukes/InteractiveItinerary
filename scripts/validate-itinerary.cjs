@@ -31,7 +31,10 @@ const FRONTEND_VALIDATION_PATH = path.join(
 );
 
 const DEFAULT_ITINERARY_PATHS = [
-    path.join(REPO_ROOT, "private/local-itineraries/seville-itinerary.private.json"),
+    path.join(
+        REPO_ROOT,
+        "private/local-itineraries/seville-itinerary.private.json",
+    ),
     path.join(REPO_ROOT, "private/seville-itinerary.private.json"),
     path.join(REPO_ROOT, "private/seville-itinerary.json"),
 ];
@@ -71,7 +74,9 @@ function validateWithSchema(schema, data) {
 
 function loadFrontendValidator() {
     if (!fs.existsSync(FRONTEND_VALIDATION_PATH)) {
-        throw new Error(`frontend validator not found at ${FRONTEND_VALIDATION_PATH}`);
+        throw new Error(
+            `frontend validator not found at ${FRONTEND_VALIDATION_PATH}`,
+        );
     }
 
     const validationSource = fs.readFileSync(FRONTEND_VALIDATION_PATH, "utf8");
@@ -118,7 +123,9 @@ function run() {
     try {
         data = JSON.parse(fs.readFileSync(itineraryPath, "utf8"));
     } catch (err) {
-        console.error(`Error: failed to parse ${itineraryPath}: ${err.message}`);
+        console.error(
+            `Error: failed to parse ${itineraryPath}: ${err.message}`,
+        );
         process.exit(1);
     }
 

@@ -71,6 +71,8 @@
             const inverseScale = 1 / scale;
             const routeLineBaseWidth = 4;
             const routeLineShadowBaseWidth = 6;
+            const routeLineDashLength = 7;
+            const routeLineDashGap = 5;
             const routeLines = svg.querySelectorAll(".route-line");
             const routeLineShadows = svg.querySelectorAll(".route-line-shadow");
 
@@ -78,6 +80,10 @@
                 line.setAttribute(
                     "stroke-width",
                     `${routeLineBaseWidth * inverseScale}`,
+                );
+                line.setAttribute(
+                    "stroke-dasharray",
+                    `${routeLineDashLength * inverseScale} ${routeLineDashGap * inverseScale}`,
                 );
             });
 
