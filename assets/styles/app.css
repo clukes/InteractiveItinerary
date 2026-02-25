@@ -1094,6 +1094,16 @@ input:focus-visible {
     }
 }
 
+.app-version {
+    text-align: center;
+    padding: 1.5rem 1rem 1rem;
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    opacity: 0.55;
+    letter-spacing: 0.02em;
+    user-select: all;
+}
+
 @media (max-width: 430px) {
     .header-actions {
         left: 0.35rem;

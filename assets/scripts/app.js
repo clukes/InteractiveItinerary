@@ -1116,5 +1116,17 @@
         await showDemoItineraryLockedState();
     }
 
+    function loadVersion() {
+        fetch("version.json", { cache: "no-cache" })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (v) {
+                if (!v) return;
+                var el = document.getElementById("app-version");
+                if (el) el.textContent = "v" + v.build + " (" + v.hash + ")";
+            })
+            .catch(function () { /* version display is non-critical */ });
+    }
+
+    loadVersion();
     bootstrap();
 })();

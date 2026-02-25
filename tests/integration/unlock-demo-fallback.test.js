@@ -95,7 +95,7 @@ describe("Locked mode demo fallback", () => {
         expect(tabs.length).toBeGreaterThan(0);
         expect(status.textContent).toContain("Showing demo itinerary");
         expect(title.textContent).toBe("DEMO ITINERARY");
-        expect(fetchMock).toHaveBeenCalledTimes(1);
+        expect(fetchMock).toHaveBeenCalledTimes(2);
     });
 
     it("keeps showing demo itinerary when unlock is clicked with empty password", async () => {
@@ -109,7 +109,7 @@ describe("Locked mode demo fallback", () => {
 
         expect(status.textContent).toContain("Showing demo itinerary");
         expect(status.className).toBe("file-status");
-        expect(fetchMock).toHaveBeenCalledTimes(2);
+        expect(fetchMock).toHaveBeenCalledTimes(3);
     });
 
     it("replaces DEMO ITINERARY title after correct password unlock", async () => {
@@ -230,7 +230,7 @@ describe("Locked mode demo fallback", () => {
         expect(unlockPanel.style.display).toBe("none");
         expect(status.hidden).toBe(true);
         expect(status.textContent).toBe("");
-        expect(refreshFetchMock).toHaveBeenCalledTimes(1);
+        expect(refreshFetchMock).toHaveBeenCalledTimes(2);
     });
 
     it("keeps unlocked fallback data when server refresh fails after reload", async () => {
@@ -271,7 +271,7 @@ describe("Locked mode demo fallback", () => {
         expect(title.textContent).toBe("Persisted Private Itinerary");
         expect(unlockPanel.style.display).toBe("none");
         expect(status.hidden).toBe(true);
-        expect(refreshFetchMock).toHaveBeenCalledTimes(1);
+        expect(refreshFetchMock).toHaveBeenCalledTimes(2);
     });
 
     it("shows refresh and unlock success status only when dev mode is enabled", async () => {

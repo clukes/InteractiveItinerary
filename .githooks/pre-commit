@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+VERSION_FILE="$REPO_ROOT/version.json"
+
+# Next build number = current commit count + 1 (this commit hasn't landed yet)
+BUILD=$(( $(git rev-list --count HEAD) + 1 ))
+HASH=$(git rev-parse --short HEAD)
+
+cat > "$VERSION_FILE" <<EOF
+{
+    "build": $BUILD,
+    "hash": "$HASH"
+}
+EOF
+
+git add "$VERSION_FILE"

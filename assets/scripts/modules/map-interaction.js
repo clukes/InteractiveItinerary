@@ -19,13 +19,13 @@
         /* ---------- state ---------- */
         const BASE_WIDTH = 360;
         const BASE_HEIGHT = 280;
-        const MIN_ZOOM = 0.5;   // zoomed out (larger viewBox)
-        const MAX_ZOOM = 6;     // zoomed in  (smaller viewBox)
+        const MIN_ZOOM = 0.5; // zoomed out (larger viewBox)
+        const MAX_ZOOM = 6; // zoomed in  (smaller viewBox)
         const ZOOM_STEP = 1.25; // multiplicative per click / wheel notch
 
-        let scale = 1;          // 1 = default fit
-        let vbX = 0;            // viewBox origin x
-        let vbY = 0;            // viewBox origin y
+        let scale = 1; // 1 = default fit
+        let vbX = 0; // viewBox origin x
+        let vbY = 0; // viewBox origin y
 
         function currentVBWidth() {
             return BASE_WIDTH / scale;
@@ -39,13 +39,21 @@
             const w = currentVBWidth();
             const h = currentVBHeight();
             const margin = 0.25;
-            vbX = Math.max(-w * (1 - margin), Math.min(BASE_WIDTH - w * margin, vbX));
-            vbY = Math.max(-h * (1 - margin), Math.min(BASE_HEIGHT - h * margin, vbY));
+            vbX = Math.max(
+                -w * (1 - margin),
+                Math.min(BASE_WIDTH - w * margin, vbX),
+            );
+            vbY = Math.max(
+                -h * (1 - margin),
+                Math.min(BASE_HEIGHT - h * margin, vbY),
+            );
         }
 
         function applyMarkerScaleCompensation() {
             const inverseScale = 1 / scale;
-            const markers = svg.querySelectorAll(".map-marker, .map-hotel-marker");
+            const markers = svg.querySelectorAll(
+                ".map-marker, .map-hotel-marker",
+            );
             markers.forEach((marker) => {
                 const x = Number(marker.getAttribute("data-marker-x"));
                 const y = Number(marker.getAttribute("data-marker-y"));
@@ -59,11 +67,34 @@
             });
         }
 
+        function applyRouteStrokeCompensation() {
+            const inverseScale = 1 / scale;
+            const routeLineBaseWidth = 4;
+            const routeLineShadowBaseWidth = 6;
+            const routeLines = svg.querySelectorAll(".route-line");
+            const routeLineShadows = svg.querySelectorAll(".route-line-shadow");
+
+            routeLines.forEach((line) => {
+                line.setAttribute(
+                    "stroke-width",
+                    `${routeLineBaseWidth * inverseScale}`,
+                );
+            });
+
+            routeLineShadows.forEach((line) => {
+                line.setAttribute(
+                    "stroke-width",
+                    `${routeLineShadowBaseWidth * inverseScale}`,
+                );
+            });
+        }
+
         function applyViewBox() {
             const w = currentVBWidth();
             const h = currentVBHeight();
             svg.setAttribute("viewBox", `${vbX} ${vbY} ${w} ${h}`);
             applyMarkerScaleCompensation();
+            applyRouteStrokeCompensation();
             updateCursorStyle();
         }
 
@@ -87,7 +118,10 @@
          * factor > 1 = zoom in, < 1 = zoom out.
          */
         function zoomAtPoint(factor, focalX, focalY) {
-            const newScale = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, scale * factor));
+            const newScale = Math.max(
+                MIN_ZOOM,
+                Math.min(MAX_ZOOM, scale * factor),
+            );
             if (newScale === scale) return;
 
             // Adjust origin so the focal point stays fixed on screen
@@ -151,8 +185,10 @@
         function onMouseMove(e) {
             if (!dragging) return;
             const rect = svg.getBoundingClientRect();
-            const dx = ((e.clientX - dragStartX) / rect.width) * currentVBWidth();
-            const dy = ((e.clientY - dragStartY) / rect.height) * currentVBHeight();
+            const dx =
+                ((e.clientX - dragStartX) / rect.width) * currentVBWidth();
+            const dy =
+                ((e.clientY - dragStartY) / rect.height) * currentVBHeight();
             if (Math.abs(dx) > 1 || Math.abs(dy) > 1) dragMoved = true;
             vbX = dragVBStartX - dx;
             vbY = dragVBStartY - dy;
