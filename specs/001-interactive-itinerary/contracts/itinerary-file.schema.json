@@ -63,6 +63,38 @@
                     "type": "string",
                     "format": "date"
                 },
+                "hotel": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["name", "location"],
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "minLength": 1
+                        },
+                        "location": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": ["lat", "lng", "mapsUrl"],
+                            "properties": {
+                                "lat": {
+                                    "type": "number",
+                                    "minimum": -90,
+                                    "maximum": 90
+                                },
+                                "lng": {
+                                    "type": "number",
+                                    "minimum": -180,
+                                    "maximum": 180
+                                },
+                                "mapsUrl": {
+                                    "type": "string",
+                                    "format": "uri"
+                                }
+                            }
+                        }
+                    }
+                },
                 "activities": {
                     "type": "array",
                     "items": {

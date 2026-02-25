@@ -19,6 +19,7 @@ fi
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 WORKER_PATH="$SCRIPT_DIR/worker.js"
+VALIDATE_SCRIPT="$REPO_ROOT/scripts/validate-itinerary.cjs"
 DEFAULT_PRIVATE_ITINERARY_PATHS=(
     "$REPO_ROOT/private/local-itineraries/seville-itinerary.private.json"
     "$REPO_ROOT/private/seville-itinerary.private.json"
@@ -31,6 +32,17 @@ STAMP_PATH="$STAMP_DIR/worker-deploy-stamp"
 if [[ ! -f "$WORKER_PATH" ]]; then
     echo "Error: worker file not found at $WORKER_PATH"
     exit 1
+fi
+
+# --- Pre-deploy validation gate ---
+if [[ -f "$VALIDATE_SCRIPT" ]]; then
+    echo "Running itinerary validation before deploy..."
+    if ! node "$VALIDATE_SCRIPT"; then
+        echo "Deploy aborted: itinerary validation failed."
+        exit 1
+    fi
+else
+    echo "Warning: validation script not found at $VALIDATE_SCRIPT — skipping."
 fi
 
 COMMAND=(npx wrangler deploy "$WORKER_PATH" --name "$WORKER_NAME")
