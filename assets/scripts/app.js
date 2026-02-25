@@ -18,6 +18,13 @@
             "Map rendering module failed to load before app bootstrap.",
         );
     }
+    const initMapInteraction =
+        window.__itineraryModules?.mapInteraction?.initMapInteraction;
+    if (typeof initMapInteraction !== "function") {
+        throw new Error(
+            "Map interaction module failed to load before app bootstrap.",
+        );
+    }
 
     const appConfig = {
         workerAuthEndpoint:
@@ -649,6 +656,13 @@
 
         // Bind event listeners
         bindActivityEvents();
+
+        // Initialise map zoom & pan interaction
+        if (state._mapCleanup) {
+            state._mapCleanup();
+            state._mapCleanup = null;
+        }
+        state._mapCleanup = initMapInteraction();
     }
 
     function renderActivityCard(act) {

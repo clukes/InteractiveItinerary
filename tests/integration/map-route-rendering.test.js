@@ -30,6 +30,10 @@ const appScripts = [
         path.resolve(__dirname, "../../assets/scripts/modules/map-rendering.js"),
         "utf-8",
     ),
+    fs.readFileSync(
+        path.resolve(__dirname, "../../assets/scripts/modules/map-interaction.js"),
+        "utf-8",
+    ),
     fs.readFileSync(path.resolve(__dirname, "../../assets/scripts/app.js"), "utf-8"),
 ];
 

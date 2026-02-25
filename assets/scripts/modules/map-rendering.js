@@ -117,7 +117,12 @@
             ? ""
             : `<div class="map-overlay-grid" aria-hidden="true"><span class="map-overlay-item route"><span class="material-symbols-outlined map-overlay-icon">route</span>Route path</span><span class="map-overlay-item stop"><span class="material-symbols-outlined map-overlay-icon">location_on</span>Stops</span>${hotelKeyItem}${missingKeyItem}<span class="map-overlay-item tap"><span class="material-symbols-outlined map-overlay-icon">touch_app</span>Tap to open</span></div>`;
         const keyPanel = `<div class="map-overlay-key"><div class="map-overlay-header"><div class="map-overlay-title" aria-hidden="true"><span class="material-symbols-outlined" style="font-size: 0.95rem;">tune</span>Filter Key</div>${keyButton}</div>${keyPanelContent}</div>`;
-        let svg = `<div class="map-shell">${keyPanel}<div class="map-container"><svg viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Route map for the day">${renderTileLayer(geometry, width, height)}`;
+        const zoomControls = `<div class="map-zoom-controls" aria-label="Map zoom controls">` +
+            `<button class="map-zoom-btn" data-map-action="zoom-in" type="button" aria-label="Zoom in"><span class="material-symbols-outlined">add</span></button>` +
+            `<button class="map-zoom-btn" data-map-action="zoom-out" type="button" aria-label="Zoom out"><span class="material-symbols-outlined">remove</span></button>` +
+            `<button class="map-zoom-btn" data-map-action="zoom-reset" type="button" aria-label="Reset zoom"><span class="material-symbols-outlined">fit_screen</span></button>` +
+            `</div>`;
+        let svg = `<div class="map-shell">${keyPanel}${zoomControls}<div class="map-container" data-base-viewbox="0 0 ${width} ${height}"><svg viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Route map for the day">${renderTileLayer(geometry, width, height)}`;
 
         if (points.length >= 2) {
             for (let i = 0; i < points.length - 1; i++) {
