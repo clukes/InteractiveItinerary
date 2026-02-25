@@ -20,5 +20,8 @@
         "jsdom": "^25.0.0",
         "serve": "^14.2.5",
         "vitest": "^3.0.0"
+    },
+    "dependencies": {
+        "dotenv": "^17.3.1"
     }
 }

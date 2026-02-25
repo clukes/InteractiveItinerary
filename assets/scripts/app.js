@@ -1034,16 +1034,17 @@
     function formatRatingSummary(text) {
         if (!text) return escapeHtml(text);
 
-        // Extract rating scores (e.g. "Google Maps 4.8/5 (320 reviews); TripAdvisor 4.5/5 (45 reviews)")
+        // Extract rating scores (e.g. "Google Maps 4.8/5 (320 reviews); Booking.com 9.4/10 (650 reviews)")
         const scoreRegex =
-            /([\w\s.]+?)\s+(\d\.\d)\/5\s*\(([\d,]+)\s*reviews?\)/g;
+            /([\w\s.]+?)\s+(\d+(?:\.\d+)?)\/(\d+)\s*\(([\d,]+)\s*reviews?\)/g;
         const scores = [];
         let match;
         while ((match = scoreRegex.exec(text)) !== null) {
             scores.push({
                 source: match[1].trim(),
                 rating: match[2],
-                count: match[3],
+                scale: match[3],
+                count: match[4],
             });
         }
 
@@ -1083,7 +1084,7 @@
         if (scores.length > 0) {
             html += '<div class="rating-scores">';
             scores.forEach((s) => {
-                html += `<span class="rating-badge"><span class="rating-score">${escapeHtml(s.rating)}/5</span> ${escapeHtml(s.source)} <span class="rating-count">(${escapeHtml(s.count)})</span></span>`;
+                html += `<span class="rating-badge"><span class="rating-score">${escapeHtml(s.rating)}/${escapeHtml(s.scale)}</span> ${escapeHtml(s.source)} <span class="rating-count">(${escapeHtml(s.count)})</span></span>`;
             });
             html += "</div>";
         }
