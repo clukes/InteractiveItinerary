@@ -18,11 +18,16 @@ const Ajv2020 = require("ajv/dist/2020");
 const addFormats = require("ajv-formats");
 const fs = require("fs");
 const path = require("path");
+const vm = require("vm");
 
 const REPO_ROOT = path.resolve(__dirname, "..");
 const SCHEMA_PATH = path.join(
     REPO_ROOT,
     "specs/001-interactive-itinerary/contracts/itinerary-file.schema.json",
+);
+const FRONTEND_VALIDATION_PATH = path.join(
+    REPO_ROOT,
+    "assets/scripts/modules/validation.js",
 );
 
 const DEFAULT_ITINERARY_PATHS = [
@@ -48,6 +53,58 @@ function resolveItineraryPath(explicit) {
     process.exit(1);
 }
 
+function validateWithSchema(schema, data) {
+    const ajv = new Ajv2020({ allErrors: true });
+    addFormats(ajv);
+    const valid = ajv.validate(schema, data);
+    if (valid) return [];
+
+    return (ajv.errors || []).map((err) => {
+        const loc = err.instancePath || "(root)";
+        const detail =
+            err.keyword === "additionalProperties"
+                ? `unexpected property "${err.params.additionalProperty}"`
+                : err.message;
+        return `${loc}  →  ${detail}`;
+    });
+}
+
+function loadFrontendValidator() {
+    if (!fs.existsSync(FRONTEND_VALIDATION_PATH)) {
+        throw new Error(`frontend validator not found at ${FRONTEND_VALIDATION_PATH}`);
+    }
+
+    const validationSource = fs.readFileSync(FRONTEND_VALIDATION_PATH, "utf8");
+    const sandbox = { window: {}, globalThis: {}, console };
+    sandbox.window = sandbox;
+    sandbox.globalThis = sandbox;
+
+    vm.createContext(sandbox);
+    vm.runInContext(validationSource, sandbox);
+
+    const validator = sandbox.__itineraryModules?.validation?.validateItinerary;
+    if (typeof validator !== "function") {
+        throw new Error(
+            "frontend validator function not found at window.__itineraryModules.validation.validateItinerary",
+        );
+    }
+
+    return validator;
+}
+
+function validateWithFrontend(data) {
+    try {
+        const validator = loadFrontendValidator();
+        const errors = validator(data);
+        if (!Array.isArray(errors)) {
+            return ["frontend validator returned a non-array result"];
+        }
+        return errors;
+    } catch (err) {
+        return [`failed to execute frontend validator: ${err.message}`];
+    }
+}
+
 function run() {
     const itineraryPath = resolveItineraryPath(process.argv[2]);
 
@@ -65,28 +122,37 @@ function run() {
         process.exit(1);
     }
 
-    const ajv = new Ajv2020({ allErrors: true });
-    addFormats(ajv);
+    const schemaErrors = validateWithSchema(schema, data);
+    const frontendErrors = validateWithFrontend(data);
 
-    const valid = ajv.validate(schema, data);
-
-    if (valid) {
-        console.log(`✅ Validation passed: ${path.relative(REPO_ROOT, itineraryPath)}`);
+    if (schemaErrors.length === 0 && frontendErrors.length === 0) {
+        console.log(
+            `✅ Validation passed (schema + frontend): ${path.relative(REPO_ROOT, itineraryPath)}`,
+        );
         process.exit(0);
     }
 
     console.error(
         `❌ Validation failed for ${path.relative(REPO_ROOT, itineraryPath)}:\n`,
     );
-    for (const err of ajv.errors) {
-        const loc = err.instancePath || "(root)";
-        const detail =
-            err.keyword === "additionalProperties"
-                ? `unexpected property "${err.params.additionalProperty}"`
-                : err.message;
-        console.error(`  ${loc}  →  ${detail}`);
+
+    if (schemaErrors.length > 0) {
+        console.error("\nSchema errors:");
+        for (const err of schemaErrors) {
+            console.error(`  ${err}`);
+        }
     }
-    console.error(`\n${ajv.errors.length} error(s) found.`);
+
+    if (frontendErrors.length > 0) {
+        console.error("\nFrontend validator errors:");
+        for (const err of frontendErrors) {
+            console.error(`  ${err}`);
+        }
+    }
+
+    console.error(
+        `\n${schemaErrors.length + frontendErrors.length} total error(s) found.`,
+    );
     process.exit(1);
 }
 
