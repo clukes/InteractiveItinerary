@@ -5,7 +5,7 @@
 
 ## Summary
 
-Build a mobile-first interactive trip itinerary static web app with day tabs, per-day SVG route maps, activity checklists with done/skipped status, expandable activity details, and reusable JSON file loading with strict validation. Implemented with a static multi-file layout (`index.html`, `assets/styles/app.css`, `assets/scripts/app.js`) plus JSON default seed data (`assets/data/default-itinerary.json`), requiring no backend services. Tested with Vitest (unit/integration) and Playwright (mobile E2E).
+Build a mobile-first interactive trip itinerary static web app with day tabs, per-day SVG route maps, activity checklists with done/skipped status, expandable activity details, and reusable JSON file loading with strict validation. Implemented with a static multi-file layout (`index.html`, `assets/styles/app.css`, `assets/scripts/app.js`) plus JSON default seed data (`assets/data/sample-itinerary.json`), requiring no backend services. Tested with Vitest (unit/integration) and Playwright (mobile E2E).
 
 ## Technical Context
 
@@ -23,7 +23,7 @@ Build a mobile-first interactive trip itinerary static web app with day tabs, pe
 
 _GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
 
-- **Portable Delivery Gate**: ✅ PASS — App is static-host deployable with relative paths (`assets/styles/app.css`, `assets/scripts/app.js`, `assets/data/default-itinerary.json`). No backend services required.
+- **Portable Delivery Gate**: ✅ PASS — App is static-host deployable with relative paths (`assets/styles/app.css`, `assets/scripts/app.js`, `assets/data/sample-itinerary.json`). No backend services required.
 - **Mobile-First Gate**: ✅ PASS — Primary viewport targets 360px–430px. Touch-first interactions (tap to switch tabs, tap to expand, tap status buttons). CSS uses mobile-first responsive layout with no horizontal scroll at target widths. Tested via Playwright with Pixel 5 and iPhone 13 device emulation.
 - **Itinerary Completeness Gate**: ✅ PASS — Scope covers: day navigation tabs, per-day SVG route maps with ordered markers, activity checklists with done/skipped status, expandable details (name, image, description, maps link, price, tips, photo-spot tips, rating, review links, website), and reusable JSON file loading with validation. No intentional omissions.
 - **Simplicity & Performance Gate**: ✅ PASS — Zero backend runtime dependencies. No build step required. Day switches are instant (re-render from in-memory state). SVG route computed client-side from coordinates. No external tile services required for core map rendering.
@@ -53,7 +53,7 @@ assets/
 ├── scripts/
 │   └── app.js           # Application logic
 └── data/
-    └── default-itinerary.json   # Default itinerary seed data
+    └── sample-itinerary.json   # Default itinerary seed data
 package.json             # Dev tooling metadata and test scripts
 vitest.config.js         # Vitest unit/integration test configuration
 playwright.config.cjs    # Playwright E2E test configuration (Mobile Chrome + Safari)

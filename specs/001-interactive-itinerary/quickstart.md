@@ -11,9 +11,11 @@
 1. Install dependencies:
     - `npm install`
 2. Start local static server:
-  - `npx serve -l 3000 -s .`
+
+- `npx serve -l 3000 -s .`
+
 3. Open `http://localhost:3000` and verify the default itinerary renders.
-4. Confirm default seed data is loaded from `assets/data/default-itinerary.json`.
+4. Confirm default seed data is loaded from `assets/data/sample-itinerary.json`.
 
 Use HTTP static hosting for local/dev/prod runs. Do not open with `file://` URLs.
 
@@ -42,7 +44,7 @@ Required tests before moving on:
 
 ### Stage 4 — Story P4: Reusable File Loading + Validation
 
-- [ ] App is static-host deployable with relative asset/data paths (`assets/styles/app.css`, `assets/scripts/app.js`, `assets/data/default-itinerary.json`).
+- [ ] App is static-host deployable with relative asset/data paths (`assets/styles/app.css`, `assets/scripts/app.js`, `assets/data/sample-itinerary.json`).
 
 ## End-to-End Verification Commands
 

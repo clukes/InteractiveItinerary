@@ -23,7 +23,6 @@ DEFAULT_PRIVATE_ITINERARY_PATHS=(
     "$REPO_ROOT/private/local-itineraries/seville-itinerary.private.json"
     "$REPO_ROOT/private/seville-itinerary.private.json"
     "$REPO_ROOT/private/seville-itinerary.json"
-    "$REPO_ROOT/private/default-itinerary.json"
 )
 ITINERARY_SOURCE_PATH="${ITINERARY_SOURCE_PATH:-}"
 STAMP_DIR="$REPO_ROOT/.cloudflare"

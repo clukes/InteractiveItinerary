@@ -10,7 +10,7 @@ let fetchMock;
 
 const demoFixture = JSON.parse(
     fs.readFileSync(
-        path.resolve(__dirname, "../../assets/data/default-itinerary.json"),
+        path.resolve(__dirname, "../../assets/data/sample-itinerary.json"),
         "utf-8",
     ),
 );
@@ -300,7 +300,9 @@ describe("Locked mode demo fallback", () => {
     });
 
     it("hard refresh button disables itself and navigates with cache-busting query", async () => {
-        const hardRefreshButton = document.getElementById("hard-refresh-button");
+        const hardRefreshButton = document.getElementById(
+            "hard-refresh-button",
+        );
         const navigateSpy = vi.fn();
         window.__itineraryHardRefreshNavigate = navigateSpy;
 
@@ -336,8 +338,9 @@ describe("Locked mode demo fallback", () => {
         appScripts.forEach((script) => headerOnlyDom.window.eval(script));
         await flushBootstrap();
 
-        const hardRefreshButton =
-            headerOnlyDom.window.document.getElementById("hard-refresh-button");
+        const hardRefreshButton = headerOnlyDom.window.document.getElementById(
+            "hard-refresh-button",
+        );
         hardRefreshButton.click();
         await flushBootstrap();
 

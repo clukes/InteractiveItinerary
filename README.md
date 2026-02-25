@@ -45,7 +45,7 @@ Use **Load Itinerary** in the app and select a JSON file that matches the schema
 
 - [Schema: itinerary-file.schema.json](specs/001-interactive-itinerary/contracts/itinerary-file.schema.json)
 - [Example: valid-itinerary.json](tests/fixtures/valid-itinerary.json)
-- [Example: seville-itinerary.json](seville-itinerary.json)
+- [Example: sample-itinerary.json](assets/data/sample-itinerary.json)
 
 ## Testing
 
@@ -75,9 +75,9 @@ Prerequisites:
 - Run `npx wrangler login` once
 - Configure required Worker bindings/secrets (for example `ITINERARY_KV`, `ITINERARY_PASSWORD`)
 - Place your real itinerary in one of these git-ignored paths:
-	- `private/local-itineraries/seville-itinerary.private.json`
-	- `private/seville-itinerary.private.json`
-	- `private/seville-itinerary.json`
+    - `private/local-itineraries/seville-itinerary.private.json`
+    - `private/seville-itinerary.private.json`
+    - `private/seville-itinerary.json`
 - Deploy script seeds remote KV key `active-itinerary` from the first matching private path by default
 - Override seed file with `ITINERARY_SOURCE_PATH=/absolute/path/to/private-itinerary.json npm run deploy:worker -- <worker-name>`
 
@@ -94,7 +94,7 @@ After setup, pushes are blocked if `cloudflare/worker.js` does not match the las
 ## Tech Notes
 
 - App uses static multi-file layout: `index.html` + `assets/styles/app.css` + `assets/scripts/app.js`
-- Default itinerary seed data is stored in `assets/data/default-itinerary.json`
+- Default itinerary seed data is stored in `assets/data/sample-itinerary.json`
 - Paths are relative (no root-absolute URLs), so deployment is safe under subpaths (for example GitHub Pages project sites)
 - No build step required for runtime
 - End-to-end coverage includes mobile viewports via Playwright

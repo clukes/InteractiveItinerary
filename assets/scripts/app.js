@@ -22,7 +22,7 @@
     const appConfig = {
         workerAuthEndpoint:
             "https://itinerary-worker.digiconner.workers.dev/auth-itinerary",
-        localFallbackDataPath: "assets/data/default-itinerary.json",
+        localFallbackDataPath: "assets/data/sample-itinerary.json",
         ...(window.__itineraryConfig || {}),
     };
 
