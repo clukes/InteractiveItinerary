@@ -25,6 +25,8 @@
             "Map interaction module failed to load before app bootstrap.",
         );
     }
+    const getTileUrls =
+        window.__itineraryModules?.mapRendering?.getTileUrls || null;
 
     const appConfig = {
         workerAuthEndpoint:
@@ -46,6 +48,7 @@
         mapFilterKeyHidden: window.innerWidth <= 640,
         isDemoLockedMode: false,
         isDevModeEnabled: false,
+        offlineCacheState: "idle", // idle|caching|done|error
     };
 
     // Expose state for testing
@@ -157,6 +160,211 @@
         }
     }
 
+    // ── Offline Precaching ──
+
+    /**
+     * Optimise an external image URL for minimal data usage.
+     * - Unsplash: append w=400&q=70 for ~30-50KB instead of multi-MB originals
+     * - Already-small or unknown CDNs: leave as-is
+     */
+    function optimiseImageUrl(url) {
+        if (typeof url !== "string" || !url) return url;
+        try {
+            const parsed = new URL(url);
+            // Unsplash image CDN — request small, compressed version
+            if (
+                parsed.hostname === "images.unsplash.com" ||
+                parsed.hostname.endsWith(".unsplash.com")
+            ) {
+                parsed.searchParams.set("w", "400");
+                parsed.searchParams.set("q", "70");
+                parsed.searchParams.set("fm", "webp");
+                return parsed.toString();
+            }
+            return url;
+        } catch (_) {
+            return url;
+        }
+    }
+
+    /**
+     * Collect all cacheable asset URLs from the loaded itinerary.
+     * Returns { tileUrls: string[], imageUrls: string[] }
+     */
+    function collectOfflineAssets(itinerary) {
+        const tileUrls = [];
+        const imageUrls = [];
+
+        if (!itinerary || !itinerary.days) return { tileUrls, imageUrls };
+
+        const MAP_WIDTH = 360;
+        const MAP_HEIGHT = 280;
+        const MAP_PADDING = 32;
+
+        itinerary.days.forEach((day) => {
+            const activities = day.activities || [];
+
+            // Tile URLs for this day's map
+            if (typeof getTileUrls === "function") {
+                // Include hotel in geometry if present
+                const allPoints = [...activities];
+                if (
+                    day.hotel &&
+                    day.hotel.location &&
+                    typeof day.hotel.location.lat === "number" &&
+                    typeof day.hotel.location.lng === "number"
+                ) {
+                    allPoints.push({ location: day.hotel.location });
+                }
+                const dayTiles = getTileUrls(
+                    allPoints,
+                    MAP_WIDTH,
+                    MAP_HEIGHT,
+                    MAP_PADDING,
+                );
+                dayTiles.forEach((u) => tileUrls.push(u));
+            }
+
+            // Image URLs from activities
+            activities.forEach((act) => {
+                if (act.image && act.image.url) {
+                    imageUrls.push(optimiseImageUrl(act.image.url));
+                }
+                if (act.photoExamples && act.photoExamples.length > 0) {
+                    act.photoExamples.forEach((pe) => {
+                        if (pe.url) {
+                            imageUrls.push(optimiseImageUrl(pe.url));
+                        }
+                    });
+                }
+            });
+        });
+
+        // Deduplicate
+        return {
+            tileUrls: [...new Set(tileUrls)],
+            imageUrls: [...new Set(imageUrls)],
+        };
+    }
+
+    /**
+     * Kick off background precaching via the Service Worker.
+     * Shows progress in the offline status bar.
+     */
+    function precacheOfflineAssets(itinerary) {
+        if (
+            !("serviceWorker" in navigator) ||
+            !navigator.serviceWorker.controller
+        ) {
+            return;
+        }
+
+        const { tileUrls, imageUrls } = collectOfflineAssets(itinerary);
+        const totalAssets = tileUrls.length + imageUrls.length;
+
+        if (totalAssets === 0) return;
+
+        state.offlineCacheState = "caching";
+        renderOfflineStatus(0, totalAssets);
+
+        let tilesCached = 0;
+        let imagesCached = 0;
+
+        function onProgress(e) {
+            if (!e.data) return;
+            if (e.data.type === "PRECACHE_PROGRESS") {
+                // Determine which batch this is from
+                if (e.data._batch === "tiles") {
+                    tilesCached = e.data.cached;
+                } else if (e.data._batch === "images") {
+                    imagesCached = e.data.cached;
+                }
+                const totalCached = tilesCached + imagesCached;
+                renderOfflineStatus(totalCached, totalAssets);
+
+                if (tilesCached + imagesCached >= totalAssets || e.data.done) {
+                    // Check if both batches done
+                    if (
+                        tilesCached >= tileUrls.length &&
+                        imagesCached >= imageUrls.length
+                    ) {
+                        state.offlineCacheState = "done";
+                        renderOfflineStatus(totalAssets, totalAssets);
+                        navigator.serviceWorker.removeEventListener(
+                            "message",
+                            onProgress,
+                        );
+                    }
+                }
+            }
+        }
+
+        navigator.serviceWorker.addEventListener("message", onProgress);
+
+        // Send tile batch
+        if (tileUrls.length > 0) {
+            navigator.serviceWorker.controller.postMessage({
+                type: "PRECACHE_URLS",
+                urls: tileUrls,
+                cacheName: "itinerary-tiles-v1",
+                _batch: "tiles",
+            });
+        }
+
+        // Send image batch
+        if (imageUrls.length > 0) {
+            navigator.serviceWorker.controller.postMessage({
+                type: "PRECACHE_URLS",
+                urls: imageUrls,
+                cacheName: "itinerary-images-v1",
+                _batch: "images",
+            });
+        }
+    }
+
+    function renderOfflineStatus(cached, total) {
+        let container = document.getElementById("offline-status");
+        if (!container) {
+            container = document.createElement("div");
+            container.id = "offline-status";
+            container.className = "offline-status";
+            container.setAttribute("role", "status");
+            container.setAttribute("aria-live", "polite");
+            // Insert after header
+            const header = document.querySelector(".app-header");
+            if (header && header.nextSibling) {
+                header.parentNode.insertBefore(container, header.nextSibling);
+            } else {
+                document.body.prepend(container);
+            }
+        }
+
+        if (state.offlineCacheState === "done" || cached >= total) {
+            container.innerHTML =
+                '<span class="offline-status-icon material-symbols-outlined">cloud_done</span>' +
+                '<span class="offline-status-text">Saved for offline use</span>';
+            container.classList.add("offline-done");
+            container.classList.remove("offline-caching");
+            // Auto-hide after a few seconds
+            setTimeout(() => {
+                container.classList.add("offline-hidden");
+            }, 4000);
+            return;
+        }
+
+        const pct = total > 0 ? Math.round((cached / total) * 100) : 0;
+        container.classList.add("offline-caching");
+        container.classList.remove("offline-done", "offline-hidden");
+        container.innerHTML =
+            '<span class="offline-status-icon material-symbols-outlined">cloud_download</span>' +
+            `<span class="offline-status-text">Saving for offline… ${pct}%</span>` +
+            `<div class="offline-progress-track"><div class="offline-progress-bar" style="width:${pct}%"></div></div>`;
+    }
+
+    // Expose for testing
+    window.__collectOfflineAssets = collectOfflineAssets;
+    window.__optimiseImageUrl = optimiseImageUrl;
+
     function toggleExpand(activityId) {
         state.expandedActivityId =
             state.expandedActivityId === activityId ? null : activityId;
@@ -220,6 +428,7 @@
             unlockElements.hardRefreshButton.disabled = true;
         }
 
+        // Unregister service worker and clear all caches for a clean slate
         try {
             if (
                 "serviceWorker" in navigator &&
@@ -247,6 +456,11 @@
         } catch (_) {
             /* no-op */
         }
+
+        // Reset offline cache state
+        state.offlineCacheState = "idle";
+        const offlineEl = document.getElementById("offline-status");
+        if (offlineEl) offlineEl.remove();
 
         const url = new URL(window.location.href);
         url.searchParams.set("_gh_refresh", String(Date.now()));
@@ -707,7 +921,8 @@
 
         // Image
         if (act.image && act.image.url) {
-            html += `<img class="detail-image" src="${escapeHtml(act.image.url)}" alt="${escapeHtml(act.image.alt || act.name)}" loading="lazy">`;
+            const imgUrl = optimiseImageUrl(act.image.url);
+            html += `<img class="detail-image" src="${escapeHtml(imgUrl)}" alt="${escapeHtml(act.image.alt || act.name)}" loading="lazy">`;
         } else {
             html += `<div class="detail-section"><span class="detail-label">Image</span><span class="detail-value not-provided">Not provided</span></div>`;
         }
@@ -751,7 +966,7 @@
                 html += `<div class="detail-label" style="margin-top:0.65rem;font-size:0.7rem;">Example Photos (tap to open, copy link to save)</div>`;
                 html += `<div class="photo-examples">`;
                 act.photoExamples.forEach((pe, idx) => {
-                    const safeUrl = escapeHtml(pe.url);
+                    const safeUrl = escapeHtml(optimiseImageUrl(pe.url));
                     const safeAlt = escapeHtml(pe.alt);
                     const safeCredit = pe.credit ? escapeHtml(pe.credit) : "";
                     const pageUrl = pe.pageUrl
@@ -972,6 +1187,14 @@
 
         updateFileStatus("Itinerary loaded successfully.", "success");
         renderApp();
+
+        // Trigger offline precaching in the background
+        try {
+            precacheOfflineAssets(data);
+        } catch (_) {
+            /* offline precaching is non-critical */
+        }
+
         return true;
     }
 

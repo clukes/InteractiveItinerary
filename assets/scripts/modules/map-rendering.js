@@ -278,7 +278,46 @@
         return svg;
     }
 
+    /**
+     * Compute all tile URLs needed for a set of activities.
+     * Used by the offline precacher to cache tiles without rendering.
+     */
+    function getTileUrls(activities, width, height, padding) {
+        if (!activities || activities.length === 0) return [];
+        const mapValid = activities.filter(
+            (a) =>
+                a.location &&
+                typeof a.location.lat === "number" &&
+                typeof a.location.lng === "number",
+        );
+        if (mapValid.length === 0) return [];
+
+        const geometry = buildMapGeometry(mapValid, width, height, padding);
+        const tileSize = 256;
+        const tileCount = 2 ** geometry.zoom;
+        const minTileX = Math.floor(geometry.mapLeft / tileSize);
+        const maxTileX = Math.floor((geometry.mapLeft + width) / tileSize);
+        const minTileY = Math.floor(geometry.mapTop / tileSize);
+        const maxTileY = Math.floor((geometry.mapTop + height) / tileSize);
+
+        const urls = [];
+        for (let tileX = minTileX; tileX <= maxTileX; tileX++) {
+            for (let tileY = minTileY; tileY <= maxTileY; tileY++) {
+                if (tileY < 0 || tileY >= tileCount) continue;
+                const wrappedTileX =
+                    ((tileX % tileCount) + tileCount) % tileCount;
+                urls.push(
+                    `https://basemaps.cartocdn.com/light_all/${geometry.zoom}/${wrappedTileX}/${tileY}.png`,
+                );
+            }
+        }
+        return urls;
+    }
+
     modules.mapRendering = {
         renderMapSection,
+        getTileUrls,
+        buildMapGeometry,
+        latLngToWorld,
     };
 })(window);
