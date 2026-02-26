@@ -8,7 +8,10 @@
         />
         <meta name="theme-color" content="#0f8f97" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta
+            name="apple-mobile-web-app-status-bar-style"
+            content="black-translucent"
+        />
         <link rel="manifest" href="manifest.json" />
         <link rel="apple-touch-icon" href="assets/icons/icon-192.svg" />
         <title>Interactive Trip Itinerary</title>
@@ -129,7 +132,9 @@
                 window.addEventListener("load", function () {
                     navigator.serviceWorker
                         .register("./sw.js")
-                        .catch(function () { /* SW registration failed — app still works */ });
+                        .catch(function () {
+                            /* SW registration failed — app still works */
+                        });
                 });
             }
         </script>

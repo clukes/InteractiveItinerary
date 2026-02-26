@@ -366,9 +366,16 @@
     window.__optimiseImageUrl = optimiseImageUrl;
 
     function toggleExpand(activityId) {
+        const isExpanding = state.expandedActivityId !== activityId;
         state.expandedActivityId =
             state.expandedActivityId === activityId ? null : activityId;
         renderDayContent();
+        if (isExpanding) {
+            const card = document.getElementById(`card-${activityId}`);
+            if (card && card.scrollIntoView) {
+                card.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+        }
     }
 
     function toggleMapFilterKey() {
