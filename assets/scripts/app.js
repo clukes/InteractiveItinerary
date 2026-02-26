@@ -371,9 +371,16 @@
             state.expandedActivityId === activityId ? null : activityId;
         renderDayContent();
         if (isExpanding) {
-            const card = document.getElementById(`card-${activityId}`);
-            if (card && card.scrollIntoView) {
-                card.scrollIntoView({ behavior: "smooth", block: "start" });
+            const scrollToCard = () => {
+                const card = document.getElementById(`card-${activityId}`);
+                if (card && card.scrollIntoView) {
+                    card.scrollIntoView({ behavior: "smooth", block: "start" });
+                }
+            };
+            if (typeof requestAnimationFrame === "function") {
+                requestAnimationFrame(scrollToCard);
+            } else {
+                scrollToCard();
             }
         }
     }

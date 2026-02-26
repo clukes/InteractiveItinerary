@@ -593,6 +593,7 @@ input:focus-visible {
         transform 0.2s;
     border: 1px solid #ecdeca;
     position: relative;
+    scroll-margin-top: 96px;
 }
 .activity-card:hover {
     box-shadow: var(--shadow-card);
