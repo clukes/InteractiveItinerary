@@ -33,4 +33,5 @@ plans/
 .cloudflare/
 
 wrangler.toml
+wrangler.dev.toml
 .wrangler/

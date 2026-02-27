@@ -264,6 +264,15 @@ input:focus-visible {
     cursor: not-allowed;
 }
 
+/* === Day Navigation (sticky) === */
+.day-nav {
+    position: sticky;
+    top: var(--header-height, 0px);
+    z-index: 90;
+    padding-top: 0.5rem;
+    padding-bottom: 0.25rem;
+}
+
 /* === Day Tabs === */
 .day-tabs {
     display: flex;

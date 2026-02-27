@@ -10,6 +10,8 @@
         "test:e2e": "npx playwright test --config playwright.config.cjs",
         "test": "npm run test:unit && npm run test:integration && npm run test:e2e",
         "validate:itinerary": "node scripts/validate-itinerary.cjs",
+        "dev": "node scripts/dev-server.mjs",
+        "dev:worker": "wrangler dev --remote --config wrangler.dev.toml",
         "deploy:worker": "bash ./cloudflare/deploy-worker.sh",
         "setup:hooks": "bash ./scripts/install-git-hooks.sh"
     },
@@ -19,7 +21,8 @@
         "ajv-formats": "^3.0.0",
         "jsdom": "^25.0.0",
         "serve": "^14.2.5",
-        "vitest": "^3.0.0"
+        "vitest": "^3.0.0",
+        "wrangler": "^4.69.0"
     },
     "dependencies": {
         "dotenv": "^17.3.1"

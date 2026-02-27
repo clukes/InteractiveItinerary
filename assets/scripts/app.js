@@ -267,34 +267,47 @@
         state.offlineCacheState = "caching";
         renderOfflineStatus(0, totalAssets);
 
+        // Track per-batch: cached (newly fetched) + alreadyCached + done flag
         let tilesCached = 0;
+        let tilesAlreadyCached = 0;
+        let tilesDone = tileUrls.length === 0;
         let imagesCached = 0;
+        let imagesAlreadyCached = 0;
+        let imagesDone = imageUrls.length === 0;
 
         function onProgress(e) {
             if (!e.data) return;
             if (e.data.type === "PRECACHE_PROGRESS") {
-                // Determine which batch this is from
+                // Update per-batch state from the SW
                 if (e.data._batch === "tiles") {
                     tilesCached = e.data.cached;
+                    tilesAlreadyCached = e.data.alreadyCached || 0;
+                    if (e.data.done) tilesDone = true;
                 } else if (e.data._batch === "images") {
                     imagesCached = e.data.cached;
+                    imagesAlreadyCached = e.data.alreadyCached || 0;
+                    if (e.data.done) imagesDone = true;
                 }
-                const totalCached = tilesCached + imagesCached;
-                renderOfflineStatus(totalCached, totalAssets);
 
-                if (tilesCached + imagesCached >= totalAssets || e.data.done) {
-                    // Check if both batches done
-                    if (
-                        tilesCached >= tileUrls.length &&
-                        imagesCached >= imageUrls.length
-                    ) {
-                        state.offlineCacheState = "done";
-                        renderOfflineStatus(totalAssets, totalAssets);
-                        navigator.serviceWorker.removeEventListener(
-                            "message",
-                            onProgress,
-                        );
-                    }
+                // Progress = everything accounted for (newly cached + already cached)
+                const totalHandled =
+                    tilesCached +
+                    tilesAlreadyCached +
+                    imagesCached +
+                    imagesAlreadyCached;
+                renderOfflineStatus(
+                    Math.min(totalHandled, totalAssets),
+                    totalAssets,
+                );
+
+                // Finish when both batches report done
+                if (tilesDone && imagesDone) {
+                    state.offlineCacheState = "done";
+                    renderOfflineStatus(totalAssets, totalAssets);
+                    navigator.serviceWorker.removeEventListener(
+                        "message",
+                        onProgress,
+                    );
                 }
             }
         }
@@ -416,6 +429,18 @@
         renderHeader();
         renderDayTabs();
         renderDayContent();
+        updateStickyNavOffset();
+    }
+
+    function updateStickyNavOffset() {
+        var header = document.querySelector(".app-header");
+        var nav = document.querySelector(".day-nav");
+        if (header && nav) {
+            /** @type {HTMLElement} */ (nav).style.setProperty(
+                "--header-height",
+                /** @type {HTMLElement} */ (header).offsetHeight + "px",
+            );
+        }
     }
 
     function isLocalDevelopmentHost() {
@@ -1455,5 +1480,6 @@
     }
 
     loadVersion();
+    window.addEventListener("resize", updateStickyNavOffset);
     bootstrap();
 })();

@@ -186,10 +186,13 @@ async function precacheUrls(urls, cacheName, maxEntries, event, batchId) {
     const available = Math.max(0, maxEntries - existing.length);
     const toFetch = needed.slice(0, available);
 
+    const alreadyCached = urls.length - needed.length;
+
     if (toFetch.length === 0) {
         notifyProgress(event, {
             cached: 0,
             total: 0,
+            alreadyCached,
             done: true,
             _batch: batchId,
         });
@@ -215,7 +218,8 @@ async function precacheUrls(urls, cacheName, maxEntries, event, batchId) {
         notifyProgress(event, {
             cached,
             total,
-            done: cached >= total,
+            alreadyCached,
+            done: false,
             _batch: batchId,
         });
     }
@@ -223,6 +227,7 @@ async function precacheUrls(urls, cacheName, maxEntries, event, batchId) {
     notifyProgress(event, {
         cached,
         total,
+        alreadyCached,
         done: true,
         _batch: batchId,
     });
