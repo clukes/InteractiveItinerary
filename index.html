@@ -126,17 +126,5 @@
         <script src="assets/scripts/modules/map-rendering.js"></script>
         <script src="assets/scripts/modules/map-interaction.js"></script>
         <script src="assets/scripts/app.js"></script>
-        <script>
-            // Register Service Worker for offline support
-            if ("serviceWorker" in navigator) {
-                window.addEventListener("load", function () {
-                    navigator.serviceWorker
-                        .register("./sw.js")
-                        .catch(function () {
-                            /* SW registration failed — app still works */
-                        });
-                });
-            }
-        </script>
     </body>
 </html>

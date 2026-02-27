@@ -25,9 +25,6 @@
             "Map interaction module failed to load before app bootstrap.",
         );
     }
-    const getTileUrls =
-        window.__itineraryModules?.mapRendering?.getTileUrls || null;
-
     const appConfig = {
         workerAuthEndpoint:
             "https://itinerary-worker.digiconner.workers.dev/auth-itinerary",
@@ -37,6 +34,9 @@
 
     const unlockedItineraryStorageKey = "itinerary_unlocked_data_v1";
     const unlockedPasswordStorageKey = "itinerary_unlocked_password_v1";
+
+    // Track which activities have had their images loaded at least once
+    const loadedImageActivities = new Set();
 
     // ── App State ──
     const state = {
@@ -48,7 +48,6 @@
         mapFilterKeyHidden: window.innerWidth <= 640,
         isDemoLockedMode: false,
         isDevModeEnabled: false,
-        offlineCacheState: "idle", // idle|caching|done|error
     };
 
     // Expose state for testing
@@ -160,195 +159,19 @@
         }
     }
 
-    // ── Offline Precaching ──
 
-    /**
-     * Optimise an external image URL for minimal data usage.
-     * - Unsplash: append w=400&q=70 for ~30-50KB instead of multi-MB originals
-     * - Already-small or unknown CDNs: leave as-is
-     */
-    function optimiseImageUrl(url) {
-        if (typeof url !== "string" || !url) return url;
-        try {
-            const parsed = new URL(url);
-            // Unsplash image CDN — request small, compressed version
-            if (
-                parsed.hostname === "images.unsplash.com" ||
-                parsed.hostname.endsWith(".unsplash.com")
-            ) {
-                parsed.searchParams.set("w", "400");
-                parsed.searchParams.set("q", "70");
-                parsed.searchParams.set("fm", "webp");
-                return parsed.toString();
-            }
-            return url;
-        } catch (_) {
-            return url;
-        }
-    }
 
-    /**
-     * Collect all cacheable asset URLs from the loaded itinerary.
-     * Returns { tileUrls: string[], imageUrls: string[] }
-     */
-    function collectOfflineAssets(itinerary) {
-        const tileUrls = [];
-        const imageUrls = [];
 
-        if (!itinerary || !itinerary.days) return { tileUrls, imageUrls };
 
-        const MAP_WIDTH = 360;
-        const MAP_HEIGHT = 280;
-        const MAP_PADDING = 32;
 
-        itinerary.days.forEach((day) => {
-            const activities = day.activities || [];
-
-            // Tile URLs for this day's map
-            if (typeof getTileUrls === "function") {
-                // Include hotel in geometry if present
-                const allPoints = [...activities];
-                if (
-                    day.hotel &&
-                    day.hotel.location &&
-                    typeof day.hotel.location.lat === "number" &&
-                    typeof day.hotel.location.lng === "number"
-                ) {
-                    allPoints.push({ location: day.hotel.location });
-                }
-                const dayTiles = getTileUrls(
-                    allPoints,
-                    MAP_WIDTH,
-                    MAP_HEIGHT,
-                    MAP_PADDING,
-                );
-                dayTiles.forEach((u) => tileUrls.push(u));
-            }
-
-            // Image URLs from activities
-            activities.forEach((act) => {
-                if (act.image && act.image.url) {
-                    imageUrls.push(optimiseImageUrl(act.image.url));
-                }
-                if (act.photoExamples && act.photoExamples.length > 0) {
-                    act.photoExamples.forEach((pe) => {
-                        if (pe.url) {
-                            imageUrls.push(optimiseImageUrl(pe.url));
-                        }
-                    });
-                }
-            });
-        });
-
-        // Deduplicate
-        return {
-            tileUrls: [...new Set(tileUrls)],
-            imageUrls: [...new Set(imageUrls)],
-        };
-    }
-
-    /**
-     * Kick off background precaching via the Service Worker.
-     * Shows progress in the offline status bar.
-     */
-    function precacheOfflineAssets(itinerary) {
-        if (
-            !("serviceWorker" in navigator) ||
-            !navigator.serviceWorker.controller
-        ) {
-            return;
-        }
-
-        const { tileUrls, imageUrls } = collectOfflineAssets(itinerary);
-        const totalAssets = tileUrls.length + imageUrls.length;
-
-        if (totalAssets === 0) return;
-
-        state.offlineCacheState = "caching";
-        renderOfflineStatus(0, totalAssets);
-
-        // Track per-batch: cached (newly fetched) + alreadyCached + done flag
-        let tilesCached = 0;
-        let tilesAlreadyCached = 0;
-        let tilesDone = tileUrls.length === 0;
-        let imagesCached = 0;
-        let imagesAlreadyCached = 0;
-        let imagesDone = imageUrls.length === 0;
-
-        function onProgress(e) {
-            if (!e.data) return;
-            if (e.data.type === "PRECACHE_PROGRESS") {
-                // Update per-batch state from the SW
-                if (e.data._batch === "tiles") {
-                    tilesCached = e.data.cached;
-                    tilesAlreadyCached = e.data.alreadyCached || 0;
-                    if (e.data.done) tilesDone = true;
-                } else if (e.data._batch === "images") {
-                    imagesCached = e.data.cached;
-                    imagesAlreadyCached = e.data.alreadyCached || 0;
-                    if (e.data.done) imagesDone = true;
-                }
-
-                // Progress = everything accounted for (newly cached + already cached)
-                const totalHandled =
-                    tilesCached +
-                    tilesAlreadyCached +
-                    imagesCached +
-                    imagesAlreadyCached;
-                renderOfflineStatus(
-                    Math.min(totalHandled, totalAssets),
-                    totalAssets,
-                );
-
-                // Finish when both batches report done
-                if (tilesDone && imagesDone) {
-                    state.offlineCacheState = "done";
-                    renderOfflineStatus(totalAssets, totalAssets);
-                    navigator.serviceWorker.removeEventListener(
-                        "message",
-                        onProgress,
-                    );
-                }
-            }
-        }
-
-        navigator.serviceWorker.addEventListener("message", onProgress);
-
-        // Send tile batch
-        if (tileUrls.length > 0) {
-            navigator.serviceWorker.controller.postMessage({
-                type: "PRECACHE_URLS",
-                urls: tileUrls,
-                cacheName: "itinerary-tiles-v1",
-                _batch: "tiles",
-            });
-        }
-
-        // Send image batch
-        if (imageUrls.length > 0) {
-            navigator.serviceWorker.controller.postMessage({
-                type: "PRECACHE_URLS",
-                urls: imageUrls,
-                cacheName: "itinerary-images-v1",
-                _batch: "images",
-            });
-        }
-    }
-
-    function renderOfflineStatus(/* cached, total */) {
-        // Hidden: progress bar was getting stuck, so we suppress UI entirely.
-        // Offline caching still runs in the background via the service worker.
-        return;
-    }
-
-    // Expose for testing
-    window.__collectOfflineAssets = collectOfflineAssets;
-    window.__optimiseImageUrl = optimiseImageUrl;
 
     function toggleExpand(activityId) {
         const isExpanding = state.expandedActivityId !== activityId;
         state.expandedActivityId =
             state.expandedActivityId === activityId ? null : activityId;
+        if (isExpanding) {
+            loadedImageActivities.add(activityId);
+        }
         renderDayContent();
         if (isExpanding) {
             const scrollToCard = () => {
@@ -434,39 +257,7 @@
             unlockElements.hardRefreshButton.disabled = true;
         }
 
-        // Unregister service worker and clear all caches for a clean slate
-        try {
-            if (
-                "serviceWorker" in navigator &&
-                typeof navigator.serviceWorker.getRegistrations === "function"
-            ) {
-                const registrations =
-                    await navigator.serviceWorker.getRegistrations();
-                await Promise.all(
-                    registrations.map((registration) =>
-                        registration.unregister(),
-                    ),
-                );
-            }
-        } catch (_) {
-            /* no-op */
-        }
 
-        try {
-            if ("caches" in window && typeof caches.keys === "function") {
-                const cacheKeys = await caches.keys();
-                await Promise.all(
-                    cacheKeys.map((cacheKey) => caches.delete(cacheKey)),
-                );
-            }
-        } catch (_) {
-            /* no-op */
-        }
-
-        // Reset offline cache state
-        state.offlineCacheState = "idle";
-        const offlineEl = document.getElementById("offline-status");
-        if (offlineEl) offlineEl.remove();
 
         const url = new URL(window.location.href);
         url.searchParams.set("_gh_refresh", String(Date.now()));
@@ -874,6 +665,19 @@
 
         container.innerHTML = html;
 
+        // Activate lazy images for the currently expanded card
+        if (state.expandedActivityId) {
+            const details = document.getElementById(
+                `details-${state.expandedActivityId}`,
+            );
+            if (details) {
+                details.querySelectorAll("img[data-src]").forEach((img) => {
+                    img.setAttribute("src", img.getAttribute("data-src"));
+                    img.removeAttribute("data-src");
+                });
+            }
+        }
+
         // Bind event listeners
         bindActivityEvents();
 
@@ -925,10 +729,15 @@
     function renderActivityDetails(act) {
         let html = "";
 
-        // Image
+        // Image (lazy: only load src when the card has been expanded at least once)
         if (act.image && act.image.url) {
-            const imgUrl = optimiseImageUrl(act.image.url);
-            html += `<img class="detail-image" src="${escapeHtml(imgUrl)}" alt="${escapeHtml(act.image.alt || act.name)}" loading="lazy">`;
+            const imgUrl = escapeHtml(act.image.url);
+            const imgAlt = escapeHtml(act.image.alt || act.name);
+            if (loadedImageActivities.has(act.activityId)) {
+                html += `<img class="detail-image" src="${imgUrl}" alt="${imgAlt}">`;
+            } else {
+                html += `<img class="detail-image" data-src="${imgUrl}" alt="${imgAlt}">`;
+            }
         } else {
             html += `<div class="detail-section"><span class="detail-label">Image</span><span class="detail-value not-provided">Not provided</span></div>`;
         }
@@ -972,15 +781,16 @@
                 html += `<div class="detail-label" style="margin-top:0.65rem;font-size:0.7rem;">Example Photos (tap to open, copy link to save)</div>`;
                 html += `<div class="photo-examples">`;
                 act.photoExamples.forEach((pe, idx) => {
-                    const safeUrl = escapeHtml(optimiseImageUrl(pe.url));
+                    const safeUrl = escapeHtml(pe.url);
                     const safeAlt = escapeHtml(pe.alt);
                     const safeCredit = pe.credit ? escapeHtml(pe.credit) : "";
                     const pageUrl = pe.pageUrl
                         ? escapeHtml(pe.pageUrl)
                         : safeUrl;
+                    const imgAttr = loadedImageActivities.has(act.activityId) ? "src" : "data-src";
                     html += `<div class="photo-example">`;
                     html += `<a href="${pageUrl}" target="_blank" rel="noopener noreferrer" title="Open example photo">`;
-                    html += `<img src="${safeUrl}" alt="${safeAlt}" loading="lazy" />`;
+                    html += `<img ${imgAttr}="${safeUrl}" alt="${safeAlt}" />`;
                     html += `</a>`;
                     html += `<div class="photo-example-caption">`;
                     html += `<span class="photo-example-credit">${safeCredit ? "📷 " + safeCredit : "📷 Unsplash"}</span>`;
@@ -1174,6 +984,7 @@
         state.expandedActivityId = null;
         state.selectedDayId = data.days[0]?.dayId || null;
         state.fileLoadState = "loaded";
+        loadedImageActivities.clear();
 
         // Initialize activity statuses
         const saved = restoreFromStorage ? loadStatusesFromStorage() : null;
@@ -1193,13 +1004,6 @@
 
         updateFileStatus("Itinerary loaded successfully.", "success");
         renderApp();
-
-        // Trigger offline precaching in the background
-        try {
-            precacheOfflineAssets(data);
-        } catch (_) {
-            /* offline precaching is non-critical */
-        }
 
         return true;
     }
