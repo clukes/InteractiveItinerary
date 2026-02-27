@@ -335,43 +335,10 @@
         }
     }
 
-    function renderOfflineStatus(cached, total) {
-        let container = document.getElementById("offline-status");
-        if (!container) {
-            container = document.createElement("div");
-            container.id = "offline-status";
-            container.className = "offline-status";
-            container.setAttribute("role", "status");
-            container.setAttribute("aria-live", "polite");
-            // Insert after header
-            const header = document.querySelector(".app-header");
-            if (header && header.nextSibling) {
-                header.parentNode.insertBefore(container, header.nextSibling);
-            } else {
-                document.body.prepend(container);
-            }
-        }
-
-        if (state.offlineCacheState === "done" || cached >= total) {
-            container.innerHTML =
-                '<span class="offline-status-icon material-symbols-outlined">cloud_done</span>' +
-                '<span class="offline-status-text">Saved for offline use</span>';
-            container.classList.add("offline-done");
-            container.classList.remove("offline-caching");
-            // Auto-hide after a few seconds
-            setTimeout(() => {
-                container.classList.add("offline-hidden");
-            }, 4000);
-            return;
-        }
-
-        const pct = total > 0 ? Math.round((cached / total) * 100) : 0;
-        container.classList.add("offline-caching");
-        container.classList.remove("offline-done", "offline-hidden");
-        container.innerHTML =
-            '<span class="offline-status-icon material-symbols-outlined">cloud_download</span>' +
-            `<span class="offline-status-text">Saving for offline… ${pct}%</span>` +
-            `<div class="offline-progress-track"><div class="offline-progress-bar" style="width:${pct}%"></div></div>`;
+    function renderOfflineStatus(/* cached, total */) {
+        // Hidden: progress bar was getting stuck, so we suppress UI entirely.
+        // Offline caching still runs in the background via the service worker.
+        return;
     }
 
     // Expose for testing
