@@ -111,7 +111,7 @@ for (const target of TARGETS) {
                 if (act.image?.url && act.image.url !== newUrl) {
                     if (dryRun) {
                         console.log(
-                            `  [DRY] ${act.name} image: ${act.image.url.slice(0, 60)}… → ${mainFile}`
+                            `  [DRY] ${act.name} image: ${act.image.url.slice(0, 60)}… → ${mainFile}`,
                         );
                     }
                     act.image.url = newUrl;
@@ -119,7 +119,7 @@ for (const target of TARGETS) {
                 }
             } else {
                 console.log(
-                    `  ⏭ ${act.name} (order ${order}): no local main image — keeping existing URL`
+                    `  ⏭ ${act.name} (order ${order}): no local main image — keeping existing URL`,
                 );
                 totalSkipped++;
             }
@@ -134,7 +134,7 @@ for (const target of TARGETS) {
                         if (pe.url && pe.url !== newUrl) {
                             if (dryRun) {
                                 console.log(
-                                    `  [DRY] ${act.name} pe[${j}]: ${pe.url.slice(0, 60)}… → ${peFile}`
+                                    `  [DRY] ${act.name} pe[${j}]: ${pe.url.slice(0, 60)}… → ${peFile}`,
                                 );
                             }
                             pe.url = newUrl;
@@ -142,7 +142,7 @@ for (const target of TARGETS) {
                         }
                     } else {
                         console.log(
-                            `  ⏭ ${act.name} pe[${j}]: no local file — keeping existing URL`
+                            `  ⏭ ${act.name} pe[${j}]: no local file — keeping existing URL`,
                         );
                         totalSkipped++;
                     }
@@ -154,8 +154,14 @@ for (const target of TARGETS) {
     totalRewrites += fileRewrites;
 
     if (!dryRun && fileRewrites > 0) {
-        writeFileSync(target.path, JSON.stringify(data, null, 2) + "\n", "utf8");
-        console.log(`  ✅ Wrote ${fileRewrites} URL rewrites to ${target.path}`);
+        writeFileSync(
+            target.path,
+            JSON.stringify(data, null, 2) + "\n",
+            "utf8",
+        );
+        console.log(
+            `  ✅ Wrote ${fileRewrites} URL rewrites to ${target.path}`,
+        );
     } else if (dryRun) {
         console.log(`  Would rewrite ${fileRewrites} URLs (dry run)`);
     } else {
@@ -164,8 +170,10 @@ for (const target of TARGETS) {
 }
 
 console.log(
-    `\n🏁 Done. ${totalRewrites} URLs rewritten, ${totalSkipped} kept as-is.`
+    `\n🏁 Done. ${totalRewrites} URLs rewritten, ${totalSkipped} kept as-is.`,
 );
 if (dryRun) {
-    console.log("   (Dry run — no files were modified. Remove --dry-run to apply.)");
+    console.log(
+        "   (Dry run — no files were modified. Remove --dry-run to apply.)",
+    );
 }

@@ -6,7 +6,7 @@ Guidelines for AI agents working on this repository.
 
 1. **Accuracy** — All itinerary information must be accurate. Double-check names, addresses, descriptions, and any factual claims before committing.
 2. **No duplicates** — Do not repeat images or activities unless explicitly asked. Each entry should be unique across the itinerary.
-3. **Image relevance** — Every image must depict the actual activity or location it is associated with. Verify the subject of the image matches the itinerary item — do not use generic or loosely related photos.
+3. **Image relevance** — Every image must depict the actual activity or location it is associated with. Verify the subject of the image matches the itinerary item — do not use generic or loosely related photos. If you can't find an image, don't give a best guess. Suggest some options and ask the user.
 4. **Example image style** — Prefer images of people posing, Instagram-style photos that highlight the person as the subject.
 5. **Review accuracy** — Reviews must relate to the specific activity. For example, if the visit is to a restaurant inside a hotel, provide reviews for the restaurant, not the hotel.
 6. **Opening times & public holidays** — Verify opening times and provide sources. If unsure or if it needs to be checked later, add a note. Check public holidays for the location and include them as a note for the relevant day.
@@ -17,7 +17,7 @@ Guidelines for AI agents working on this repository.
 ## Images & URLs
 
 9. **Verify links** — All URLs and images must work. Do not commit broken links or images.
-10. **Image sourcing** — Any images are acceptable. If an API key is required, download the image once and store it in Cloudflare to avoid ongoing costs. Minimise API costs. Images do not need to be free — this is a private, non-commercial project.
+10. **Image sourcing** — Any images are acceptable. For publicly accessible images (e.g. Unsplash, Pexels, Wikimedia), link directly to the URL — no need to download or re-host. Only download and store in Cloudflare when the source requires an API key (e.g. Google Maps Place Photos) to avoid ongoing costs. Images do not need to be free — this is a private, non-commercial project.
 
 ## Development
 
@@ -89,16 +89,18 @@ Run `npm run validate:itinerary` after any itinerary JSON change.
 
 ## Deployment
 
+**Ask the user before doing any deployment.**
+
 - **Static site** — Push to GitHub Pages (or serve with any static host).
 - **Worker** — When `cloudflare/worker.js` is modified, deploy before handoff:
-  ```bash
-  npm run deploy:worker -- <worker-name> [environment]
-  ```
-  Requires `npx wrangler login` and configured secrets (`ITINERARY_PASSWORD`, `ITINERARY_KV`).
+    ```bash
+    npm run deploy:worker -- <worker-name> [environment]
+    ```
+    Requires `npx wrangler login` and configured secrets (`ITINERARY_PASSWORD`, `ITINERARY_KV`).
 - **Images** — Upload to Cloudflare Pages:
-  ```bash
-  npm run deploy:images
-  ```
+    ```bash
+    npm run deploy:images
+    ```
 
 ## Code Conventions
 
@@ -111,6 +113,7 @@ Run `npm run validate:itinerary` after any itinerary JSON change.
 ## Private & Ignored Paths
 
 The `private/` and `plans/` directories are git-ignored. Real itinerary data lives in:
+
 - `private/seville-itinerary.json`
 - `private/local-itineraries/seville-itinerary.private.json`
 - `private/images/` (uploaded to Cloudflare Pages)

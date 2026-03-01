@@ -72,7 +72,9 @@ for (const dir of ["assets", "private", "."]) {
                 scheduleReload();
             }
         });
-    } catch { /* directory may not exist */ }
+    } catch {
+        /* directory may not exist */
+    }
 }
 
 /* ── Local itinerary & dev password ────────────────────────────── */
@@ -142,7 +144,11 @@ const server = createServer(async (req, res) => {
 
         if (!localItineraryPath) {
             res.writeHead(500, corsH);
-            res.end(JSON.stringify({ error: "No local itinerary file found. Place one in private/." }));
+            res.end(
+                JSON.stringify({
+                    error: "No local itinerary file found. Place one in private/.",
+                }),
+            );
             return;
         }
 
@@ -169,7 +175,11 @@ const server = createServer(async (req, res) => {
             res.end(data);
         } catch (err) {
             res.writeHead(500, corsH);
-            res.end(JSON.stringify({ error: `Failed to read itinerary: ${err.message}` }));
+            res.end(
+                JSON.stringify({
+                    error: `Failed to read itinerary: ${err.message}`,
+                }),
+            );
         }
         return;
     }
@@ -192,7 +202,10 @@ const server = createServer(async (req, res) => {
         // Inject config override into index.html
         if (urlPath === "/index.html") {
             let html = body.toString("utf-8");
-            html = html.replace("</head>", `${CONFIG_SNIPPET}\n${LIVE_RELOAD_CLIENT}\n</head>`);
+            html = html.replace(
+                "</head>",
+                `${CONFIG_SNIPPET}\n${LIVE_RELOAD_CLIENT}\n</head>`,
+            );
             // Add a visual dev-mode indicator
             html = html.replace(
                 "</body>",
@@ -217,7 +230,11 @@ const server = createServer(async (req, res) => {
 server.listen(PORT, async () => {
     const devPw = await loadDevPassword();
     console.log(`\n  🌐  Dev frontend:  http://localhost:${PORT}`);
-    console.log(`  📂  Local itinerary: ${localItineraryPath || "(none found)"}`);
-    console.log(`  🔑  Dev password: ${devPw ? "(set via private/.dev-password)" : "(none — any password accepted)"}`);
+    console.log(
+        `  📂  Local itinerary: ${localItineraryPath || "(none found)"}`,
+    );
+    console.log(
+        `  🔑  Dev password: ${devPw ? "(set via private/.dev-password)" : "(none — any password accepted)"}`,
+    );
     console.log(`  🔄  Live-reload active — watching for file changes\n`);
 });
