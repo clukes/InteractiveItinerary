@@ -159,12 +159,6 @@
         }
     }
 
-
-
-
-
-
-
     function toggleExpand(activityId) {
         const isExpanding = state.expandedActivityId !== activityId;
         state.expandedActivityId =
@@ -256,8 +250,6 @@
         if (unlockElements.hardRefreshButton) {
             unlockElements.hardRefreshButton.disabled = true;
         }
-
-
 
         const url = new URL(window.location.href);
         url.searchParams.set("_gh_refresh", String(Date.now()));
@@ -787,7 +779,9 @@
                     const pageUrl = pe.pageUrl
                         ? escapeHtml(pe.pageUrl)
                         : safeUrl;
-                    const imgAttr = loadedImageActivities.has(act.activityId) ? "src" : "data-src";
+                    const imgAttr = loadedImageActivities.has(act.activityId)
+                        ? "src"
+                        : "data-src";
                     html += `<div class="photo-example">`;
                     html += `<a href="${pageUrl}" target="_blank" rel="noopener noreferrer" title="Open example photo">`;
                     html += `<img ${imgAttr}="${safeUrl}" alt="${safeAlt}" />`;

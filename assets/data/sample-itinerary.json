@@ -28,7 +28,7 @@
           "name": "Neighborhood Coffee",
           "description": "Start with a relaxed coffee near the city center.",
           "image": {
-            "url": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400",
+            "url": "https://itinerary-images.pages.dev/day1-1-main-ab200d50.jpg",
             "alt": "Coffee on a wooden table"
           },
           "location": {
@@ -60,7 +60,7 @@
           "name": "City History Museum",
           "description": "Explore local history exhibits in a restored historic building.",
           "image": {
-            "url": "https://images.unsplash.com/photo-1554907984-15263bfd63bd?w=400",
+            "url": "https://itinerary-images.pages.dev/day1-2-main-a0acbb93.jpg",
             "alt": "Museum interior gallery"
           },
           "location": {
@@ -92,7 +92,7 @@
           "name": "Riverside Walk",
           "description": "A light afternoon walk along the river promenade.",
           "image": {
-            "url": "https://images.unsplash.com/photo-1472396961693-142e6e269027?w=400",
+            "url": "https://itinerary-images.pages.dev/day1-3-main-c59aaab8.jpg",
             "alt": "Riverside pedestrian walkway"
           },
           "location": {
@@ -133,7 +133,7 @@
           "name": "Market Visit",
           "description": "Browse a local market with produce and handmade goods.",
           "image": {
-            "url": "https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=400",
+            "url": "https://itinerary-images.pages.dev/day2-1-main-65d5a0af.jpg",
             "alt": "Colorful market stalls"
           },
           "location": {
@@ -165,7 +165,7 @@
           "name": "Gallery Stop",
           "description": "Short visit to a contemporary art gallery.",
           "image": {
-            "url": "https://images.unsplash.com/photo-1577083552431-6e5fd01aa342?w=400",
+            "url": "https://itinerary-images.pages.dev/day2-2-main-44160948.jpg",
             "alt": "Contemporary art gallery room"
           },
           "location": {

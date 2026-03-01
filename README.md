@@ -19,25 +19,17 @@ A mobile-first, static web app for browsing a multi-day itinerary with maps, che
 
 ## Run Locally
 
-1. Install dependencies:
-
 ```bash
-npm install
+npm install && npm run dev
 ```
 
-2. Start a local server:
+This starts the dev server on port 3000 with live-reload. It serves the local itinerary from `private/` directly — no Cloudflare Worker needed. Edit the JSON, save, and the browser refreshes automatically.
 
-```bash
-npx serve -l 3000 -s .
-```
+The dev password is `dev` (stored in `private/.dev-password`, git-ignored).
 
-3. Open:
+Then open http://localhost:3000.
 
-```text
-http://localhost:3000
-```
-
-Use HTTP static hosting (local server, GitHub Pages, Netlify, etc.). Do not use `file://` URLs.
+Do not use `file://` URLs — always serve via HTTP.
 
 ## Load Your Own Itinerary
 
